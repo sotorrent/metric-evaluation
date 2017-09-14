@@ -1,0 +1,13 @@
+csvExtraction\PostVersionsListManagement.class
+util\ConnectedBlocks.class
+util\ConnectionsOfTwoVersions.class
+csvExtraction\GroundTruthExtractionOfCSVs.class
+metricsComparism\Metric.class
+metricsComparism\Metric$1.class
+metricsComparism\Metric$Type.class
+MainMetricsComparator.class
+statistics\Statistics.class
+metricsComparism\MetricsComparator.class
+tests\MetricsComparisonTest.class
+util\ConnectionsOfAllVersions.class
+metricsComparism\MetricResult.class
