@@ -1,18 +1,20 @@
 package metricsComparism;
 
 
+import csvExtraction.GroundTruthExtractionOfCSVs;
+import csvExtraction.PostVersionsListManagement;
 import de.unitrier.st.soposthistory.blocks.CodeBlockVersion;
 import de.unitrier.st.soposthistory.blocks.TextBlockVersion;
 import de.unitrier.st.soposthistory.version.PostVersionList;
-import csvExtraction.GroundTruthExtractionOfCSVs;
-import csvExtraction.PostVersionsListManagement;
 import util.ConnectionsOfAllVersions;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.function.BiFunction;
 
 
@@ -183,9 +185,7 @@ public class MetricsComparator{
         return metricResult;
     }
 
-
-
-    public void createStatisticsFiles() throws IOException {
+    public void createStatisticsFiles(String pathToSample) throws IOException {
 
         Metric.Type[] metrics = Metric.Type.values().clone();
 
@@ -197,108 +197,92 @@ public class MetricsComparator{
         }
 
 
-        //for test
-        //Type[] metrics = new Type[1];
-        //metrics[0] = Type.tokenOverlapNormalized;
-        //
+        PrintWriter printWriter = new PrintWriter(new File(pathToSample + ".csv"));
 
-        PrintWriter[] printWriters = new PrintWriter[10];
-        printWriters[0] = new PrintWriter(new File("./metric results/total time for all PostVersionLists measured (text)" + ".csv"));
-        printWriters[1] = new PrintWriter(new File("./metric results/similarity (true positives) (text)" + ".csv"));
-        printWriters[2] = new PrintWriter(new File("./metric results/similarity (false positives) (text)" + ".csv"));
-        printWriters[3] = new PrintWriter(new File("./metric results/similarity (true negatives) (text)" + ".csv"));
-        printWriters[4] = new PrintWriter(new File("./metric results/similarity (false negatives) (text)" + ".csv"));
+        printWriter.write("sample; ");
+        printWriter.write("metric; ");
+        printWriter.write("threshold; ");
 
-        printWriters[5] = new PrintWriter(new File("./metric results/total time for all PostVersionLists measured (code)" + ".csv"));
-        printWriters[6] = new PrintWriter(new File("./metric results/similarity (true positives) (code)" + ".csv"));
-        printWriters[7] = new PrintWriter(new File("./metric results/similarity (false positives) (code)" + ".csv"));
-        printWriters[8] = new PrintWriter(new File("./metric results/similarity (true negatives) (code)" + ".csv"));
-        printWriters[9] = new PrintWriter(new File("./metric results/similarity (false negatives) (code)" + ".csv"));
+        printWriter.write("postid; ");
+        printWriter.write("posthistoryid; ");
 
-        for(int i=0; i<metrics.length+1; i++) {
-//        for(int i=0; i<=3; i++) {             // TODO : use this for testing
+        printWriter.write("runtimetext; ");
+        printWriter.write("#truepositivestext; ");
+        printWriter.write("#truenegativestext; ");
+        printWriter.write("#falsepositivestext; ");
+        printWriter.write("#falsenegativestext; ");
 
-            for (int j = 0; j < postVersionsListManagement.postVersionLists.size()+1; j++) {
+        printWriter.write("#runtimecode; ");
+        printWriter.write("#truepositivescode; ");
+        printWriter.write("#truenegativescode; ");
+        printWriter.write("#falsepositivescode; ");
+        printWriter.write("#falsenegativescode; ");
+        printWriter.write("\n");
 
-                if(i == 0 && j == 0){
-                    printWriters[0].write("total time for all PostVersionLists measured (text)");
-                    printWriters[1].write("similarity (true positives) (text)");
-                    printWriters[2].write("similarity (false positives) (text)");
-                    printWriters[3].write("similarity (true negatives) (text)");
-                    printWriters[4].write("similarity (false negatives) (text)");
 
-                    printWriters[5].write("total time for all PostVersionLists measured (code)");
-                    printWriters[6].write("similarity (true positives) (code)");
-                    printWriters[7].write("similarity (false positives) (code)");
-                    printWriters[8].write("similarity (true negatives) (code)");
-                    printWriters[9].write("similarity (false negatives) (code)");
-                }else if(i == 0){
-                    for (PrintWriter printWriter : printWriters) {
-                        printWriter.write(postVersionsListManagement.postVersionLists.get(j-1).getFirst().getPostId().toString());
-                    }
-                }else if(j == 0){
-                    for (PrintWriter printWriter : printWriters) {
-                        printWriter.write(metrics[i - 1].toString());
-                    }
-                }else{
+        List<Double> thresholds = Arrays.asList(0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9);
+
+        for(Double threshold : thresholds) {
+
+            int count = 1;
+
+            CodeBlockVersion.similarityThreshold = threshold;
+            TextBlockVersion.similarityThreshold = threshold;
+
+            for (Metric.Type metric : metrics) {
+
+                if (Metric.getBiFunctionMetric(metric) == null) {
+                    System.err.println("FAILED " + metric);
+                    continue;
+                }
+
+                this.postVersionsListManagement = new PostVersionsListManagement(pathToDirectoryOfAllPostHistories);
+
+                for (PostVersionList postVersionList : postVersionsListManagement.postVersionLists) {
                     try {
-                        this.postVersionsListManagement = new PostVersionsListManagement(pathToDirectoryOfAllPostHistories);
-
-                        MetricResult tmpMetricResult
+                        MetricResult tmpMetricResult_text
                                 = this.computeSimilarity_writeInResult_text(
-                                this.postVersionsListManagement.postVersionLists.get(j-1).getFirst().getPostId(),
-                                Metric.getBiFunctionMetric(metrics[i-1]));
+                                postVersionList.getFirst().getPostId(),
+                                Metric.getBiFunctionMetric(metric));
 
-                        printWriters[0].write(tmpMetricResult.totalTimeMeasured_text + "");
-                        printWriters[1].write(tmpMetricResult.truePositives_text + "");
-                        printWriters[2].write(tmpMetricResult.falsePositives_text + "");
-                        printWriters[3].write(tmpMetricResult.trueNegatives_text + "");
-                        printWriters[4].write(tmpMetricResult.falseNegatives_text + "");
-                    }catch (IllegalArgumentException e){
-                        for (PrintWriter printWriter : printWriters) {
-                            printWriter.write("no result");
-                        }
-                    }
-
-                    try {
-                        MetricResult tmpMetricResult
+                        MetricResult tmpMetricResult_code
                                 = this.computeSimilarity_writeInResult_code(
-                                this.postVersionsListManagement.postVersionLists.get(j-1).getFirst().getPostId(),
-                                Metric.getBiFunctionMetric(metrics[i - 1]));
+                                postVersionList.getFirst().getPostId(),
+                                Metric.getBiFunctionMetric(metric));
 
-                        printWriters[5].write(tmpMetricResult.totalTimeMeasured_code + "");
-                        printWriters[6].write(tmpMetricResult.truePositives_code + "");
-                        printWriters[7].write(tmpMetricResult.falsePositives_code + "");
-                        printWriters[8].write(tmpMetricResult.trueNegatives_code + "");
-                        printWriters[9].write(tmpMetricResult.falseNegatives_code + "");
-                    }catch (IllegalArgumentException e){
-                        for (PrintWriter printWriter : printWriters) {
-                            printWriter.write("no result");
-                        }
+
+                            for (int l = 0; l < postVersionList.size() - 1; l++) {
+
+                                printWriter.write(pathToSample + "; ");
+                                printWriter.write(metric + "; ");
+                                printWriter.write(threshold + "; ");
+
+                                printWriter.write(postVersionList.get(l).getPostId() + "; ");
+                                printWriter.write(postVersionList.get(l).getPostHistoryId() + "; ");
+
+                                printWriter.write(tmpMetricResult_text.totalTimeMeasured_text + "; ");
+                                printWriter.write(tmpMetricResult_text.measuredDataList.get(l).truePositives_text + "; ");
+                                printWriter.write(tmpMetricResult_text.measuredDataList.get(l).trueNegatives_text + "; ");
+                                printWriter.write(tmpMetricResult_text.measuredDataList.get(l).falsePositives_text + "; ");
+                                printWriter.write(tmpMetricResult_text.measuredDataList.get(l).falseNegatives_text + "; ");
+
+                                printWriter.write(tmpMetricResult_code.totalTimeMeasured_code + "; ");
+                                printWriter.write(tmpMetricResult_code.measuredDataList.get(l).truePositives_code + "; ");
+                                printWriter.write(tmpMetricResult_code.measuredDataList.get(l).trueNegatives_code + "; ");
+                                printWriter.write(tmpMetricResult_code.measuredDataList.get(l).falsePositives_code + "; ");
+                                printWriter.write(tmpMetricResult_code.measuredDataList.get(l).falseNegatives_code + "\n");
+                            }
+
+                    } catch (IllegalArgumentException e) {
+                        printWriter.write("null" + "\n");
                     }
                 }
-
-                if(j < postVersionsListManagement.postVersionLists.size()){
-                    for (PrintWriter printWriter : printWriters) {
-                        printWriter.write(", ");
-                    }
-                }
-
-            }
-            for (PrintWriter printWriter : printWriters) {
-                printWriter.write("\n");
-            }
-
-            for (PrintWriter printWriter : printWriters) {
                 printWriter.flush();
+
+                System.out.println("metric " + metric + " with threshold " + threshold + " completed (" + count++ + " of " + metrics.length + ")");
             }
-
-            if(i>0)
-                System.out.println("metric " + metrics[i-1] + " completed (" + i + " of " + metrics.length + ")");
         }
 
-        for (PrintWriter printWriter : printWriters) {
-            printWriter.close();
-        }
+        printWriter.close();
     }
 }

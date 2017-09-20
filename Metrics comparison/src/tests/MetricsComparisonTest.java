@@ -2,9 +2,12 @@ package tests;
 
 import csvExtraction.GroundTruthExtractionOfCSVs;
 import csvExtraction.PostVersionsListManagement;
+import de.unitrier.st.soposthistory.blocks.CodeBlockVersion;
 import de.unitrier.st.soposthistory.blocks.TextBlockVersion;
 import de.unitrier.st.soposthistory.version.PostVersionList;
 import de.unitrier.st.soposthistorygt.util.anchorsURLs.AnchorTextAndUrlHandler;
+import de.unitrier.st.stringsimilarity.profile.Variants;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import metricsComparism.MetricsComparator;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.Test;
@@ -12,7 +15,6 @@ import util.ConnectionsOfAllVersions;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,7 +26,8 @@ import static de.unitrier.st.soposthistorygt.GroundTruthApp.GroundTruthCreator.n
 public class MetricsComparisonTest {
 
 
-    private static Path pathToCSVs = Paths.get("testdata", "comparison");
+    private static String pathToCSVs = Paths.get("testdata", "representative CSVs").toString();
+    private static String pathToFewCompletedFiles= Paths.get("testdata", "fewCompletedFiles").toString();
 
 
     @Test
@@ -34,6 +37,10 @@ public class MetricsComparisonTest {
 
         GroundTruthExtractionOfCSVs groundTruthExtractionOfCSVs = new GroundTruthExtractionOfCSVs(pathToCSVs.toString());
         PostVersionsListManagement postVersionsListManagement = new PostVersionsListManagement(pathToCSVs.toString());
+
+        TextBlockVersion.similarityMetric = Variants::manhattanThreeGramNormalized;
+        CodeBlockVersion.similarityMetric = Variants::manhattanThreeGramNormalized;
+
         postVersionsListManagement.getPostVersionListWithID(postId).processVersionHistory();
 
         ConnectionsOfAllVersions connectionsOfAllVersionsGroundTruth_text = groundTruthExtractionOfCSVs.getAllConnectionsOfAllConsecutiveVersions_text(postId);
@@ -65,6 +72,7 @@ public class MetricsComparisonTest {
     }
 
 
+    @Ignore
     @Test
     public void testSetIfPostVersionListsAreParsable() throws IOException {
 
@@ -113,10 +121,10 @@ public class MetricsComparisonTest {
         stopWatch.start();
 
         MetricsComparator metricsComparator = new MetricsComparator(
-                pathToCSVs.toString(),
-                pathToCSVs.toString());
+                pathToFewCompletedFiles,
+                pathToFewCompletedFiles);
 
-        metricsComparator.createStatisticsFiles();
+        metricsComparator.createStatisticsFiles(pathToFewCompletedFiles);
 
         stopWatch.stop();
         System.out.println(stopWatch.getTime() + " milliseconds overall");
@@ -135,7 +143,10 @@ public class MetricsComparisonTest {
 
         List<TextBlockVersion> textBlocks = postVersionsListManagement.getPostVersionListWithID(postId).get(postVersionsListManagement.getPostVersionListWithID(postId).size()-1).getTextBlocks();
         for(int i=0; i<textBlocks.size(); i++){
-            System.out.println(textBlocks.get(i).getLocalId() + " has pred " + textBlocks.get(i).getPred().getLocalId());
+            Integer predId = null;
+            if(textBlocks.get(i).getPred() != null)
+                predId = textBlocks.get(i).getPred().getLocalId();
+            System.out.println(textBlocks.get(i).getLocalId() + " has pred " + predId);
         }
         System.out.println();
 

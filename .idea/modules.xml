@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/metrics-comparison.iml" filepath="$PROJECT_DIR$/.idea/metrics-comparison.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Metrics comparison/so-posthistory-metricscomparision.iml" filepath="$PROJECT_DIR$/Metrics comparison/so-posthistory-metricscomparision.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Metrics comparison/so-posthistory-metricscomparison.iml" filepath="$PROJECT_DIR$/Metrics comparison/so-posthistory-metricscomparison.iml" />
     </modules>
   </component>
 </project>
