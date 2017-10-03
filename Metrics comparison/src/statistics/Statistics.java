@@ -2,16 +2,16 @@ package statistics;
 
 import csvExtraction.PostVersionsListManagement;
 import de.unitrier.st.soposthistory.blocks.PostBlockVersion;
+import de.unitrier.st.soposthistory.blocks.TextBlockVersion;
+import de.unitrier.st.soposthistory.version.PostVersion;
 import de.unitrier.st.soposthistory.version.PostVersionList;
 import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.util.regex.Pattern;
 
 public class Statistics {
 
@@ -21,7 +21,9 @@ public class Statistics {
     public void testPostVersionListManagement(){
         LinkedList<String> pathToAllDirectories = new LinkedList<>();
 
-        pathToAllDirectories.add("postVersionLists");
+        /*
+        pathToAllDirectories.add("testdata\\representative CSVs");
+        */
         pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_1\\files");
         pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_2\\files");
         pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_3\\files");
@@ -36,7 +38,7 @@ public class Statistics {
 
         StringBuilder output = new StringBuilder();
 
-        output.append("post-id; post-history-id; local-id; possible pred or succ local-ids; number of possible successors or predecessors\n");
+        output.append("post-id; post-history-id; local-id; blockTypeId; possible pred or succ local-ids; number of possible successors or predecessors\n");
 
         for(String path : pathToAllDirectories) {
             PostVersionsListManagement postVersionsListManagement = new PostVersionsListManagement(path);
@@ -60,6 +62,8 @@ public class Statistics {
                                         .append(postVersionList.get(j).getPostHistoryId())
                                         .append("; ")
                                         .append(postVersionList.get(j).getPostBlocks().get(k).getLocalId())
+                                        .append("; ")
+                                        .append(postVersionList.get(j).getPostBlocks().get(k) instanceof TextBlockVersion ? 1 : 2)
                                         .append("; ")
                                         .append("local-ids of possible preds: ")
                                         .append(possiblePreds)
@@ -88,6 +92,8 @@ public class Statistics {
                                         .append(postVersionList.get(j).getPostHistoryId())
                                         .append("; ")
                                         .append(postVersionList.get(j).getPostBlocks().get(k).getLocalId())
+                                        .append("; ")
+                                        .append(postVersionList.get(j).getPostBlocks().get(k) instanceof TextBlockVersion ? 1 : 2)
                                         .append("; ")
                                         .append("local-ids of possible succs: ")
                                         .append(possibleSuccs)
