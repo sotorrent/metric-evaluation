@@ -113,17 +113,64 @@ public class Statistics {
     }
 
     @Test
-    public void getStatistics(){
+    public void testFindPostVersionListsWithEmptyBlocks(){
+        LinkedList<String> pathToAllDirectories = new LinkedList<>();
+
+        pathToAllDirectories.add("testdata\\representative CSVs");
+        /*
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_1\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_2\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_3\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_4\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_5\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_6\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_7\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_8\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_9\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_10\\files");
+*/
+        ArrayList<Integer> postIdsEmptyBlocks = new ArrayList<>();
+
+
+        for(String path : pathToAllDirectories) {
+            PostVersionsListManagement postVersionsListManagement = new PostVersionsListManagement(path);
+            for(PostVersionList postVersionList : postVersionsListManagement.postVersionLists) {
+                for (PostVersion postVersion : postVersionList) {
+                    for(int k=0; k<postVersion.getPostBlocks().size(); k++) {
+                        if (Pattern.matches("\\s*", postVersion.getPostBlocks().get(k).getContent())){
+                            if(!postIdsEmptyBlocks.contains(postVersion.getPostId()))
+                                postIdsEmptyBlocks.add(postVersion.getPostId());
+                            break;
+                        }
+                    }
+                }
+            }
+            System.out.println(postIdsEmptyBlocks);
+        }
+    }
+
+    @Test
+    public void getStatisticsOfBlocksWithMultipleLinkingPossibilities(){
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader("testdata\\statistics\\possible multiple connections.csv"));
 
             LinkedList<Integer> postIdWithMultipleChoices = new LinkedList<>();
 
-            LinkedList<Integer> distinctValuesOfPossiblePreds = new LinkedList<>();
-            HashMap<Integer, Integer> frequenciesOfPossiblePreds = new HashMap<>();
+            LinkedList<Integer> distinctValuesOfPossibleBlockTypeIds = new LinkedList<>();
+            HashMap<Integer, Integer> frequenciesOfBlocKTypeIds = new HashMap<>();
 
-            LinkedList<Integer> distinctValuesOfPossibleSuccs = new LinkedList<>();
-            HashMap<Integer, Integer> frequenciesOfPossibleSuccs = new HashMap<>();
+            LinkedList<Integer> distinctValuesOfPossiblePredBlocks = new LinkedList<>();
+            HashMap<Integer, Integer> frequenciesOfPossiblePredBlocks = new HashMap<>();
+
+            LinkedList<Integer> distinctValuesOfPossiblePredPostHistoryIds = new LinkedList<>();
+            HashMap<Integer, Integer> frequenciesOfAffectedPredPostHistoryIds = new HashMap<>();
+
+            LinkedList<Integer> distinctValuesOfPossibleSuccBlocks = new LinkedList<>();
+            HashMap<Integer, Integer> frequenciesOfPossibleSuccBlocks = new HashMap<>();
+
+            LinkedList<Integer> distinctValuesOfPossibleSuccPostHistoryIds = new LinkedList<>();
+            HashMap<Integer, Integer> frequenciesOfAffectedSuccPostHistoryIds = new HashMap<>();
+
 
             boolean firstLine = true;
             String line;
@@ -137,6 +184,7 @@ public class Statistics {
                 Integer postId = Integer.valueOf(tokens.nextToken());
                 Integer postHistoryId = Integer.valueOf(tokens.nextToken().trim());
                 Integer localId = Integer.valueOf(tokens.nextToken().trim());
+                Integer blockTypeId = Integer.valueOf(tokens.nextToken().trim());
 
                 String predOrSuccs = tokens.nextToken();
                 Boolean hasPossiblePreds = predOrSuccs.contains("pred");
@@ -145,19 +193,54 @@ public class Statistics {
                 Integer numberOfPossibleLinks = Integer.valueOf(tokens.nextToken().trim());
 
                 if(hasPossiblePreds){
-                    if(frequenciesOfPossiblePreds.get(numberOfPossibleLinks) == null && !distinctValuesOfPossiblePreds.contains(numberOfPossibleLinks)){
-                        distinctValuesOfPossiblePreds.add(numberOfPossibleLinks);
-                        frequenciesOfPossiblePreds.put(numberOfPossibleLinks, 1);
+                    if(frequenciesOfBlocKTypeIds.get(blockTypeId) == null && !distinctValuesOfPossibleBlockTypeIds.contains(blockTypeId)){
+                        distinctValuesOfPossibleBlockTypeIds.add(blockTypeId);
+                        frequenciesOfBlocKTypeIds.put(blockTypeId, 1);
                     }else{
-                        frequenciesOfPossiblePreds.replace(numberOfPossibleLinks, frequenciesOfPossiblePreds.get(numberOfPossibleLinks), frequenciesOfPossiblePreds.get(numberOfPossibleLinks)+1);
+                        frequenciesOfBlocKTypeIds.replace(blockTypeId, frequenciesOfBlocKTypeIds.get(blockTypeId), frequenciesOfBlocKTypeIds.get(blockTypeId)+1);
+                    }
+
+                    if(frequenciesOfPossiblePredBlocks.get(numberOfPossibleLinks) == null && !distinctValuesOfPossiblePredBlocks.contains(numberOfPossibleLinks)){
+                        distinctValuesOfPossiblePredBlocks.add(numberOfPossibleLinks);
+                        frequenciesOfPossiblePredBlocks.put(numberOfPossibleLinks, 1);
+                    }else{
+                        frequenciesOfPossiblePredBlocks.replace(numberOfPossibleLinks, frequenciesOfPossiblePredBlocks.get(numberOfPossibleLinks), frequenciesOfPossiblePredBlocks.get(numberOfPossibleLinks)+1);
+                    }
+
+                    if(!distinctValuesOfPossiblePredPostHistoryIds.contains(postHistoryId)){
+                        distinctValuesOfPossiblePredPostHistoryIds.add(postHistoryId);
+
+                        if(frequenciesOfAffectedPredPostHistoryIds.get(numberOfPossibleLinks) == null){
+                            frequenciesOfAffectedPredPostHistoryIds.put(numberOfPossibleLinks, 1);
+                        }else{
+                            frequenciesOfAffectedPredPostHistoryIds.replace(numberOfPossibleLinks, frequenciesOfAffectedPredPostHistoryIds.get(numberOfPossibleLinks), frequenciesOfAffectedPredPostHistoryIds.get(numberOfPossibleLinks)+1);
+                        }
                     }
                 }
+
                 if(hasPossibleSuccs){
-                    if(frequenciesOfPossibleSuccs.get(numberOfPossibleLinks) == null && !distinctValuesOfPossibleSuccs.contains(numberOfPossibleLinks)){
-                        distinctValuesOfPossibleSuccs.add(numberOfPossibleLinks);
-                        frequenciesOfPossibleSuccs.put(numberOfPossibleLinks, 1);
+                    if(frequenciesOfBlocKTypeIds.get(blockTypeId) == null && !distinctValuesOfPossibleBlockTypeIds.contains(blockTypeId)){
+                        distinctValuesOfPossibleBlockTypeIds.add(blockTypeId);
+                        frequenciesOfBlocKTypeIds.put(blockTypeId, 1);
                     }else{
-                        frequenciesOfPossibleSuccs.replace(numberOfPossibleLinks, frequenciesOfPossibleSuccs.get(numberOfPossibleLinks), frequenciesOfPossibleSuccs.get(numberOfPossibleLinks)+1);
+                        frequenciesOfBlocKTypeIds.replace(blockTypeId, frequenciesOfBlocKTypeIds.get(blockTypeId), frequenciesOfBlocKTypeIds.get(blockTypeId)+1);
+                    }
+
+                    if(frequenciesOfPossibleSuccBlocks.get(numberOfPossibleLinks) == null && !distinctValuesOfPossibleSuccBlocks.contains(numberOfPossibleLinks)){
+                        distinctValuesOfPossibleSuccBlocks.add(numberOfPossibleLinks);
+                        frequenciesOfPossibleSuccBlocks.put(numberOfPossibleLinks, 1);
+                    }else{
+                        frequenciesOfPossibleSuccBlocks.replace(numberOfPossibleLinks, frequenciesOfPossibleSuccBlocks.get(numberOfPossibleLinks), frequenciesOfPossibleSuccBlocks.get(numberOfPossibleLinks)+1);
+                    }
+
+                    if(!distinctValuesOfPossibleSuccPostHistoryIds.contains(postHistoryId)){
+                        distinctValuesOfPossibleSuccPostHistoryIds.add(postHistoryId);
+
+                        if(frequenciesOfAffectedSuccPostHistoryIds.get(numberOfPossibleLinks) == null){
+                            frequenciesOfAffectedSuccPostHistoryIds.put(numberOfPossibleLinks, 1);
+                        }else{
+                            frequenciesOfAffectedSuccPostHistoryIds.replace(numberOfPossibleLinks, frequenciesOfAffectedSuccPostHistoryIds.get(numberOfPossibleLinks), frequenciesOfAffectedSuccPostHistoryIds.get(numberOfPossibleLinks)+1);
+                        }
                     }
                 }
 
@@ -168,23 +251,91 @@ public class Statistics {
             System.out.println("number of post ids that contain blocks which could be connected to multiple predecessors or successors: " +  postIdWithMultipleChoices.size() + " of 100000 (" + ((double)postIdWithMultipleChoices.size() / 100000) * 100 + " %)");
             System.out.println();
 
-            System.out.println("Occuring numbers of blocks that could be linked and their frequencies (predecessors): ");
-            Collections.sort(distinctValuesOfPossiblePreds);
-            for (Integer value : distinctValuesOfPossiblePreds) {
-                System.out.println(value + ": " + frequenciesOfPossiblePreds.get(value));
+            System.out.println("Distinct numbers of predecessor blocks that could be linked; possible predecessor blocks that could be matched; number of predecessor postHistories");
+            Collections.sort(distinctValuesOfPossiblePredBlocks);
+            for (Integer value : distinctValuesOfPossiblePredBlocks) {
+                System.out.println(value + "; " + frequenciesOfPossiblePredBlocks.get(value) + "; " + frequenciesOfAffectedPredPostHistoryIds.get(value));
             }
             System.out.println();
 
-            System.out.println("Occuring numbers of blocks that could be linked and their frequencies (successors): ");
-            Collections.sort(distinctValuesOfPossibleSuccs);
-            for (Integer value : distinctValuesOfPossibleSuccs) {
-                System.out.println(value + ": " + frequenciesOfPossibleSuccs.get(value));
+            System.out.println("Distinct numbers of successor blocks that could be linked; possible successor blocks that could be matched; number of successor postHistories");
+            Collections.sort(distinctValuesOfPossibleSuccBlocks);
+            for (Integer value : distinctValuesOfPossibleSuccBlocks) {
+                System.out.println(value + "; " + frequenciesOfPossibleSuccBlocks.get(value) + "; " + frequenciesOfAffectedSuccPostHistoryIds.get(value));
             }
+
+            System.out.println();
+            System.out.println("Affected text blocks: " + frequenciesOfBlocKTypeIds.get(1));
+            System.out.println("Affected code blocks: " + frequenciesOfBlocKTypeIds.get(2));
 
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+    }
+
+    @Test
+    public void getAverageSizesOfBlocksAndVersions(){
+        LinkedList<String> pathToAllDirectories = new LinkedList<>();
+
+        // pathToAllDirectories.add("testdata\\representative CSVs");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_1\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_2\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_3\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_4\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_5\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_6\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_7\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_8\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_9\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_10\\files");
+
+        long textBlockLength = 0;
+        int numberOfTextBlocks = 0;
+
+        long codeBlockLength = 0;
+        int numberOfCodeBlocks = 0;
+
+        int numberOfVersions = 0;
+
+        int numberOfPosts = 0;
+
+        for(String path : pathToAllDirectories) {
+            PostVersionsListManagement postVersionsListManagement = new PostVersionsListManagement(path);
+            for(PostVersionList postVersionList : postVersionsListManagement.postVersionLists) {
+
+                numberOfPosts++;
+
+                for (PostVersion postVersion : postVersionList) {
+                    for(int k=0; k<postVersion.getTextBlocks().size(); k++) {
+                        textBlockLength += postVersion.getTextBlocks().get(k).getContent().length();
+                    }
+                    for(int k=0; k<postVersion.getCodeBlocks().size(); k++) {
+                        codeBlockLength += postVersion.getCodeBlocks().get(k).getContent().length();
+                    }
+
+                    numberOfTextBlocks += postVersion.getTextBlocks().size();
+                    numberOfCodeBlocks += postVersion.getCodeBlocks().size();
+                }
+
+                numberOfVersions += postVersionList.size();
+            }
+
+            System.out.println("Finished: " + path);
+        }
+
+        System.out.println("number of versions: " + numberOfVersions);
+        System.out.println("average number of versions: " + (double)numberOfVersions / numberOfPosts);
+        System.out.println();
+        System.out.println("number of text blocks: " + numberOfTextBlocks);
+        System.out.println("average number of text blocks: " + (double)numberOfTextBlocks / numberOfVersions);
+        System.out.println("number of code blocks: " + numberOfCodeBlocks);
+        System.out.println("average number of code blocks: " + (double)numberOfCodeBlocks / numberOfVersions);
+        System.out.println();
+        System.out.println("text block length: " + textBlockLength);
+        System.out.println("average text block length: " + (double)textBlockLength / numberOfTextBlocks);
+        System.out.println("code block length: " + codeBlockLength);
+        System.out.println("average code block length: " + (double)codeBlockLength / numberOfCodeBlocks);
     }
 }
