@@ -3,21 +3,25 @@ package tests;
 import csvExtraction.GroundTruthExtractionOfCSVs;
 import csvExtraction.PostVersionsListManagement;
 import de.unitrier.st.soposthistory.blocks.CodeBlockVersion;
+import de.unitrier.st.soposthistory.blocks.PostBlockVersion;
 import de.unitrier.st.soposthistory.blocks.TextBlockVersion;
+import de.unitrier.st.soposthistory.version.PostVersion;
 import de.unitrier.st.soposthistory.version.PostVersionList;
 import de.unitrier.st.soposthistorygt.util.anchorsURLs.AnchorTextAndUrlHandler;
 import de.unitrier.st.stringsimilarity.profile.Variants;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import metricsComparism.MetricsComparator;
 import org.apache.commons.lang3.time.StopWatch;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import util.ConnectionsOfAllVersions;
+import util.ConnectionsOfTwoVersions;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import static csvExtraction.PostVersionsListManagement.pattern_groundTruth;
 import static de.unitrier.st.soposthistorygt.GroundTruthApp.GroundTruthCreator.normalizeURLsInTextBlocksOfAllVersions;
@@ -28,15 +32,30 @@ public class MetricsComparisonTest {
 
     private static String pathToCSVs = Paths.get("testdata", "representative CSVs").toString();
     private static String pathToFewCompletedFiles= Paths.get("testdata", "fewCompletedFiles").toString();
+    private static LinkedList<String> pathToAllDirectories = new LinkedList<>();
+
+    @BeforeAll
+    public static void init(){
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_1\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_2\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_3\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_4\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_5\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_6\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_7\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_8\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_9\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_10\\files");
+    }
 
 
     @Test
-    public void testExtractions(){
+    public void testExtractionOfOnePost(){
 
         int postId = 3758880;
 
-        GroundTruthExtractionOfCSVs groundTruthExtractionOfCSVs = new GroundTruthExtractionOfCSVs(pathToCSVs.toString());
-        PostVersionsListManagement postVersionsListManagement = new PostVersionsListManagement(pathToCSVs.toString());
+        GroundTruthExtractionOfCSVs groundTruthExtractionOfCSVs = new GroundTruthExtractionOfCSVs(pathToCSVs);
+        PostVersionsListManagement postVersionsListManagement = new PostVersionsListManagement(pathToCSVs);
 
         TextBlockVersion.similarityMetric = Variants::manhattanThreeGramNormalized;
         CodeBlockVersion.similarityMetric = Variants::manhattanThreeGramNormalized;
@@ -72,22 +91,8 @@ public class MetricsComparisonTest {
     }
 
 
-    @Ignore
     @Test
-    public void testSetIfPostVersionListsAreParsable() throws IOException {
-
-        LinkedList<String> pathToAllDirectories = new LinkedList<>();
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_1\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_2\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_3\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_4\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_5\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_6\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_7\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_8\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_9\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_10\\files");
-
+    public void testSetIfAllPostVersionListsAreParsable() throws IOException {
 
         for (String path : pathToAllDirectories) {
             File file = new File(path);
@@ -132,12 +137,11 @@ public class MetricsComparisonTest {
 
 
     @Test
-    public void testNumberOfPredecessors(){
+    public void testNumberOfPredecessorsOfOnePost(){
         int postId = 3758880;
         TextBlockVersion.similarityMetric = de.unitrier.st.stringsimilarity.set.Variants::twoGramDiceVariant;
 
-        GroundTruthExtractionOfCSVs groundTruthExtractionOfCSVs = new GroundTruthExtractionOfCSVs(pathToCSVs.toString());
-        PostVersionsListManagement postVersionsListManagement = new PostVersionsListManagement(pathToCSVs.toString());
+        PostVersionsListManagement postVersionsListManagement = new PostVersionsListManagement(pathToCSVs);
         postVersionsListManagement.getPostVersionListWithID(postId).processVersionHistory(PostVersionList.PostBlockTypeFilter.TEXT);
 
 
@@ -149,32 +153,75 @@ public class MetricsComparisonTest {
             System.out.println(textBlocks.get(i).getLocalId() + " has pred " + predId);
         }
         System.out.println();
+    }
 
+    @Test
+    public void testNumberOfPredecessorsComputedMetric(){
 
-        ConnectionsOfAllVersions connectionsOfAllVersionsGroundTruth_text = groundTruthExtractionOfCSVs.getAllConnectionsOfAllConsecutiveVersions_text(postId);
-        ConnectionsOfAllVersions connectionsOfAllVersionsComputedMetric_text = postVersionsListManagement.getAllConnectionsOfAllConsecutiveVersions_text(postId);
+        TextBlockVersion.similarityMetric = de.unitrier.st.stringsimilarity.set.Variants::twoGramDiceVariant;
 
+        PostVersionsListManagement postVersionsListManagement = new PostVersionsListManagement(pathToCSVs);
 
-        System.out.println("Ground Truth: ");
-        System.out.println("All text blocks:");
-        for(int i=0; i<connectionsOfAllVersionsGroundTruth_text.size(); i++){
-            System.out.println(connectionsOfAllVersionsGroundTruth_text.get(i));
-        }
+        for (PostVersionList postVersionList : postVersionsListManagement.postVersionLists) {
+            postVersionList.processVersionHistory();
 
-        System.out.println("\n\nComputed Metric: ");
-        System.out.println("All text blocks:");
-        for(int i=0; i<connectionsOfAllVersionsComputedMetric_text.size(); i++){
-            System.out.println(connectionsOfAllVersionsComputedMetric_text.get(i));
+            for (PostVersion postVersion : postVersionList) {
+                List<PostBlockVersion> postBlocks = postVersion.getPostBlocks();
+
+                for (int i = 0; i < postBlocks.size(); i++) {
+                    if (postBlocks.get(i).getPred() == null)
+                        continue;
+
+                    for (int j = i + 1; j < postBlocks.size(); j++) {
+                        if (postBlocks.get(j).getPred() == null || postBlocks.get(i) instanceof TextBlockVersion != postBlocks.get(j) instanceof TextBlockVersion)
+                            continue;
+
+                        if (Objects.equals(postBlocks.get(i).getPred().getLocalId(), postBlocks.get(j).getPred().getLocalId())) {
+                            System.err.println(
+                                    "Error: multiple predecessors are set in post with id " + postVersion.getPostId() + "."
+                            );
+                        }
+                    }
+                }
+
+            }
         }
     }
 
+    @Test
+    public void testNumberOfPredecessorsGroundTruth(){
+
+        GroundTruthExtractionOfCSVs groundTruthExtractionOfCSVs = new GroundTruthExtractionOfCSVs("C:\\Users\\Lorik\\Documents\\GitHub\\so-posthistory-gt\\postVersionLists");
+
+        for (ConnectionsOfAllVersions connectionsOfAllVersions : groundTruthExtractionOfCSVs.getGroundTruth()) {
+            for (ConnectionsOfTwoVersions connectionsOfTwoVersions : connectionsOfAllVersions) {
+
+                for (int i=0; i<connectionsOfTwoVersions.size(); i++) {
+                    if (connectionsOfTwoVersions.get(i).getLeftLocalId() == null)
+                        continue;
+
+                    for (int j=i+1; j<connectionsOfTwoVersions.size(); j++) {
+                        if(connectionsOfTwoVersions.get(j).getLeftLocalId() == null || connectionsOfTwoVersions.get(i).getPostBlockTypeId() != connectionsOfTwoVersions.get(j).getPostBlockTypeId())
+                            continue;
+
+                        if (Objects.equals(connectionsOfTwoVersions.get(i).getLeftLocalId(), connectionsOfTwoVersions.get(j).getLeftLocalId())) {
+                            System.err.println(
+                                    "Error: multiple predecessors are set in post with id " + connectionsOfAllVersions.getPostId() + "."
+                            );
+                        }
+                    }
+                }
+
+            }
+        }
+    }
 
     @Test
     public void checkWhetherPostVersionListConnectionsWillBeResetRight(){
         int postId = 3758880;
         //TextBlockVersion.similarityMetric = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingTokenDiceVariant;
 
-        PostVersionsListManagement postVersionsListManagement = new PostVersionsListManagement(pathToCSVs.toString());
+        PostVersionsListManagement postVersionsListManagement = new PostVersionsListManagement(pathToCSVs);
         postVersionsListManagement.getPostVersionListWithID(postId).processVersionHistory(PostVersionList.PostBlockTypeFilter.TEXT);
 
 
