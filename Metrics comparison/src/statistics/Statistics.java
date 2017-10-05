@@ -1,6 +1,7 @@
 package statistics;
 
 import csvExtraction.PostVersionsListManagement;
+import de.unitrier.st.soposthistory.blocks.CodeBlockVersion;
 import de.unitrier.st.soposthistory.blocks.PostBlockVersion;
 import de.unitrier.st.soposthistory.blocks.TextBlockVersion;
 import de.unitrier.st.soposthistory.version.PostVersion;
@@ -150,6 +151,109 @@ public class Statistics {
     }
 
     @Test
+    public void getStatisticsOfBlockSizes(){
+        LinkedList<String> pathToAllDirectories = new LinkedList<>();
+
+        // pathToAllDirectories.add("testdata\\representative CSVs");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_1\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_2\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_3\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_4\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_5\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_6\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_7\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_8\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_9\\files");
+        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_10\\files");
+
+
+        LinkedList<Integer> distinctValuesOfBlockLenghtsText = new LinkedList<>();
+        HashMap<Integer, Integer> frequenciesOfBlockLenghtsText = new HashMap<>();
+        LinkedList<Integer> affectedPostHistoriesText = new LinkedList<>();
+        LinkedList<Integer> affectedPostsText = new LinkedList<>();
+
+        LinkedList<Integer> distinctValuesOfBlockLenghtsCode = new LinkedList<>();
+        HashMap<Integer, Integer> frequenciesOfBlockLenghtsCode = new HashMap<>();
+        LinkedList<Integer> affectedPostHistoriesCode = new LinkedList<>();
+        LinkedList<Integer> affectedPostsCode = new LinkedList<>();
+
+        for(String path : pathToAllDirectories) {
+            PostVersionsListManagement postVersionsListManagement = new PostVersionsListManagement(path);
+            for(PostVersionList postVersionList : postVersionsListManagement.postVersionLists) {
+                for (PostVersion postVersion : postVersionList) {
+                    for(PostBlockVersion postBlockVersion : postVersion.getPostBlocks()){
+
+                        int blockLength = postBlockVersion.getContent().length();
+
+                        if(blockLength <= 5){
+                            if(postBlockVersion instanceof TextBlockVersion){
+                                if(!distinctValuesOfBlockLenghtsText.contains(blockLength)){
+                                    distinctValuesOfBlockLenghtsText.add(blockLength);
+                                    frequenciesOfBlockLenghtsText.put(blockLength, 1);
+                                }else{
+                                    frequenciesOfBlockLenghtsText.replace(
+                                            blockLength,
+                                            frequenciesOfBlockLenghtsText.get(blockLength),
+                                            frequenciesOfBlockLenghtsText.get(blockLength) + 1
+                                    );
+                                }
+
+                                if(!affectedPostHistoriesText.contains(postVersion.getPostHistoryId()))
+                                    affectedPostHistoriesText.add(postVersion.getPostHistoryId());
+
+                                if(!affectedPostsText.contains(postVersion.getPostId()))
+                                    affectedPostsText.add(postVersion.getPostId());
+                            }
+                            else if(postBlockVersion instanceof CodeBlockVersion){
+                                if(!distinctValuesOfBlockLenghtsCode.contains(blockLength)){
+                                    distinctValuesOfBlockLenghtsCode.add(blockLength);
+                                    frequenciesOfBlockLenghtsCode.put(blockLength, 1);
+                                }else{
+                                    frequenciesOfBlockLenghtsCode.replace(
+                                            blockLength,
+                                            frequenciesOfBlockLenghtsCode.get(blockLength),
+                                            frequenciesOfBlockLenghtsCode.get(blockLength) + 1
+                                    );
+                                }
+
+                                if(!affectedPostHistoriesCode.contains(postVersion.getPostHistoryId()))
+                                    affectedPostHistoriesCode.add(postVersion.getPostHistoryId());
+
+                                if(!affectedPostsCode.contains(postVersion.getPostId()))
+                                    affectedPostsCode.add(postVersion.getPostId());
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            System.out.println("completed: " + path);
+        }
+
+        System.out.println("Text:");
+        System.out.println("blockLength; frequencies");
+        for (Integer value : distinctValuesOfBlockLenghtsText) {
+            System.out.println(value + "; " + frequenciesOfBlockLenghtsText.get(value));
+        }
+        System.out.println();
+
+        System.out.println("Code:");
+        System.out.println("blockLength; frequencies");
+        for (Integer value : distinctValuesOfBlockLenghtsCode) {
+            System.out.println(value + "; " + frequenciesOfBlockLenghtsCode.get(value));
+        }
+        System.out.println();
+
+        System.out.println("number of affected post histories for text: " + affectedPostHistoriesText.size());
+        System.out.println("number of affected post histories for code: " + affectedPostHistoriesCode.size());
+        System.out.println();
+
+        System.out.println("number of affected posts for text: " + affectedPostsText.size());
+        System.out.println("number of affected posts for code: " + affectedPostsCode.size());
+    }
+
+    @Test
     public void getStatisticsOfBlocksWithMultipleLinkingPossibilities(){
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader("testdata\\statistics\\possible multiple connections.csv"));
@@ -274,6 +378,7 @@ public class Statistics {
         }
 
     }
+
 
     @Test
     public void getAverageSizesOfBlocksAndVersions(){
