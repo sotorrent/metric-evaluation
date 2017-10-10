@@ -6,40 +6,61 @@
     <groupId>de.unitrier.st.soposthistory</groupId>
     <artifactId>so-posthistory-metricscomparision</artifactId>
     <version>0.1</version>
+    <url>https://github.com/sotorrent/metrics-comparison</url>
+
+    <distributionManagement>
+        <repository>
+            <id>releases</id>
+            <url>file://${basedir}/releases/</url>
+        </repository>
+    </distributionManagement>
 
     <repositories>
-        <repository>
-            <id>soposthistory</id>
-            <url>file://${basedir}/../so-posthistory-extractor/target/</url>
-        </repository>
+        <!-- see also https://stackoverflow.com/a/14013645 -->
         <repository>
             <id>stringsimilarity</id>
-            <url>file://${basedir}/../string-similarity/target/</url>
+            <url>https://raw.github.com/sotorrent/string-similarity/master/releases/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>soposthistoryextractor</id>
+            <url>https://raw.github.com/sotorrent/so-posthistory-extractor/master/releases/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
         </repository>
         <repository>
             <id>posthistory-gt</id>
-            <url>file://${basedir}/../so-posthistory-gt/target</url>
+            <url>https://raw.github.com/sotorrent/so-posthistory-gt/master/releases/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
         </repository>
     </repositories>
 
     <dependencies>
-        <!-- local dependency -->
+        <!-- https://github.com/sotorrent/so-posthistory-extractor/tree/master/releases/ -->
         <dependency>
             <groupId>de.unitrier.st.soposthistory</groupId>
             <artifactId>so-posthistory-extractor</artifactId>
-            <version>1.4.1</version>
+            <version>1.4.3</version>
         </dependency>
-        <!-- local dependency -->
+        <!-- https://github.com/sotorrent/string-similarity/tree/master/releases/ -->
         <dependency>
             <groupId>de.unitrier.st</groupId>
             <artifactId>string-similarity</artifactId>
-            <version>1.2.0</version>
+            <version>1.2.3</version>
         </dependency>
-        <!-- local dependency -->
+        <!-- https://github.com/sotorrent/so-posthistory-gt/tree/master/releases/ -->
         <dependency>
             <groupId>de.unitrier.st.soposthistory</groupId>
             <artifactId>so-posthistory-gt</artifactId>
-            <version>0.1.11</version>
+            <version>0.1.12</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.atlassian.commonmark/commonmark -->
         <dependency>
