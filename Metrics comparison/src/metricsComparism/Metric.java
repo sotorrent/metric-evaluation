@@ -18,122 +18,122 @@ class Metric {
         optimalAlignmentStandard,
         optimalAlignmentNormalized,
 
-        optimalAlignment2GramFingerprint,
-        optimalAlignment3GramFingerprint,
-        optimalAlignment4GramFingerprint,
-        optimalAlignment5GramFingerprint,
+        // optimalAlignment2GramFingerprint,
+        // optimalAlignment3GramFingerprint,
+        // optimalAlignment4GramFingerprint,
+        // optimalAlignment5GramFingerprint,
 
-        optimalAlignmentShingle2Fingerprint,
-        optimalAlignmentShingle3Fingerprint,
+        // optimalAlignmentShingle2Fingerprint,
+        // optimalAlignmentShingle3Fingerprint,
 
-        optimalAlignment2GramFingerprintNormalized,
-        optimalAlignment3GramFingerprintNormalized,
-        optimalAlignment4GramFingerprintNormalized,
-        optimalAlignment5GramFingerprintNormalized,
+        // optimalAlignment2GramFingerprintNormalized,
+        // optimalAlignment3GramFingerprintNormalized,
+        // optimalAlignment4GramFingerprintNormalized,
+        // optimalAlignment5GramFingerprintNormalized,
 
-        optimalAlignmentShingle2FingerprintNormalized,
-        optimalAlignmentShingle3FingerprintNormalized,
+        // optimalAlignmentShingle2FingerprintNormalized,
+        // optimalAlignmentShingle3FingerprintNormalized,
 
         longestCommonSubsequenceStandard,
         longestCommonSubsequenceNormalized,
 
-        longestCommonSubsequence2GramFingerprint,
-        longestCommonSubsequence3GramFingerprint,
-        longestCommonSubsequence4GramFingerprint,
-        longestCommonSubsequence5GramFingerprint,
+        // longestCommonSubsequence2GramFingerprint,
+        // longestCommonSubsequence3GramFingerprint,
+        // longestCommonSubsequence4GramFingerprint,
+        // longestCommonSubsequence5GramFingerprint,
 
-        longestCommonSubsequenceShingle2Fingerprint,
-        longestCommonSubsequenceShingle3Fingerprint,
+        // longestCommonSubsequenceShingle2Fingerprint,
+        // longestCommonSubsequenceShingle3Fingerprint,
 
-        longestCommonSubsequence2GramFingerprintNormalized,
-        longestCommonSubsequence3GramFingerprintNormalized,
-        longestCommonSubsequence4GramFingerprintNormalized,
-        longestCommonSubsequence5GramFingerprintNormalized,
+        // longestCommonSubsequence2GramFingerprintNormalized,
+        // longestCommonSubsequence3GramFingerprintNormalized,
+        // longestCommonSubsequence4GramFingerprintNormalized,
+        // longestCommonSubsequence5GramFingerprintNormalized,
 
-        longestCommonSubsequenceShingle2FingerprintNormalized,
-        longestCommonSubsequenceShingle3FingerprintNormalized,
+        // longestCommonSubsequenceShingle2FingerprintNormalized,
+        // longestCommonSubsequenceShingle3FingerprintNormalized,
 
 
         // fingerprint based
-        winnowingTokenJaccard,
+        // winnowingTokenJaccard,
 
         winnowing2GramJaccard,
         winnowing3GramJaccard,
         winnowing4GramJaccard,
         winnowing5GramJaccard,
 
-        winnowingShingle2Jaccard,
-        winnowingShingle3Jaccard,
+        // winnowingShingle2Jaccard,
+        // winnowingShingle3Jaccard,
 
-        winnowingNormalizedTokenJaccard,
+        // winnowingNormalizedTokenJaccard,
 
         winnowingNormalized2GramJaccard,
         winnowingNormalized3GramJaccard,
         winnowingNormalized4GramJaccard,
         winnowingNormalized5GramJaccard,
 
-        winnowingNormalizedShingle2Jaccard,
-        winnowingNormalizedShingle3Jaccard,
+        // winnowingNormalizedShingle2Jaccard,
+        // winnowingNormalizedShingle3Jaccard,
 
-        winnowingTokenDice,
+        // winnowingTokenDice,
 
         winnowing2GramDice,
         winnowing3GramDice,
         winnowing4GramDice,
         winnowing5GramDice,
 
-        winnowingShingle2Dice,
-        winnowingShingle3Dice,
+        // winnowingShingle2Dice,
+        // winnowingShingle3Dice,
 
-        winnowingNormalizedTokenDice,
+        // winnowingNormalizedTokenDice,
 
         winnowingNormalized2GramDice,
         winnowingNormalized3GramDice,
         winnowingNormalized4GramDice,
         winnowingNormalized5GramDice,
 
-        winnowingNormalizedShingle2Dice,
-        winnowingNormalizedShingle3Dice,
+        // winnowingNormalizedShingle2Dice,
+        // winnowingNormalizedShingle3Dice,
 
-        winnowingTokenDiceVariant,
+        // winnowingTokenDiceVariant,
 
         winnowing2GramDiceVariant,
         winnowing3GramDiceVariant,
         winnowing4GramDiceVariant,
         winnowing5GramDiceVariant,
 
-        winnowingShingle2DiceVariant,
-        winnowingShingle3DiceVariant,
+        // winnowingShingle2DiceVariant,
+        // winnowingShingle3DiceVariant,
 
-        winnowingNormalizedTokenDiceVariant,
+        // winnowingNormalizedTokenDiceVariant,
 
         winnowingNormalized2GramDiceVariant,
         winnowingNormalized3GramDiceVariant,
         winnowingNormalized4GramDiceVariant,
         winnowingNormalized5GramDiceVariant,
 
-        winnowingNormalizedShingle2DiceVariant,
-        winnowingNormalizedShingle3DiceVariant,
+        // winnowingNormalizedShingle2DiceVariant,
+        // winnowingNormalizedShingle3DiceVariant,
 
-        winnowingTokenOverlap,
+        // winnowingTokenOverlap,
 
         winnowing2GramOverlap,
         winnowing3GramOverlap,
         winnowing4GramOverlap,
         winnowing5GramOverlap,
 
-        winnowingShingle2Overlap,
-        winnowingShingle3Overlap,
+        // winnowingShingle2Overlap,
+        // winnowingShingle3Overlap,
 
-        winnowingNormalizedTokenOverlap,
+        // winnowingNormalizedTokenOverlap,
 
         winnowingNormalized2GramOverlap,
         winnowingNormalized3GramOverlap,
         winnowingNormalized4GramOverlap,
         winnowingNormalized5GramOverlap,
 
-        winnowingNormalizedShingle2Overlap,
-        winnowingNormalizedShingle3Overlap,
+        // winnowingNormalizedShingle2Overlap,
+        // winnowingNormalizedShingle3Overlap,
 
 
         // profile based
@@ -270,7 +270,25 @@ class Metric {
         twoGramSimilarityKondrak05,
         threeGramSimilarityKondrak05,
         fourGramSimilarityKondrak05,
-        fiveGramSimilarityKondrak05
+        fiveGramSimilarityKondrak05,
+
+
+        winnowingTwoGramLongestCommonSubsequence,
+        winnowingThreeGramLongestCommonSubsequence,
+        winnowingFourGramLongestCommonSubsequence,
+        winnowingFiveGramLongestCommonSubsequence,
+        winnowingTwoGramLongestCommonSubsequenceNormalized,
+        winnowingThreeGramLongestCommonSubsequenceNormalized,
+        winnowingFourGramLongestCommonSubsequenceNormalized,
+        winnowingFiveGramLongestCommonSubsequenceNormalized,
+        winnowingTwoGramOptimalAlignment,
+        winnowingThreeGramOptimalAlignment,
+        winnowingFourGramOptimalAlignment,
+        winnowingFiveGramOptimalAlignment,
+        winnowingTwoGramOptimalAlignmentNormalized,
+        winnowingThreeGramOptimalAlignmentNormalized,
+        winnowingFourGramOptimalAlignmentNormalized,
+        winnowingFiveGramOptimalAlignmentNormalized
         }
 
 
@@ -547,6 +565,25 @@ class Metric {
             case fiveGramSimilarityKondrak05:
                 return fiveGramSimilarityKondrak05;
 
+
+            case winnowingTwoGramLongestCommonSubsequence : return winnowingTwoGramLongestCommonSubsequence;
+            case    winnowingThreeGramLongestCommonSubsequence : return winnowingThreeGramLongestCommonSubsequence;
+            case winnowingFourGramLongestCommonSubsequence : return winnowingFourGramLongestCommonSubsequence;
+            case winnowingFiveGramLongestCommonSubsequence : return winnowingFiveGramLongestCommonSubsequence;
+            case winnowingTwoGramLongestCommonSubsequenceNormalized : return winnowingTwoGramLongestCommonSubsequenceNormalized;
+            case    winnowingThreeGramLongestCommonSubsequenceNormalized : return winnowingThreeGramLongestCommonSubsequenceNormalized;
+            case winnowingFourGramLongestCommonSubsequenceNormalized : return winnowingFourGramLongestCommonSubsequenceNormalized;
+            case    winnowingFiveGramLongestCommonSubsequenceNormalized : return winnowingFiveGramLongestCommonSubsequenceNormalized;
+            case winnowingTwoGramOptimalAlignment : return winnowingTwoGramOptimalAlignment;
+            case    winnowingThreeGramOptimalAlignment : return winnowingThreeGramOptimalAlignment;
+            case winnowingFourGramOptimalAlignment : return winnowingFourGramOptimalAlignment;
+            case    winnowingFiveGramOptimalAlignment : return winnowingFiveGramOptimalAlignment;
+            case winnowingTwoGramOptimalAlignmentNormalized : return winnowingTwoGramOptimalAlignmentNormalized;
+            case    winnowingThreeGramOptimalAlignmentNormalized : return winnowingThreeGramOptimalAlignmentNormalized;
+            case winnowingFourGramOptimalAlignmentNormalized : return winnowingFourGramOptimalAlignmentNormalized;
+            case    winnowingFiveGramOptimalAlignmentNormalized : return winnowingFiveGramOptimalAlignmentNormalized;
+
+
             default:
                 return null;
         }
@@ -740,5 +777,23 @@ class Metric {
     private static BiFunction<String, String, Double> threeGramSimilarityKondrak05 = de.unitrier.st.stringsimilarity.set.Variants::threeGramSimilarityKondrak05;
     private static BiFunction<String, String, Double> fourGramSimilarityKondrak05 = de.unitrier.st.stringsimilarity.set.Variants::fourGramSimilarityKondrak05;
     private static BiFunction<String, String, Double> fiveGramSimilarityKondrak05 = de.unitrier.st.stringsimilarity.set.Variants::fiveGramSimilarityKondrak05;
+
+
+    private static BiFunction<String, String, Double> winnowingTwoGramLongestCommonSubsequence = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingTwoGramLongestCommonSubsequence;
+    private static BiFunction<String, String, Double> winnowingThreeGramLongestCommonSubsequence = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingThreeGramLongestCommonSubsequence;
+    private static BiFunction<String, String, Double> winnowingFourGramLongestCommonSubsequence = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingFourGramLongestCommonSubsequence;
+    private static BiFunction<String, String, Double> winnowingFiveGramLongestCommonSubsequence = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingFiveGramLongestCommonSubsequence;
+    private static BiFunction<String, String, Double> winnowingTwoGramLongestCommonSubsequenceNormalized = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingTwoGramLongestCommonSubsequenceNormalized;
+    private static BiFunction<String, String, Double> winnowingThreeGramLongestCommonSubsequenceNormalized = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingThreeGramLongestCommonSubsequenceNormalized;
+    private static BiFunction<String, String, Double> winnowingFourGramLongestCommonSubsequenceNormalized = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingFourGramLongestCommonSubsequenceNormalized;
+    private static BiFunction<String, String, Double> winnowingFiveGramLongestCommonSubsequenceNormalized = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingFiveGramLongestCommonSubsequenceNormalized;
+    private static BiFunction<String, String, Double> winnowingTwoGramOptimalAlignment = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingTwoGramOptimalAlignment;
+    private static BiFunction<String, String, Double> winnowingThreeGramOptimalAlignment = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingThreeGramOptimalAlignment;
+    private static BiFunction<String, String, Double> winnowingFourGramOptimalAlignment = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingFourGramOptimalAlignment;
+    private static BiFunction<String, String, Double> winnowingFiveGramOptimalAlignment = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingFiveGramOptimalAlignment;
+    private static BiFunction<String, String, Double> winnowingTwoGramOptimalAlignmentNormalized = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingTwoGramOptimalAlignmentNormalized;
+    private static BiFunction<String, String, Double> winnowingThreeGramOptimalAlignmentNormalized = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingThreeGramOptimalAlignmentNormalized;
+    private static BiFunction<String, String, Double> winnowingFourGramOptimalAlignmentNormalized = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingFourGramOptimalAlignmentNormalized;
+    private static BiFunction<String, String, Double> winnowingFiveGramOptimalAlignmentNormalized = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingFiveGramOptimalAlignmentNormalized;
 
 }
