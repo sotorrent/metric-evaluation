@@ -1,12 +1,11 @@
-package metricsComparism;
+package de.unitrier.st.soposthistory.metricscomparison.metricsComparison;
 
 import java.util.function.BiFunction;
-
 
 class Metric {
 
     // to make automated process ease
-    public enum Type{
+    public enum Type {
 
         // edit based
         levenshteinStandard,
@@ -289,11 +288,11 @@ class Metric {
         winnowingThreeGramOptimalAlignmentNormalized,
         winnowingFourGramOptimalAlignmentNormalized,
         winnowingFiveGramOptimalAlignmentNormalized
-        }
+    }
 
 
-    static BiFunction<String, String, Double> getBiFunctionMetric(Type metric){
-        switch (metric){
+    static BiFunction<String, String, Double> getBiFunctionMetric(Type metric) {
+        switch (metric) {
 
             case levenshteinStandard:
                 return levenshtein;
@@ -313,99 +312,131 @@ class Metric {
             case longestCommonSubsequenceStandard:
                 return longestCommonSubsequence;
 
-            case longestCommonSubsequenceNormalized :
+            case longestCommonSubsequenceNormalized:
                 return longestCommonSubsequenceNormalized;
 
-            case winnowing2GramJaccard : return winnowingTwoGramJaccard;
-            case winnowing3GramJaccard : return winnowingThreeGramJaccard;
-            case winnowing4GramJaccard : return winnowingFourGramJaccard;
-            case winnowing5GramJaccard : return winnowingFiveGramJaccard;
-            case winnowingNormalized2GramJaccard : return winnowingTwoGramJaccardNormalized;
-            case winnowingNormalized3GramJaccard : return winnowingThreeGramJaccardNormalized;
-            case winnowingNormalized4GramJaccard : return winnowingFourGramJaccardNormalized;
-            case winnowingNormalized5GramJaccard : return winnowingFiveGramJaccardNormalized;
-            case winnowing2GramDice : return winnowingTwoGramDice;
-            case winnowing3GramDice : return winnowingThreeGramDice;
-            case winnowing4GramDice : return winnowingFourGramDice;
-            case winnowing5GramDice : return winnowingFiveGramDice;
-            case winnowingNormalized2GramDice : return winnowingTwoGramDiceNormalized;
-            case winnowingNormalized3GramDice : return winnowingThreeGramDiceNormalized;
-            case winnowingNormalized4GramDice : return winnowingFourGramDiceNormalized;
-            case winnowingNormalized5GramDice : return winnowingFiveGramDiceNormalized;
-            case winnowing2GramDiceVariant : return winnowingTwoGramDiceVariant;
-            case winnowing3GramDiceVariant : return winnowingThreeGramDiceVariant;
-            case winnowing4GramDiceVariant : return winnowingFourGramDiceVariant;
-            case winnowing5GramDiceVariant : return winnowingFiveGramDiceVariant;
-            case winnowingNormalized2GramDiceVariant : return winnowingTwoGramDiceVariantNormalized;
-            case winnowingNormalized3GramDiceVariant : return winnowingThreeGramDiceVariantNormalized;
-            case winnowingNormalized4GramDiceVariant : return winnowingFourGramDiceVariantNormalized;
-            case winnowingNormalized5GramDiceVariant : return winnowingFiveGramDiceVariantNormalized;
-            case winnowing2GramOverlap : return winnowingTwoGramOverlap;
-            case winnowing3GramOverlap : return winnowingThreeGramOverlap;
-            case winnowing4GramOverlap : return winnowingFourGramOverlap;
-            case winnowing5GramOverlap : return winnowingFiveGramOverlap;
-            case winnowingNormalized2GramOverlap : return winnowingTwoGramOverlapNormalized;
-            case winnowingNormalized3GramOverlap : return winnowingThreeGramOverlapNormalized;
-            case winnowingNormalized4GramOverlap : return winnowingFourGramOverlapNormalized;
-            case winnowingNormalized5GramOverlap : return winnowingFiveGramOverlapNormalized;
+            case winnowing2GramJaccard:
+                return winnowingTwoGramJaccard;
+            case winnowing3GramJaccard:
+                return winnowingThreeGramJaccard;
+            case winnowing4GramJaccard:
+                return winnowingFourGramJaccard;
+            case winnowing5GramJaccard:
+                return winnowingFiveGramJaccard;
+            case winnowingNormalized2GramJaccard:
+                return winnowingTwoGramJaccardNormalized;
+            case winnowingNormalized3GramJaccard:
+                return winnowingThreeGramJaccardNormalized;
+            case winnowingNormalized4GramJaccard:
+                return winnowingFourGramJaccardNormalized;
+            case winnowingNormalized5GramJaccard:
+                return winnowingFiveGramJaccardNormalized;
+            case winnowing2GramDice:
+                return winnowingTwoGramDice;
+            case winnowing3GramDice:
+                return winnowingThreeGramDice;
+            case winnowing4GramDice:
+                return winnowingFourGramDice;
+            case winnowing5GramDice:
+                return winnowingFiveGramDice;
+            case winnowingNormalized2GramDice:
+                return winnowingTwoGramDiceNormalized;
+            case winnowingNormalized3GramDice:
+                return winnowingThreeGramDiceNormalized;
+            case winnowingNormalized4GramDice:
+                return winnowingFourGramDiceNormalized;
+            case winnowingNormalized5GramDice:
+                return winnowingFiveGramDiceNormalized;
+            case winnowing2GramDiceVariant:
+                return winnowingTwoGramDiceVariant;
+            case winnowing3GramDiceVariant:
+                return winnowingThreeGramDiceVariant;
+            case winnowing4GramDiceVariant:
+                return winnowingFourGramDiceVariant;
+            case winnowing5GramDiceVariant:
+                return winnowingFiveGramDiceVariant;
+            case winnowingNormalized2GramDiceVariant:
+                return winnowingTwoGramDiceVariantNormalized;
+            case winnowingNormalized3GramDiceVariant:
+                return winnowingThreeGramDiceVariantNormalized;
+            case winnowingNormalized4GramDiceVariant:
+                return winnowingFourGramDiceVariantNormalized;
+            case winnowingNormalized5GramDiceVariant:
+                return winnowingFiveGramDiceVariantNormalized;
+            case winnowing2GramOverlap:
+                return winnowingTwoGramOverlap;
+            case winnowing3GramOverlap:
+                return winnowingThreeGramOverlap;
+            case winnowing4GramOverlap:
+                return winnowingFourGramOverlap;
+            case winnowing5GramOverlap:
+                return winnowingFiveGramOverlap;
+            case winnowingNormalized2GramOverlap:
+                return winnowingTwoGramOverlapNormalized;
+            case winnowingNormalized3GramOverlap:
+                return winnowingThreeGramOverlapNormalized;
+            case winnowingNormalized4GramOverlap:
+                return winnowingFourGramOverlapNormalized;
+            case winnowingNormalized5GramOverlap:
+                return winnowingFiveGramOverlapNormalized;
 
 
-            case cosineNormalizedTokensBool :
+            case cosineNormalizedTokensBool:
                 return cosineTokenNormalizedBool;
-            case cosineNormalizedTokensTermFrequency :
+            case cosineNormalizedTokensTermFrequency:
                 return cosineTokenNormalizedTermFrequency;
-            case cosineNormalizedTokensNormalizedTermFrequency :
+            case cosineNormalizedTokensNormalizedTermFrequency:
                 return cosineTokenNormalizedNormalizedTermFrequency;
-            case cosineNormalized2GramsBool :
+            case cosineNormalized2GramsBool:
                 return cosineTwoGramNormalizedBool;
-            case cosineNormalized3GramsBool :
+            case cosineNormalized3GramsBool:
                 return cosineThreeGramNormalizedBool;
-            case cosineNormalized4GramsBool :
+            case cosineNormalized4GramsBool:
                 return cosineFourGramNormalizedBool;
-            case cosineNormalized5GramsBool :
+            case cosineNormalized5GramsBool:
                 return cosineFiveGramNormalizedBool;
-            case cosineNormalized2GramsTermFrequency :
+            case cosineNormalized2GramsTermFrequency:
                 return cosineTwoGramNormalizedTermFrequency;
-            case cosineNormalized3GramsTermFrequency :
+            case cosineNormalized3GramsTermFrequency:
                 return cosineThreeGramNormalizedTermFrequency;
-            case cosineNormalized4GramsTermFrequency :
+            case cosineNormalized4GramsTermFrequency:
                 return cosineFourGramNormalizedTermFrequency;
-            case cosineNormalized5GramsTermFrequency :
+            case cosineNormalized5GramsTermFrequency:
                 return cosineFiveGramNormalizedTermFrequency;
-            case cosineNormalized2GramsNormalizedTermFrequency :
+            case cosineNormalized2GramsNormalizedTermFrequency:
                 return cosineTwoGramNormalizedNormalizedTermFrequency;
-            case cosineNormalized3GramsNormalizedTermFrequency :
+            case cosineNormalized3GramsNormalizedTermFrequency:
                 return cosineThreeGramNormalizedNormalizedTermFrequency;
-            case cosineNormalized4GramsNormalizedTermFrequency :
+            case cosineNormalized4GramsNormalizedTermFrequency:
                 return cosineFourGramNormalizedNormalizedTermFrequency;
-            case cosineNormalized5GramsNormalizedTermFrequency :
+            case cosineNormalized5GramsNormalizedTermFrequency:
                 return cosineFiveGramNormalizedNormalizedTermFrequency;
-            case cosineNormalizedShingle2Bool :
+            case cosineNormalizedShingle2Bool:
                 return cosineTwoShingleNormalizedBool;
-            case cosineNormalizedShingle3Bool :
+            case cosineNormalizedShingle3Bool:
                 return cosineThreeShingleNormalizedBool;
-            case cosineNormalizedShingle2TermFrequency :
+            case cosineNormalizedShingle2TermFrequency:
                 return cosineTwoShingleNormalizedTermFrequency;
-            case cosineNormalizedShingle3TermFrequency :
+            case cosineNormalizedShingle3TermFrequency:
                 return cosineThreeShingleNormalizedTermFrequency;
-            case cosineNormalizedShingle2NormalizedTermFrequency :
+            case cosineNormalizedShingle2NormalizedTermFrequency:
                 return cosineTwoShingleNormalizedNormalizedTermFrequency;
-            case cosineNormalizedShingle3NormalizedTermFrequency :
+            case cosineNormalizedShingle3NormalizedTermFrequency:
                 return cosineThreeShingleNormalizedNormalizedTermFrequency;
 
-            case manhattanNormalizedTokens :
+            case manhattanNormalizedTokens:
                 return manhattanTokenNormalized;
-            case manhattanNormalized2Grams :
+            case manhattanNormalized2Grams:
                 return manhattanTwoGramNormalized;
-            case manhattanNormalized3Grams :
+            case manhattanNormalized3Grams:
                 return manhattanThreeGramNormalized;
-            case manhattanNormalized4Grams :
+            case manhattanNormalized4Grams:
                 return manhattanFourGramNormalized;
-            case manhattanNormalized5Grams :
+            case manhattanNormalized5Grams:
                 return manhattanFiveGramNormalized;
-            case manhattanNormalizedShingles2 :
+            case manhattanNormalizedShingles2:
                 return manhattanTwoShingleNormalized;
-            case manhattanNormalizedShingles3 :
+            case manhattanNormalizedShingles3:
                 return manhattanThreeShingleNormalized;
 
             case jaccardTokens:
@@ -566,22 +597,38 @@ class Metric {
                 return fiveGramSimilarityKondrak05;
 
 
-            case winnowingTwoGramLongestCommonSubsequence : return winnowingTwoGramLongestCommonSubsequence;
-            case    winnowingThreeGramLongestCommonSubsequence : return winnowingThreeGramLongestCommonSubsequence;
-            case winnowingFourGramLongestCommonSubsequence : return winnowingFourGramLongestCommonSubsequence;
-            case winnowingFiveGramLongestCommonSubsequence : return winnowingFiveGramLongestCommonSubsequence;
-            case winnowingTwoGramLongestCommonSubsequenceNormalized : return winnowingTwoGramLongestCommonSubsequenceNormalized;
-            case    winnowingThreeGramLongestCommonSubsequenceNormalized : return winnowingThreeGramLongestCommonSubsequenceNormalized;
-            case winnowingFourGramLongestCommonSubsequenceNormalized : return winnowingFourGramLongestCommonSubsequenceNormalized;
-            case    winnowingFiveGramLongestCommonSubsequenceNormalized : return winnowingFiveGramLongestCommonSubsequenceNormalized;
-            case winnowingTwoGramOptimalAlignment : return winnowingTwoGramOptimalAlignment;
-            case    winnowingThreeGramOptimalAlignment : return winnowingThreeGramOptimalAlignment;
-            case winnowingFourGramOptimalAlignment : return winnowingFourGramOptimalAlignment;
-            case    winnowingFiveGramOptimalAlignment : return winnowingFiveGramOptimalAlignment;
-            case winnowingTwoGramOptimalAlignmentNormalized : return winnowingTwoGramOptimalAlignmentNormalized;
-            case    winnowingThreeGramOptimalAlignmentNormalized : return winnowingThreeGramOptimalAlignmentNormalized;
-            case winnowingFourGramOptimalAlignmentNormalized : return winnowingFourGramOptimalAlignmentNormalized;
-            case    winnowingFiveGramOptimalAlignmentNormalized : return winnowingFiveGramOptimalAlignmentNormalized;
+            case winnowingTwoGramLongestCommonSubsequence:
+                return winnowingTwoGramLongestCommonSubsequence;
+            case winnowingThreeGramLongestCommonSubsequence:
+                return winnowingThreeGramLongestCommonSubsequence;
+            case winnowingFourGramLongestCommonSubsequence:
+                return winnowingFourGramLongestCommonSubsequence;
+            case winnowingFiveGramLongestCommonSubsequence:
+                return winnowingFiveGramLongestCommonSubsequence;
+            case winnowingTwoGramLongestCommonSubsequenceNormalized:
+                return winnowingTwoGramLongestCommonSubsequenceNormalized;
+            case winnowingThreeGramLongestCommonSubsequenceNormalized:
+                return winnowingThreeGramLongestCommonSubsequenceNormalized;
+            case winnowingFourGramLongestCommonSubsequenceNormalized:
+                return winnowingFourGramLongestCommonSubsequenceNormalized;
+            case winnowingFiveGramLongestCommonSubsequenceNormalized:
+                return winnowingFiveGramLongestCommonSubsequenceNormalized;
+            case winnowingTwoGramOptimalAlignment:
+                return winnowingTwoGramOptimalAlignment;
+            case winnowingThreeGramOptimalAlignment:
+                return winnowingThreeGramOptimalAlignment;
+            case winnowingFourGramOptimalAlignment:
+                return winnowingFourGramOptimalAlignment;
+            case winnowingFiveGramOptimalAlignment:
+                return winnowingFiveGramOptimalAlignment;
+            case winnowingTwoGramOptimalAlignmentNormalized:
+                return winnowingTwoGramOptimalAlignmentNormalized;
+            case winnowingThreeGramOptimalAlignmentNormalized:
+                return winnowingThreeGramOptimalAlignmentNormalized;
+            case winnowingFourGramOptimalAlignmentNormalized:
+                return winnowingFourGramOptimalAlignmentNormalized;
+            case winnowingFiveGramOptimalAlignmentNormalized:
+                return winnowingFiveGramOptimalAlignmentNormalized;
 
 
             default:
@@ -591,7 +638,7 @@ class Metric {
 
 
     // ****** Edit based *****
-    private static BiFunction<String, String, Double> levenshtein =  de.unitrier.st.stringsimilarity.edit.Variants::levenshtein;
+    private static BiFunction<String, String, Double> levenshtein = de.unitrier.st.stringsimilarity.edit.Variants::levenshtein;
     private static BiFunction<String, String, Double> levenshteinNormalized = de.unitrier.st.stringsimilarity.edit.Variants::levenshteinNormalized;
 
     private static BiFunction<String, String, Double> damerauLevenshtein = de.unitrier.st.stringsimilarity.edit.Variants::damerauLevenshtein;
@@ -653,9 +700,9 @@ class Metric {
     private static BiFunction<String, String, Double> cosineFourGramNormalizedBool = de.unitrier.st.stringsimilarity.profile.Variants::cosineFourGramNormalizedBool;
     private static BiFunction<String, String, Double> cosineFiveGramNormalizedBool = de.unitrier.st.stringsimilarity.profile.Variants::cosineFiveGramNormalizedBool;
     private static BiFunction<String, String, Double> cosineTwoGramNormalizedTermFrequency = de.unitrier.st.stringsimilarity.profile.Variants::cosineTwoGramNormalizedTermFrequency;
-    private static BiFunction<String, String, Double> cosineThreeGramNormalizedTermFrequency =  de.unitrier.st.stringsimilarity.profile.Variants::cosineThreeGramNormalizedTermFrequency;
-    private static BiFunction<String, String, Double> cosineFourGramNormalizedTermFrequency =  de.unitrier.st.stringsimilarity.profile.Variants::cosineFourGramNormalizedTermFrequency;
-    private static BiFunction<String, String, Double> cosineFiveGramNormalizedTermFrequency =  de.unitrier.st.stringsimilarity.profile.Variants::cosineFiveGramNormalizedTermFrequency;
+    private static BiFunction<String, String, Double> cosineThreeGramNormalizedTermFrequency = de.unitrier.st.stringsimilarity.profile.Variants::cosineThreeGramNormalizedTermFrequency;
+    private static BiFunction<String, String, Double> cosineFourGramNormalizedTermFrequency = de.unitrier.st.stringsimilarity.profile.Variants::cosineFourGramNormalizedTermFrequency;
+    private static BiFunction<String, String, Double> cosineFiveGramNormalizedTermFrequency = de.unitrier.st.stringsimilarity.profile.Variants::cosineFiveGramNormalizedTermFrequency;
     private static BiFunction<String, String, Double> cosineTwoGramNormalizedNormalizedTermFrequency = de.unitrier.st.stringsimilarity.profile.Variants::cosineTwoGramNormalizedNormalizedTermFrequency;
     private static BiFunction<String, String, Double> cosineThreeGramNormalizedNormalizedTermFrequency = de.unitrier.st.stringsimilarity.profile.Variants::cosineThreeGramNormalizedNormalizedTermFrequency;
     private static BiFunction<String, String, Double> cosineFourGramNormalizedNormalizedTermFrequency = de.unitrier.st.stringsimilarity.profile.Variants::cosineFourGramNormalizedNormalizedTermFrequency;

@@ -1,9 +1,9 @@
-package statistics;
+package de.unitrier.st.soposthistory.metricscomparison.statistics;
 
-import csvExtraction.PostVersionsListManagement;
 import de.unitrier.st.soposthistory.blocks.CodeBlockVersion;
 import de.unitrier.st.soposthistory.blocks.PostBlockVersion;
 import de.unitrier.st.soposthistory.blocks.TextBlockVersion;
+import de.unitrier.st.soposthistory.metricscomparison.csvExtraction.PostVersionsListManagement;
 import de.unitrier.st.soposthistory.version.PostVersion;
 import de.unitrier.st.soposthistory.version.PostVersionList;
 import org.junit.jupiter.api.Test;
@@ -16,10 +16,12 @@ import java.util.regex.Pattern;
 
 public class Statistics {
 
-    // TODO: find more ideas for statistics
+    // TODO: find more ideas for de.unitrier.st.soposthistory.metricscomparison.statistics
+
+    // TODO: make paths relative or configurable
 
     @Test
-    public void testPostVersionListManagement(){
+    public void testPostVersionListManagement() {
         LinkedList<String> pathToAllDirectories = new LinkedList<>();
 
         /*
@@ -41,11 +43,11 @@ public class Statistics {
 
         output.append("post-id; post-history-id; local-id; blockTypeId; possible pred or succ local-ids; number of possible successors or predecessors\n");
 
-        for(String path : pathToAllDirectories) {
+        for (String path : pathToAllDirectories) {
             PostVersionsListManagement postVersionsListManagement = new PostVersionsListManagement(path);
-            for(PostVersionList postVersionList : postVersionsListManagement.postVersionLists) {
-                for (int j=0; j<postVersionList.size(); j++) {
-                    if(j > 0) {
+            for (PostVersionList postVersionList : postVersionsListManagement.postVersionLists) {
+                for (int j = 0; j < postVersionList.size(); j++) {
+                    if (j > 0) {
                         for (int k = 0; k < postVersionList.get(j).getPostBlocks().size(); k++) {
                             PostBlockVersion postBlockVersion = postVersionList.get(j).getPostBlocks().get(k);
                             LinkedList<Integer> possiblePreds = new LinkedList<>();
@@ -75,12 +77,12 @@ public class Statistics {
                         }
                     }
 
-                    if(j < postVersionList.size()-1){
+                    if (j < postVersionList.size() - 1) {
                         for (int k = 0; k < postVersionList.get(j).getPostBlocks().size(); k++) {
                             PostBlockVersion postBlockVersion = postVersionList.get(j).getPostBlocks().get(k);
                             LinkedList<Integer> possibleSuccs = new LinkedList<>();
-                            for (int l = 0; l < postVersionList.get(j+1).getPostBlocks().size(); l++) {
-                                PostBlockVersion postBlockVersionSucc = postVersionList.get(j+1).getPostBlocks().get(l);
+                            for (int l = 0; l < postVersionList.get(j + 1).getPostBlocks().size(); l++) {
+                                PostBlockVersion postBlockVersionSucc = postVersionList.get(j + 1).getPostBlocks().get(l);
 
                                 if (postBlockVersion.getContent().equals(postBlockVersionSucc.getContent()))
                                     possibleSuccs.add(postBlockVersionSucc.getLocalId());
@@ -114,7 +116,7 @@ public class Statistics {
     }
 
     @Test
-    public void testFindPostVersionListsWithEmptyBlocks(){
+    public void testFindPostVersionListsWithEmptyBlocks() {
         LinkedList<String> pathToAllDirectories = new LinkedList<>();
 
         pathToAllDirectories.add("testdata\\representative CSVs");
@@ -133,13 +135,13 @@ public class Statistics {
         ArrayList<Integer> postIdsEmptyBlocks = new ArrayList<>();
 
 
-        for(String path : pathToAllDirectories) {
+        for (String path : pathToAllDirectories) {
             PostVersionsListManagement postVersionsListManagement = new PostVersionsListManagement(path);
-            for(PostVersionList postVersionList : postVersionsListManagement.postVersionLists) {
+            for (PostVersionList postVersionList : postVersionsListManagement.postVersionLists) {
                 for (PostVersion postVersion : postVersionList) {
-                    for(int k=0; k<postVersion.getPostBlocks().size(); k++) {
-                        if (Pattern.matches("\\s*", postVersion.getPostBlocks().get(k).getContent())){
-                            if(!postIdsEmptyBlocks.contains(postVersion.getPostId()))
+                    for (int k = 0; k < postVersion.getPostBlocks().size(); k++) {
+                        if (Pattern.matches("\\s*", postVersion.getPostBlocks().get(k).getContent())) {
+                            if (!postIdsEmptyBlocks.contains(postVersion.getPostId()))
                                 postIdsEmptyBlocks.add(postVersion.getPostId());
                             break;
                         }
@@ -151,7 +153,7 @@ public class Statistics {
     }
 
     @Test
-    public void getStatisticsOfBlockSizes(){
+    public void getStatisticsOfBlockSizes() {
         LinkedList<String> pathToAllDirectories = new LinkedList<>();
 
         // pathToAllDirectories.add("testdata\\representative CSVs");
@@ -177,20 +179,20 @@ public class Statistics {
         LinkedList<Integer> affectedPostHistoriesCode = new LinkedList<>();
         LinkedList<Integer> affectedPostsCode = new LinkedList<>();
 
-        for(String path : pathToAllDirectories) {
+        for (String path : pathToAllDirectories) {
             PostVersionsListManagement postVersionsListManagement = new PostVersionsListManagement(path);
-            for(PostVersionList postVersionList : postVersionsListManagement.postVersionLists) {
+            for (PostVersionList postVersionList : postVersionsListManagement.postVersionLists) {
                 for (PostVersion postVersion : postVersionList) {
-                    for(PostBlockVersion postBlockVersion : postVersion.getPostBlocks()){
+                    for (PostBlockVersion postBlockVersion : postVersion.getPostBlocks()) {
 
                         int blockLength = postBlockVersion.getContent().length();
 
-                        if(blockLength <= 5){
-                            if(postBlockVersion instanceof TextBlockVersion){
-                                if(!distinctValuesOfBlockLenghtsText.contains(blockLength)){
+                        if (blockLength <= 5) {
+                            if (postBlockVersion instanceof TextBlockVersion) {
+                                if (!distinctValuesOfBlockLenghtsText.contains(blockLength)) {
                                     distinctValuesOfBlockLenghtsText.add(blockLength);
                                     frequenciesOfBlockLenghtsText.put(blockLength, 1);
-                                }else{
+                                } else {
                                     frequenciesOfBlockLenghtsText.replace(
                                             blockLength,
                                             frequenciesOfBlockLenghtsText.get(blockLength),
@@ -198,17 +200,16 @@ public class Statistics {
                                     );
                                 }
 
-                                if(!affectedPostHistoriesText.contains(postVersion.getPostHistoryId()))
+                                if (!affectedPostHistoriesText.contains(postVersion.getPostHistoryId()))
                                     affectedPostHistoriesText.add(postVersion.getPostHistoryId());
 
-                                if(!affectedPostsText.contains(postVersion.getPostId()))
+                                if (!affectedPostsText.contains(postVersion.getPostId()))
                                     affectedPostsText.add(postVersion.getPostId());
-                            }
-                            else if(postBlockVersion instanceof CodeBlockVersion){
-                                if(!distinctValuesOfBlockLenghtsCode.contains(blockLength)){
+                            } else if (postBlockVersion instanceof CodeBlockVersion) {
+                                if (!distinctValuesOfBlockLenghtsCode.contains(blockLength)) {
                                     distinctValuesOfBlockLenghtsCode.add(blockLength);
                                     frequenciesOfBlockLenghtsCode.put(blockLength, 1);
-                                }else{
+                                } else {
                                     frequenciesOfBlockLenghtsCode.replace(
                                             blockLength,
                                             frequenciesOfBlockLenghtsCode.get(blockLength),
@@ -216,10 +217,10 @@ public class Statistics {
                                     );
                                 }
 
-                                if(!affectedPostHistoriesCode.contains(postVersion.getPostHistoryId()))
+                                if (!affectedPostHistoriesCode.contains(postVersion.getPostHistoryId()))
                                     affectedPostHistoriesCode.add(postVersion.getPostHistoryId());
 
-                                if(!affectedPostsCode.contains(postVersion.getPostId()))
+                                if (!affectedPostsCode.contains(postVersion.getPostId()))
                                     affectedPostsCode.add(postVersion.getPostId());
                             }
                         }
@@ -254,9 +255,9 @@ public class Statistics {
     }
 
     @Test
-    public void getStatisticsOfBlocksWithMultipleLinkingPossibilities(){
+    public void getStatisticsOfBlocksWithMultipleLinkingPossibilities() {
         try {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader("testdata\\statistics\\possible multiple connections.csv"));
+            BufferedReader bufferedReader = new BufferedReader(new FileReader("testdata\\de.unitrier.st.soposthistory.metricscomparison.statistics\\possible multiple connections.csv"));
 
             LinkedList<Integer> postIdWithMultipleChoices = new LinkedList<>();
 
@@ -278,8 +279,8 @@ public class Statistics {
 
             boolean firstLine = true;
             String line;
-            while((line = bufferedReader.readLine()) != null){
-                if(firstLine){
+            while ((line = bufferedReader.readLine()) != null) {
+                if (firstLine) {
                     firstLine = false;
                     continue;
                 }
@@ -296,63 +297,63 @@ public class Statistics {
                 String localIds = predOrSuccs.substring(28);
                 Integer numberOfPossibleLinks = Integer.valueOf(tokens.nextToken().trim());
 
-                if(hasPossiblePreds){
-                    if(frequenciesOfBlocKTypeIds.get(blockTypeId) == null && !distinctValuesOfPossibleBlockTypeIds.contains(blockTypeId)){
+                if (hasPossiblePreds) {
+                    if (frequenciesOfBlocKTypeIds.get(blockTypeId) == null && !distinctValuesOfPossibleBlockTypeIds.contains(blockTypeId)) {
                         distinctValuesOfPossibleBlockTypeIds.add(blockTypeId);
                         frequenciesOfBlocKTypeIds.put(blockTypeId, 1);
-                    }else{
-                        frequenciesOfBlocKTypeIds.replace(blockTypeId, frequenciesOfBlocKTypeIds.get(blockTypeId), frequenciesOfBlocKTypeIds.get(blockTypeId)+1);
+                    } else {
+                        frequenciesOfBlocKTypeIds.replace(blockTypeId, frequenciesOfBlocKTypeIds.get(blockTypeId), frequenciesOfBlocKTypeIds.get(blockTypeId) + 1);
                     }
 
-                    if(frequenciesOfPossiblePredBlocks.get(numberOfPossibleLinks) == null && !distinctValuesOfPossiblePredBlocks.contains(numberOfPossibleLinks)){
+                    if (frequenciesOfPossiblePredBlocks.get(numberOfPossibleLinks) == null && !distinctValuesOfPossiblePredBlocks.contains(numberOfPossibleLinks)) {
                         distinctValuesOfPossiblePredBlocks.add(numberOfPossibleLinks);
                         frequenciesOfPossiblePredBlocks.put(numberOfPossibleLinks, 1);
-                    }else{
-                        frequenciesOfPossiblePredBlocks.replace(numberOfPossibleLinks, frequenciesOfPossiblePredBlocks.get(numberOfPossibleLinks), frequenciesOfPossiblePredBlocks.get(numberOfPossibleLinks)+1);
+                    } else {
+                        frequenciesOfPossiblePredBlocks.replace(numberOfPossibleLinks, frequenciesOfPossiblePredBlocks.get(numberOfPossibleLinks), frequenciesOfPossiblePredBlocks.get(numberOfPossibleLinks) + 1);
                     }
 
-                    if(!distinctValuesOfPossiblePredPostHistoryIds.contains(postHistoryId)){
+                    if (!distinctValuesOfPossiblePredPostHistoryIds.contains(postHistoryId)) {
                         distinctValuesOfPossiblePredPostHistoryIds.add(postHistoryId);
 
-                        if(frequenciesOfAffectedPredPostHistoryIds.get(numberOfPossibleLinks) == null){
+                        if (frequenciesOfAffectedPredPostHistoryIds.get(numberOfPossibleLinks) == null) {
                             frequenciesOfAffectedPredPostHistoryIds.put(numberOfPossibleLinks, 1);
-                        }else{
-                            frequenciesOfAffectedPredPostHistoryIds.replace(numberOfPossibleLinks, frequenciesOfAffectedPredPostHistoryIds.get(numberOfPossibleLinks), frequenciesOfAffectedPredPostHistoryIds.get(numberOfPossibleLinks)+1);
+                        } else {
+                            frequenciesOfAffectedPredPostHistoryIds.replace(numberOfPossibleLinks, frequenciesOfAffectedPredPostHistoryIds.get(numberOfPossibleLinks), frequenciesOfAffectedPredPostHistoryIds.get(numberOfPossibleLinks) + 1);
                         }
                     }
                 }
 
-                if(hasPossibleSuccs){
-                    if(frequenciesOfBlocKTypeIds.get(blockTypeId) == null && !distinctValuesOfPossibleBlockTypeIds.contains(blockTypeId)){
+                if (hasPossibleSuccs) {
+                    if (frequenciesOfBlocKTypeIds.get(blockTypeId) == null && !distinctValuesOfPossibleBlockTypeIds.contains(blockTypeId)) {
                         distinctValuesOfPossibleBlockTypeIds.add(blockTypeId);
                         frequenciesOfBlocKTypeIds.put(blockTypeId, 1);
-                    }else{
-                        frequenciesOfBlocKTypeIds.replace(blockTypeId, frequenciesOfBlocKTypeIds.get(blockTypeId), frequenciesOfBlocKTypeIds.get(blockTypeId)+1);
+                    } else {
+                        frequenciesOfBlocKTypeIds.replace(blockTypeId, frequenciesOfBlocKTypeIds.get(blockTypeId), frequenciesOfBlocKTypeIds.get(blockTypeId) + 1);
                     }
 
-                    if(frequenciesOfPossibleSuccBlocks.get(numberOfPossibleLinks) == null && !distinctValuesOfPossibleSuccBlocks.contains(numberOfPossibleLinks)){
+                    if (frequenciesOfPossibleSuccBlocks.get(numberOfPossibleLinks) == null && !distinctValuesOfPossibleSuccBlocks.contains(numberOfPossibleLinks)) {
                         distinctValuesOfPossibleSuccBlocks.add(numberOfPossibleLinks);
                         frequenciesOfPossibleSuccBlocks.put(numberOfPossibleLinks, 1);
-                    }else{
-                        frequenciesOfPossibleSuccBlocks.replace(numberOfPossibleLinks, frequenciesOfPossibleSuccBlocks.get(numberOfPossibleLinks), frequenciesOfPossibleSuccBlocks.get(numberOfPossibleLinks)+1);
+                    } else {
+                        frequenciesOfPossibleSuccBlocks.replace(numberOfPossibleLinks, frequenciesOfPossibleSuccBlocks.get(numberOfPossibleLinks), frequenciesOfPossibleSuccBlocks.get(numberOfPossibleLinks) + 1);
                     }
 
-                    if(!distinctValuesOfPossibleSuccPostHistoryIds.contains(postHistoryId)){
+                    if (!distinctValuesOfPossibleSuccPostHistoryIds.contains(postHistoryId)) {
                         distinctValuesOfPossibleSuccPostHistoryIds.add(postHistoryId);
 
-                        if(frequenciesOfAffectedSuccPostHistoryIds.get(numberOfPossibleLinks) == null){
+                        if (frequenciesOfAffectedSuccPostHistoryIds.get(numberOfPossibleLinks) == null) {
                             frequenciesOfAffectedSuccPostHistoryIds.put(numberOfPossibleLinks, 1);
-                        }else{
-                            frequenciesOfAffectedSuccPostHistoryIds.replace(numberOfPossibleLinks, frequenciesOfAffectedSuccPostHistoryIds.get(numberOfPossibleLinks), frequenciesOfAffectedSuccPostHistoryIds.get(numberOfPossibleLinks)+1);
+                        } else {
+                            frequenciesOfAffectedSuccPostHistoryIds.replace(numberOfPossibleLinks, frequenciesOfAffectedSuccPostHistoryIds.get(numberOfPossibleLinks), frequenciesOfAffectedSuccPostHistoryIds.get(numberOfPossibleLinks) + 1);
                         }
                     }
                 }
 
-                if(!postIdWithMultipleChoices.contains(postId))
+                if (!postIdWithMultipleChoices.contains(postId))
                     postIdWithMultipleChoices.add(postId);
             }
 
-            System.out.println("number of post ids that contain blocks which could be connected to multiple predecessors or successors: " +  postIdWithMultipleChoices.size() + " of 100000 (" + ((double)postIdWithMultipleChoices.size() / 100000) * 100 + " %)");
+            System.out.println("number of post ids that contain blocks which could be connected to multiple predecessors or successors: " + postIdWithMultipleChoices.size() + " of 100000 (" + ((double) postIdWithMultipleChoices.size() / 100000) * 100 + " %)");
             System.out.println();
 
             System.out.println("Distinct numbers of predecessor blocks that could be linked; possible predecessor blocks that could be matched; number of predecessor postHistories");
@@ -381,7 +382,7 @@ public class Statistics {
 
 
     @Test
-    public void getAverageSizesOfBlocksAndVersions(){
+    public void getAverageSizesOfBlocksAndVersions() {
         LinkedList<String> pathToAllDirectories = new LinkedList<>();
 
         // pathToAllDirectories.add("testdata\\representative CSVs");
@@ -406,17 +407,17 @@ public class Statistics {
 
         int numberOfPosts = 0;
 
-        for(String path : pathToAllDirectories) {
+        for (String path : pathToAllDirectories) {
             PostVersionsListManagement postVersionsListManagement = new PostVersionsListManagement(path);
-            for(PostVersionList postVersionList : postVersionsListManagement.postVersionLists) {
+            for (PostVersionList postVersionList : postVersionsListManagement.postVersionLists) {
 
                 numberOfPosts++;
 
                 for (PostVersion postVersion : postVersionList) {
-                    for(int k=0; k<postVersion.getTextBlocks().size(); k++) {
+                    for (int k = 0; k < postVersion.getTextBlocks().size(); k++) {
                         textBlockLength += postVersion.getTextBlocks().get(k).getContent().length();
                     }
-                    for(int k=0; k<postVersion.getCodeBlocks().size(); k++) {
+                    for (int k = 0; k < postVersion.getCodeBlocks().size(); k++) {
                         codeBlockLength += postVersion.getCodeBlocks().get(k).getContent().length();
                     }
 
@@ -431,16 +432,16 @@ public class Statistics {
         }
 
         System.out.println("number of versions: " + numberOfVersions);
-        System.out.println("average number of versions: " + (double)numberOfVersions / numberOfPosts);
+        System.out.println("average number of versions: " + (double) numberOfVersions / numberOfPosts);
         System.out.println();
         System.out.println("number of text blocks: " + numberOfTextBlocks);
-        System.out.println("average number of text blocks: " + (double)numberOfTextBlocks / numberOfVersions);
+        System.out.println("average number of text blocks: " + (double) numberOfTextBlocks / numberOfVersions);
         System.out.println("number of code blocks: " + numberOfCodeBlocks);
-        System.out.println("average number of code blocks: " + (double)numberOfCodeBlocks / numberOfVersions);
+        System.out.println("average number of code blocks: " + (double) numberOfCodeBlocks / numberOfVersions);
         System.out.println();
         System.out.println("text block length: " + textBlockLength);
-        System.out.println("average text block length: " + (double)textBlockLength / numberOfTextBlocks);
+        System.out.println("average text block length: " + (double) textBlockLength / numberOfTextBlocks);
         System.out.println("code block length: " + codeBlockLength);
-        System.out.println("average code block length: " + (double)codeBlockLength / numberOfCodeBlocks);
+        System.out.println("average code block length: " + (double) codeBlockLength / numberOfCodeBlocks);
     }
 }

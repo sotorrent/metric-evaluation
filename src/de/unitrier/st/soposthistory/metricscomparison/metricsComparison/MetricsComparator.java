@@ -1,12 +1,11 @@
-package metricsComparism;
+package de.unitrier.st.soposthistory.metricscomparison.metricsComparison;
 
-
-import csvExtraction.GroundTruthExtractionOfCSVs;
-import csvExtraction.PostVersionsListManagement;
 import de.unitrier.st.soposthistory.blocks.CodeBlockVersion;
 import de.unitrier.st.soposthistory.blocks.TextBlockVersion;
+import de.unitrier.st.soposthistory.metricscomparison.csvExtraction.GroundTruthExtractionOfCSVs;
+import de.unitrier.st.soposthistory.metricscomparison.csvExtraction.PostVersionsListManagement;
+import de.unitrier.st.soposthistory.metricscomparison.util.ConnectionsOfAllVersions;
 import de.unitrier.st.soposthistory.version.PostVersionList;
-import util.ConnectionsOfAllVersions;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,8 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiFunction;
 
-
-public class MetricsComparator{
+public class MetricsComparator {
 
     private String pathToDirectoryOfAllPostHistories;
     private String pathToDirectoryOfAllCompletedCSVs;
@@ -31,7 +29,7 @@ public class MetricsComparator{
     private LinkedList<ConnectionsOfAllVersions> groundTruth_code = null;
 
     // constructor and helping methods
-    public MetricsComparator(String pathToDirectoryOfPostHistories, String pathToDirectoryOfCompletedCSVs){
+    public MetricsComparator(String pathToDirectoryOfPostHistories, String pathToDirectoryOfCompletedCSVs) {
 
         this.pathToDirectoryOfAllPostHistories = pathToDirectoryOfPostHistories;
         this.pathToDirectoryOfAllCompletedCSVs = pathToDirectoryOfCompletedCSVs;
@@ -51,26 +49,26 @@ public class MetricsComparator{
     private void checkWhetherSetOfCompletedPostsIsSameAsSetOfPostHistories() {
         LinkedList<Integer> postIdsOfGroundTruth = new LinkedList<>();
         LinkedList<Integer> postIdsOfPostHistories = new LinkedList<>();
-        for(int i=0; i<groundTruth.size(); i++){
+        for (int i = 0; i < groundTruth.size(); i++) {
             postIdsOfGroundTruth.add(groundTruth.get(i).getPostId());
         }
 
-        for(int i=0; i<postVersionsListManagement.postVersionLists.size(); i++){
+        for (int i = 0; i < postVersionsListManagement.postVersionLists.size(); i++) {
             postIdsOfPostHistories.add(postVersionsListManagement.postVersionLists.get(i).getFirst().getPostId());
         }
 
         Collections.sort(postIdsOfGroundTruth);
         Collections.sort(postIdsOfPostHistories);
 
-        if(!postIdsOfGroundTruth.equals(postIdsOfPostHistories)){
+        if (!postIdsOfGroundTruth.equals(postIdsOfPostHistories)) {
             LinkedList<Integer> invalidPosts = new LinkedList<>();
-            for(int i=0; i<postIdsOfGroundTruth.size(); i++){
-                if(!postIdsOfPostHistories.contains(postIdsOfGroundTruth.get(i))){
+            for (int i = 0; i < postIdsOfGroundTruth.size(); i++) {
+                if (!postIdsOfPostHistories.contains(postIdsOfGroundTruth.get(i))) {
                     invalidPosts.add(postIdsOfGroundTruth.get(i));
                 }
             }
-            for(int i=0; i<postIdsOfPostHistories.size(); i++){
-                if(!postIdsOfGroundTruth.contains(postIdsOfPostHistories.get(i))){
+            for (int i = 0; i < postIdsOfPostHistories.size(); i++) {
+                if (!postIdsOfGroundTruth.contains(postIdsOfPostHistories.get(i))) {
                     invalidPosts.add(postIdsOfPostHistories.get(i));
                 }
             }
@@ -83,26 +81,26 @@ public class MetricsComparator{
 
     private void checkWhetherNumberOfBlocksIsSame() {
 
-        if(groundTruth_text.size() != postVersionsListManagement.postVersionLists.size()
-                || groundTruth_code.size() != postVersionsListManagement.postVersionLists.size()){
+        if (groundTruth_text.size() != postVersionsListManagement.postVersionLists.size()
+                || groundTruth_code.size() != postVersionsListManagement.postVersionLists.size()) {
             System.err.println("number of ground truths and number of post version lists are different");
         }
 
-        for(int i=0; i<groundTruth_text.size(); i++){
+        for (int i = 0; i < groundTruth_text.size(); i++) {
 
             int currentPostId = groundTruth.get(i).getPostId();
 
             int numberOfTextBlocksOverallInGroundTruth = 0;
-            for(int j=0; j<groundTruth_text.get(i).size(); j++){
+            for (int j = 0; j < groundTruth_text.get(i).size(); j++) {
                 numberOfTextBlocksOverallInGroundTruth += groundTruth_text.get(i).get(j).size();
             }
 
             int numberOfTextBlocksOverallInComputedMetric = 0;
-            for(int j=0; j<postVersionsListManagement.getAllConnectionsOfAllConsecutiveVersions_text(currentPostId).size(); j++){
+            for (int j = 0; j < postVersionsListManagement.getAllConnectionsOfAllConsecutiveVersions_text(currentPostId).size(); j++) {
                 numberOfTextBlocksOverallInComputedMetric += postVersionsListManagement.getAllConnectionsOfAllConsecutiveVersions_text(currentPostId).get(j).size();
             }
 
-            if(numberOfTextBlocksOverallInGroundTruth != numberOfTextBlocksOverallInComputedMetric){
+            if (numberOfTextBlocksOverallInGroundTruth != numberOfTextBlocksOverallInComputedMetric) {
                 System.err.println(
                         "Number of text blocks that will be compared must be the same but are different in post with id "
                                 + postVersionsListManagement.postVersionLists.get(i).getFirst().getPostId() + ": "
@@ -116,21 +114,21 @@ public class MetricsComparator{
             }
         }
 
-        for(int i=0; i<groundTruth_code.size(); i++){
+        for (int i = 0; i < groundTruth_code.size(); i++) {
 
             int currentPostId = groundTruth.get(i).getPostId();
 
             int numberOfCodeBlocksOverallInGroundTruth = 0;
-            for(int j=0; j<groundTruth_code.get(i).size(); j++){
+            for (int j = 0; j < groundTruth_code.get(i).size(); j++) {
                 numberOfCodeBlocksOverallInGroundTruth += groundTruth_code.get(i).get(j).size();
             }
 
             int numberOfCodeBlocksOverallInComputedMetric = 0;
-            for(int j=0; j<postVersionsListManagement.getAllConnectionsOfAllConsecutiveVersions_code(currentPostId).size(); j++){
+            for (int j = 0; j < postVersionsListManagement.getAllConnectionsOfAllConsecutiveVersions_code(currentPostId).size(); j++) {
                 numberOfCodeBlocksOverallInComputedMetric += postVersionsListManagement.getAllConnectionsOfAllConsecutiveVersions_code(currentPostId).get(j).size();
             }
 
-            if(numberOfCodeBlocksOverallInGroundTruth != numberOfCodeBlocksOverallInComputedMetric){
+            if (numberOfCodeBlocksOverallInGroundTruth != numberOfCodeBlocksOverallInComputedMetric) {
                 System.err.println(
                         "Number of code blocks that will be compared must be the same but are different in post with id "
                                 + postVersionsListManagement.postVersionLists.get(i).getFirst().getPostId() + ": "
@@ -189,9 +187,9 @@ public class MetricsComparator{
 
         Metric.Type[] metrics = Metric.Type.values().clone();
 
-        for(int i=0; i<metrics.length; i++){
+        for (int i = 0; i < metrics.length; i++) {
             Metric.Type tmp = metrics[i];
-            int rnd = (int)(Math.random()*metrics.length);
+            int rnd = (int) (Math.random() * metrics.length);
             metrics[i] = metrics[rnd];
             metrics[rnd] = tmp;
         }
@@ -222,7 +220,7 @@ public class MetricsComparator{
 
         List<Double> thresholds = Arrays.asList(0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9);
 
-        for(Double threshold : thresholds) {
+        for (Double threshold : thresholds) {
 
             int count = 1;
 
@@ -251,27 +249,27 @@ public class MetricsComparator{
                                 Metric.getBiFunctionMetric(metric));
 
 
-                            for (int l = 0; l < postVersionList.size() - 1; l++) {
+                        for (int l = 0; l < postVersionList.size() - 1; l++) {
 
-                                printWriter.write(pathToSample + "; ");
-                                printWriter.write(metric + "; ");
-                                printWriter.write(threshold + "; ");
+                            printWriter.write(pathToSample + "; ");
+                            printWriter.write(metric + "; ");
+                            printWriter.write(threshold + "; ");
 
-                                printWriter.write(postVersionList.get(l).getPostId() + "; ");
-                                printWriter.write(postVersionList.get(l).getPostHistoryId() + "; ");
+                            printWriter.write(postVersionList.get(l).getPostId() + "; ");
+                            printWriter.write(postVersionList.get(l).getPostHistoryId() + "; ");
 
-                                printWriter.write(tmpMetricResult_text.totalTimeMeasured_text + "; ");
-                                printWriter.write(tmpMetricResult_text.measuredDataList.get(l).truePositives_text + "; ");
-                                printWriter.write(tmpMetricResult_text.measuredDataList.get(l).trueNegatives_text + "; ");
-                                printWriter.write(tmpMetricResult_text.measuredDataList.get(l).falsePositives_text + "; ");
-                                printWriter.write(tmpMetricResult_text.measuredDataList.get(l).falseNegatives_text + "; ");
+                            printWriter.write(tmpMetricResult_text.totalTimeMeasured_text + "; ");
+                            printWriter.write(tmpMetricResult_text.measuredDataList.get(l).truePositives_text + "; ");
+                            printWriter.write(tmpMetricResult_text.measuredDataList.get(l).trueNegatives_text + "; ");
+                            printWriter.write(tmpMetricResult_text.measuredDataList.get(l).falsePositives_text + "; ");
+                            printWriter.write(tmpMetricResult_text.measuredDataList.get(l).falseNegatives_text + "; ");
 
-                                printWriter.write(tmpMetricResult_code.totalTimeMeasured_code + "; ");
-                                printWriter.write(tmpMetricResult_code.measuredDataList.get(l).truePositives_code + "; ");
-                                printWriter.write(tmpMetricResult_code.measuredDataList.get(l).trueNegatives_code + "; ");
-                                printWriter.write(tmpMetricResult_code.measuredDataList.get(l).falsePositives_code + "; ");
-                                printWriter.write(tmpMetricResult_code.measuredDataList.get(l).falseNegatives_code + "\n");
-                            }
+                            printWriter.write(tmpMetricResult_code.totalTimeMeasured_code + "; ");
+                            printWriter.write(tmpMetricResult_code.measuredDataList.get(l).truePositives_code + "; ");
+                            printWriter.write(tmpMetricResult_code.measuredDataList.get(l).trueNegatives_code + "; ");
+                            printWriter.write(tmpMetricResult_code.measuredDataList.get(l).falsePositives_code + "; ");
+                            printWriter.write(tmpMetricResult_code.measuredDataList.get(l).falseNegatives_code + "\n");
+                        }
 
                     } catch (IllegalArgumentException e) {
                         printWriter.write("null" + "\n");

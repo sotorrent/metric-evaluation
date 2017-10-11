@@ -1,9 +1,8 @@
-package util;
+package de.unitrier.st.soposthistory.metricscomparison.util;
 
 import java.util.LinkedList;
 
 public class ConnectionsOfTwoVersions extends LinkedList<ConnectedBlocks> {
-
     int leftVersionId;
     int rightVersionId;
 

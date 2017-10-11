@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <name>SOPostHistoryGroundTruth</name>
+    <name>SOPostHistoryMetricsComparison</name>
     <groupId>de.unitrier.st.soposthistory</groupId>
     <artifactId>so-posthistory-metricscomparision</artifactId>
     <version>0.1</version>
@@ -34,7 +34,7 @@
             </snapshots>
         </repository>
         <repository>
-            <id>posthistory-gt</id>
+            <id>soposthistorygt</id>
             <url>https://raw.github.com/sotorrent/so-posthistory-gt/master/releases/</url>
             <snapshots>
                 <enabled>true</enabled>
@@ -135,6 +135,7 @@
 
     <build>
         <sourceDirectory>src</sourceDirectory>
+        <!--testSourceDirectory>src/de/unitrier/st/soposthistory/metricscomparison/tests</testSourceDirectory-->
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -150,7 +151,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>de.unitrier.st.soposthistorygt.GroundTruthApp.MainGroundTruthCreator</mainClass>
+                            <mainClass>de.unitrier.st.soposthistory.metricscomparison.MainMetricsComparator</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -161,7 +162,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>de.unitrier.st.soposthistorygt.GroundTruthApp.MainGroundTruthCreator</mainClass>
+                            <mainClass>de.unitrier.st.soposthistory.metricscomparison.MainMetricsComparator</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -174,6 +175,51 @@
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.0.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- http://junit.org/junit5/docs/current/user-guide/#running-tests-build-maven -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.19.1</version>
+                <dependencies>
+                    <!-- https://mvnrepository.com/artifact/org.junit.platform/junit-platform-surefire-provider -->
+                    <dependency>
+                        <groupId>org.junit.platform</groupId>
+                        <artifactId>junit-platform-surefire-provider</artifactId>
+                        <version>1.0.0</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.7</version>
+            </plugin>
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.4</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
                         </goals>
                     </execution>
                 </executions>

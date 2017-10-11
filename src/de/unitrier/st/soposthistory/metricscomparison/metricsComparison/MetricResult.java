@@ -1,14 +1,14 @@
-package metricsComparism;
+package de.unitrier.st.soposthistory.metricscomparison.metricsComparison;
 
+import de.unitrier.st.soposthistory.metricscomparison.util.ConnectedBlocks;
+import de.unitrier.st.soposthistory.metricscomparison.util.ConnectionsOfAllVersions;
 import org.apache.commons.lang3.time.StopWatch;
-import util.ConnectedBlocks;
-import util.ConnectionsOfAllVersions;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-class MeasuredData{
+class MeasuredData {
 
     int truePositives_text = 0;
     int falsePositives_text = 0;
@@ -20,7 +20,8 @@ class MeasuredData{
     int trueNegatives_code = 0;
     int falseNegatives_code = 0;
 
-    MeasuredData(){}
+    MeasuredData() {
+    }
 }
 
 public class MetricResult {
@@ -35,7 +36,8 @@ public class MetricResult {
     List<MeasuredData> measuredDataList = new ArrayList<>();
 
 
-    public MetricResult(){}
+    public MetricResult() {
+    }
 
     public void updateMetricResult_text() {
         this.totalTimeMeasured_text += this.stopWatch.getTime();
@@ -46,26 +48,26 @@ public class MetricResult {
     }
 
 
-    void compareMetricResults_text(ConnectionsOfAllVersions groundTruth){
+    void compareMetricResults_text(ConnectionsOfAllVersions groundTruth) {
 
-        for(int i=0; i<groundTruth.size(); i++){
+        for (int i = 0; i < groundTruth.size(); i++) {
 
             MeasuredData measuredData = new MeasuredData();
 
-            for(int j=0; j<groundTruth.get(i).size(); j++){
+            for (int j = 0; j < groundTruth.get(i).size(); j++) {
                 ConnectedBlocks connectedBlocksGroundTruth = groundTruth.get(i).get(j);
                 ConnectedBlocks connectedBlocksComputedMetric = connectionsOfAllVersions_text.get(i).get(j);
 
-                if(Objects.equals(connectedBlocksGroundTruth.getLeftLocalId(), connectedBlocksComputedMetric.getLeftLocalId())){
-                    if(connectedBlocksGroundTruth.getLeftLocalId() != null){
+                if (Objects.equals(connectedBlocksGroundTruth.getLeftLocalId(), connectedBlocksComputedMetric.getLeftLocalId())) {
+                    if (connectedBlocksGroundTruth.getLeftLocalId() != null) {
                         measuredData.truePositives_text++;
-                    }else{
+                    } else {
                         measuredData.trueNegatives_text++;
                     }
-                }else{
-                    if(connectedBlocksGroundTruth.getLeftLocalId() == null){
+                } else {
+                    if (connectedBlocksGroundTruth.getLeftLocalId() == null) {
                         measuredData.falsePositives_text++;
-                    }else{
+                    } else {
                         measuredData.falseNegatives_text++;
                     }
                 }
@@ -76,26 +78,26 @@ public class MetricResult {
     }
 
 
-    void compareMetricResults_code(ConnectionsOfAllVersions groundTruth){
+    void compareMetricResults_code(ConnectionsOfAllVersions groundTruth) {
 
-        for(int i=0; i<groundTruth.size(); i++){
+        for (int i = 0; i < groundTruth.size(); i++) {
 
             MeasuredData measuredData = new MeasuredData();
 
-            for(int j=0; j<groundTruth.get(i).size(); j++){
+            for (int j = 0; j < groundTruth.get(i).size(); j++) {
                 ConnectedBlocks connectedBlocksGroundTruth = groundTruth.get(i).get(j);
                 ConnectedBlocks connectedBlocksComputedMetric = connectionsOfAllVersions_code.get(i).get(j);
 
-                if(Objects.equals(connectedBlocksGroundTruth.getLeftLocalId(), connectedBlocksComputedMetric.getLeftLocalId())){
-                    if(connectedBlocksGroundTruth.getLeftLocalId() != null){
+                if (Objects.equals(connectedBlocksGroundTruth.getLeftLocalId(), connectedBlocksComputedMetric.getLeftLocalId())) {
+                    if (connectedBlocksGroundTruth.getLeftLocalId() != null) {
                         measuredData.truePositives_code++;
-                    }else{
+                    } else {
                         measuredData.trueNegatives_code++;
                     }
-                }else{
-                    if(connectedBlocksGroundTruth.getLeftLocalId() == null){
+                } else {
+                    if (connectedBlocksGroundTruth.getLeftLocalId() == null) {
                         measuredData.falsePositives_code++;
-                    }else{
+                    } else {
                         measuredData.falseNegatives_code++;
                     }
                 }

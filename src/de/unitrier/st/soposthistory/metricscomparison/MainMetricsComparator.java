@@ -1,4 +1,6 @@
-import metricsComparism.MetricsComparator;
+package de.unitrier.st.soposthistory.metricscomparison;
+
+import de.unitrier.st.soposthistory.metricscomparison.metricsComparison.MetricsComparator;
 import org.apache.commons.lang3.time.StopWatch;
 
 import java.io.IOException;

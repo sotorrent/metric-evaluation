@@ -1,15 +1,15 @@
-package csvExtraction;
+package de.unitrier.st.soposthistory.metricscomparison.csvExtraction;
 
+import de.unitrier.st.soposthistory.metricscomparison.util.ConnectedBlocks;
+import de.unitrier.st.soposthistory.metricscomparison.util.ConnectionsOfAllVersions;
+import de.unitrier.st.soposthistory.metricscomparison.util.ConnectionsOfTwoVersions;
 import de.unitrier.st.soposthistorygt.util.BlockLifeSpanSnapshot;
-import util.ConnectedBlocks;
-import util.ConnectionsOfAllVersions;
-import util.ConnectionsOfTwoVersions;
 
 import java.io.*;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.LinkedList;
 import java.util.regex.Pattern;
 
 public class GroundTruthExtractionOfCSVs {
@@ -20,25 +20,25 @@ public class GroundTruthExtractionOfCSVs {
 
 
     // constructor
-    public GroundTruthExtractionOfCSVs(String pathOfDirectoryOfCSVs){
+    public GroundTruthExtractionOfCSVs(String pathOfDirectoryOfCSVs) {
         groundTruth = extractListOfConnectionsOfAllVersionsOfAllExportedCSVs(pathOfDirectoryOfCSVs);
         groundTruth.sort(Comparator.comparingInt(ConnectionsOfAllVersions::getPostId));
         divideGroundTruthIntoTextAndCode();
     }
 
-    public LinkedList<ConnectionsOfAllVersions> getGroundTruth(){
+    public LinkedList<ConnectionsOfAllVersions> getGroundTruth() {
         return groundTruth;
     }
 
-    public LinkedList<ConnectionsOfAllVersions> getGroundTruthText(){
+    public LinkedList<ConnectionsOfAllVersions> getGroundTruthText() {
         return groundTruth_text;
     }
 
-    public LinkedList<ConnectionsOfAllVersions> getGroundTruthCode(){
+    public LinkedList<ConnectionsOfAllVersions> getGroundTruthCode() {
         return groundTruth_code;
     }
 
-    public static LinkedList<String> parseLines(String pathToExportedCSV){
+    public static LinkedList<String> parseLines(String pathToExportedCSV) {
 
         BufferedReader bufferedReader = null;
         try {
@@ -51,7 +51,7 @@ public class GroundTruthExtractionOfCSVs {
 
         String line;
         try {
-            while((line = bufferedReader.readLine()) != null){
+            while ((line = bufferedReader.readLine()) != null) {
                 lines.add(line);
             }
         } catch (IOException e) {
@@ -64,11 +64,11 @@ public class GroundTruthExtractionOfCSVs {
         return lines;
     }
 
-    private List<BlockLifeSpanSnapshot> extractBlockLifeSpanSnapshotsUnordered(List<String> lines){
+    private List<BlockLifeSpanSnapshot> extractBlockLifeSpanSnapshotsUnordered(List<String> lines) {
 
         List<BlockLifeSpanSnapshot> blockLifeSpanSnapshots = new LinkedList<>();
 
-        for(String line : lines){
+        for (String line : lines) {
             StringTokenizer tokens = new StringTokenizer(line, "; ");
             int postId = Integer.valueOf(tokens.nextToken().replace("\"", ""));
             int postHistoryId = Integer.valueOf(tokens.nextToken().replace("\"", ""));
@@ -79,11 +79,13 @@ public class GroundTruthExtractionOfCSVs {
 
             try {
                 predLocalId = Integer.valueOf(tokens.nextToken().replace("\"", ""));
-            }catch (NumberFormatException ignored) {}
+            } catch (NumberFormatException ignored) {
+            }
 
             try {
                 succLocalId = Integer.valueOf(tokens.nextToken().replace("\"", ""));
-            }catch (NumberFormatException ignored){}
+            } catch (NumberFormatException ignored) {
+            }
 
             BlockLifeSpanSnapshot blockLifeSpanSnapshot = new BlockLifeSpanSnapshot(postId, postHistoryId, postBlockTypeId, -1, localId, predLocalId, succLocalId);
             blockLifeSpanSnapshots.add(blockLifeSpanSnapshot);
@@ -92,7 +94,7 @@ public class GroundTruthExtractionOfCSVs {
         return blockLifeSpanSnapshots;
     }
 
-    private LinkedList<LinkedList<BlockLifeSpanSnapshot>> orderBlockLifeSpanSnapshotsByPostHistoryId(List<BlockLifeSpanSnapshot> blockLifeSpanSnapshots){
+    private LinkedList<LinkedList<BlockLifeSpanSnapshot>> orderBlockLifeSpanSnapshotsByPostHistoryId(List<BlockLifeSpanSnapshot> blockLifeSpanSnapshots) {
         blockLifeSpanSnapshots.sort(Comparator.comparingInt(BlockLifeSpanSnapshot::getPostHistoryId));
 
         int count = 1;
@@ -113,9 +115,9 @@ public class GroundTruthExtractionOfCSVs {
         return listOfListOfBlockLifeSnapshotsOrderedByVersions;
     }
 
-    private ConnectionsOfTwoVersions getAllConnectionsBetweenTwoVersions(int leftVersionId, LinkedList<BlockLifeSpanSnapshot> rightVersionOfBlocks){
+    private ConnectionsOfTwoVersions getAllConnectionsBetweenTwoVersions(int leftVersionId, LinkedList<BlockLifeSpanSnapshot> rightVersionOfBlocks) {
         ConnectionsOfTwoVersions connectionsOfTwoVersions = new ConnectionsOfTwoVersions(leftVersionId);
-        for(int i=0; i<rightVersionOfBlocks.size(); i++){
+        for (int i = 0; i < rightVersionOfBlocks.size(); i++) {
             connectionsOfTwoVersions.add(
                     new ConnectedBlocks(
                             rightVersionOfBlocks.get(i).getPredLocalId(),
@@ -126,30 +128,30 @@ public class GroundTruthExtractionOfCSVs {
         return connectionsOfTwoVersions;
     }
 
-    private ConnectionsOfAllVersions getAllConnectionsOfAllConsecutiveVersions(String pathToCSV){
+    private ConnectionsOfAllVersions getAllConnectionsOfAllConsecutiveVersions(String pathToCSV) {
         List<String> lines = parseLines(pathToCSV);
         List<BlockLifeSpanSnapshot> listOfBlockLifeSpanSnapshots = extractBlockLifeSpanSnapshotsUnordered(lines);
         LinkedList<LinkedList<BlockLifeSpanSnapshot>> listOfListOfBlockLifeSpanSnapshots = orderBlockLifeSpanSnapshotsByPostHistoryId(listOfBlockLifeSpanSnapshots);
 
         ConnectionsOfAllVersions connectionsOfAllVersions = new ConnectionsOfAllVersions(listOfListOfBlockLifeSpanSnapshots.getFirst().getFirst().getPostId());
 
-        for(int i=1; i<listOfListOfBlockLifeSpanSnapshots.size(); i++){
+        for (int i = 1; i < listOfListOfBlockLifeSpanSnapshots.size(); i++) {
             connectionsOfAllVersions.add(
-                    getAllConnectionsBetweenTwoVersions(i+1, listOfListOfBlockLifeSpanSnapshots.get(i))
+                    getAllConnectionsBetweenTwoVersions(i + 1, listOfListOfBlockLifeSpanSnapshots.get(i))
             );
         }
 
         return connectionsOfAllVersions;
     }
 
-    private LinkedList<ConnectionsOfAllVersions> extractListOfConnectionsOfAllVersionsOfAllExportedCSVs(String directoryOfGroundTruthCSVs){
+    private LinkedList<ConnectionsOfAllVersions> extractListOfConnectionsOfAllVersionsOfAllExportedCSVs(String directoryOfGroundTruthCSVs) {
 
         File file = new File(directoryOfGroundTruthCSVs);
         Pattern pattern = Pattern.compile("completed_" + "[0-9]+" + "\\.csv");
         File[] allCompletedPostVersionListsInFolder = file.listFiles((dir, name) -> name.matches(pattern.pattern())); // https://stackoverflow.com/questions/4852531/find-files-in-a-folder-using-java
 
         assert allCompletedPostVersionListsInFolder != null;
-        for(File completedCSV : allCompletedPostVersionListsInFolder){
+        for (File completedCSV : allCompletedPostVersionListsInFolder) {
             try {
                 groundTruth.add(getAllConnectionsOfAllConsecutiveVersions(completedCSV.getCanonicalPath()));
             } catch (IOException e) {
@@ -163,18 +165,18 @@ public class GroundTruthExtractionOfCSVs {
         return groundTruth;
     }
 
-    private void divideGroundTruthIntoTextAndCode(){
-        for(ConnectionsOfAllVersions allVersionsOfConnections : groundTruth){
+    private void divideGroundTruthIntoTextAndCode() {
+        for (ConnectionsOfAllVersions allVersionsOfConnections : groundTruth) {
             groundTruth_text.add(new ConnectionsOfAllVersions(allVersionsOfConnections.getPostId()));
             groundTruth_code.add(new ConnectionsOfAllVersions(allVersionsOfConnections.getPostId()));
             int count = 1;
-            for(ConnectionsOfTwoVersions twoVersionsOfConnections : allVersionsOfConnections){
+            for (ConnectionsOfTwoVersions twoVersionsOfConnections : allVersionsOfConnections) {
                 groundTruth_text.getLast().add(new ConnectionsOfTwoVersions(count));
                 groundTruth_code.getLast().add(new ConnectionsOfTwoVersions(count));
-                for(ConnectedBlocks connectedBlock : twoVersionsOfConnections){
-                    if(connectedBlock.getPostBlockTypeId() == 1){
+                for (ConnectedBlocks connectedBlock : twoVersionsOfConnections) {
+                    if (connectedBlock.getPostBlockTypeId() == 1) {
                         groundTruth_text.getLast().getLast().add(connectedBlock);
-                    }else{
+                    } else {
                         groundTruth_code.getLast().getLast().add(connectedBlock);
                     }
                 }
@@ -184,7 +186,7 @@ public class GroundTruthExtractionOfCSVs {
     }
 
 
-    public ConnectionsOfAllVersions getAllConnectionsOfAllConsecutiveVersions_text(int postId){
+    public ConnectionsOfAllVersions getAllConnectionsOfAllConsecutiveVersions_text(int postId) {
         for (ConnectionsOfAllVersions groundTruth_text : groundTruth_text)
             if (groundTruth_text.getPostId() == postId)
                 return groundTruth_text;
@@ -192,7 +194,7 @@ public class GroundTruthExtractionOfCSVs {
         return null;
     }
 
-    public ConnectionsOfAllVersions getAllConnectionsOfAllConsecutiveVersions_code(int postId){
+    public ConnectionsOfAllVersions getAllConnectionsOfAllConsecutiveVersions_code(int postId) {
         for (ConnectionsOfAllVersions groundTruth_code : groundTruth_code)
             if (groundTruth_code.getPostId() == postId)
                 return groundTruth_code;

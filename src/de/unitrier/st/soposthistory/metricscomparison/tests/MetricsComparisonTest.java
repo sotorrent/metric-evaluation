@@ -1,20 +1,20 @@
-package tests;
+package de.unitrier.st.soposthistory.metricscomparison.tests;
 
-import csvExtraction.GroundTruthExtractionOfCSVs;
-import csvExtraction.PostVersionsListManagement;
 import de.unitrier.st.soposthistory.blocks.CodeBlockVersion;
 import de.unitrier.st.soposthistory.blocks.PostBlockVersion;
 import de.unitrier.st.soposthistory.blocks.TextBlockVersion;
+import de.unitrier.st.soposthistory.metricscomparison.csvExtraction.GroundTruthExtractionOfCSVs;
+import de.unitrier.st.soposthistory.metricscomparison.csvExtraction.PostVersionsListManagement;
+import de.unitrier.st.soposthistory.metricscomparison.metricsComparison.MetricsComparator;
+import de.unitrier.st.soposthistory.metricscomparison.util.ConnectionsOfAllVersions;
+import de.unitrier.st.soposthistory.metricscomparison.util.ConnectionsOfTwoVersions;
 import de.unitrier.st.soposthistory.version.PostVersion;
 import de.unitrier.st.soposthistory.version.PostVersionList;
 import de.unitrier.st.soposthistorygt.util.anchorsURLs.AnchorTextAndUrlHandler;
 import de.unitrier.st.stringsimilarity.profile.Variants;
-import metricsComparism.MetricsComparator;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import util.ConnectionsOfAllVersions;
-import util.ConnectionsOfTwoVersions;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,19 +23,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-import static csvExtraction.PostVersionsListManagement.pattern_groundTruth;
+import static de.unitrier.st.soposthistory.metricscomparison.csvExtraction.PostVersionsListManagement.pattern_groundTruth;
 import static de.unitrier.st.soposthistorygt.GroundTruthApp.GroundTruthCreator.normalizeURLsInTextBlocksOfAllVersions;
 
 
 public class MetricsComparisonTest {
 
+    // TODO: make paths relative or configurable
+    // TODO: do not start time-consuming test cases automatically
 
     private static String pathToCSVs = Paths.get("testdata", "representative CSVs").toString();
-    private static String pathToFewCompletedFiles= Paths.get("testdata", "fewCompletedFiles").toString();
+    private static String pathToFewCompletedFiles = Paths.get("testdata", "fewCompletedFiles").toString();
     private static LinkedList<String> pathToAllDirectories = new LinkedList<>();
 
     @BeforeAll
-    public static void init(){
+    public static void init() {
         pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_1\\files");
         pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_2\\files");
         pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_3\\files");
@@ -50,7 +52,7 @@ public class MetricsComparisonTest {
 
 
     @Test
-    public void testExtractionOfOnePost(){
+    public void testExtractionOfOnePost() {
 
         int postId = 3758880;
 
@@ -70,22 +72,22 @@ public class MetricsComparisonTest {
 
         System.out.println("Ground Truth: ");
         System.out.println("All text blocks:");
-        for(int i=0; i<connectionsOfAllVersionsGroundTruth_text.size(); i++){
+        for (int i = 0; i < connectionsOfAllVersionsGroundTruth_text.size(); i++) {
             System.out.println(connectionsOfAllVersionsGroundTruth_text.get(i));
         }
         System.out.println("\nAll code blocks:");
-        for(int i=0; i<connectionsOfAllVersionsGroundTruth_code.size(); i++){
+        for (int i = 0; i < connectionsOfAllVersionsGroundTruth_code.size(); i++) {
             System.out.println(connectionsOfAllVersionsGroundTruth_code.get(i));
         }
 
 
         System.out.println("\n\nComputed Metric: ");
         System.out.println("All text blocks:");
-        for(int i=0; i<connectionsOfAllVersionsComputedMetric_text.size(); i++){
+        for (int i = 0; i < connectionsOfAllVersionsComputedMetric_text.size(); i++) {
             System.out.println(connectionsOfAllVersionsComputedMetric_text.get(i));
         }
         System.out.println("\n\nAll code blocks:");
-        for(int i=0; i<connectionsOfAllVersionsComputedMetric_code.size(); i++){
+        for (int i = 0; i < connectionsOfAllVersionsComputedMetric_code.size(); i++) {
             System.out.println(connectionsOfAllVersionsComputedMetric_code.get(i));
         }
     }
@@ -137,7 +139,7 @@ public class MetricsComparisonTest {
 
 
     @Test
-    public void testNumberOfPredecessorsOfOnePost(){
+    public void testNumberOfPredecessorsOfOnePost() {
         int postId = 3758880;
         TextBlockVersion.similarityMetric = de.unitrier.st.stringsimilarity.set.Variants::twoGramDiceVariant;
 
@@ -145,10 +147,10 @@ public class MetricsComparisonTest {
         postVersionsListManagement.getPostVersionListWithID(postId).processVersionHistory(PostVersionList.PostBlockTypeFilter.TEXT);
 
 
-        List<TextBlockVersion> textBlocks = postVersionsListManagement.getPostVersionListWithID(postId).get(postVersionsListManagement.getPostVersionListWithID(postId).size()-1).getTextBlocks();
-        for(int i=0; i<textBlocks.size(); i++){
+        List<TextBlockVersion> textBlocks = postVersionsListManagement.getPostVersionListWithID(postId).get(postVersionsListManagement.getPostVersionListWithID(postId).size() - 1).getTextBlocks();
+        for (int i = 0; i < textBlocks.size(); i++) {
             Integer predId = null;
-            if(textBlocks.get(i).getPred() != null)
+            if (textBlocks.get(i).getPred() != null)
                 predId = textBlocks.get(i).getPred().getLocalId();
             System.out.println(textBlocks.get(i).getLocalId() + " has pred " + predId);
         }
@@ -156,7 +158,7 @@ public class MetricsComparisonTest {
     }
 
     @Test
-    public void testNumberOfPredecessorsComputedMetric(){
+    public void testNumberOfPredecessorsComputedMetric() {
 
         TextBlockVersion.similarityMetric = de.unitrier.st.stringsimilarity.set.Variants::twoGramDiceVariant;
 
@@ -189,19 +191,19 @@ public class MetricsComparisonTest {
     }
 
     @Test
-    public void testNumberOfPredecessorsGroundTruth(){
+    public void testNumberOfPredecessorsGroundTruth() {
 
         GroundTruthExtractionOfCSVs groundTruthExtractionOfCSVs = new GroundTruthExtractionOfCSVs("C:\\Users\\Lorik\\Documents\\GitHub\\so-posthistory-gt\\postVersionLists");
 
         for (ConnectionsOfAllVersions connectionsOfAllVersions : groundTruthExtractionOfCSVs.getGroundTruth()) {
             for (ConnectionsOfTwoVersions connectionsOfTwoVersions : connectionsOfAllVersions) {
 
-                for (int i=0; i<connectionsOfTwoVersions.size(); i++) {
+                for (int i = 0; i < connectionsOfTwoVersions.size(); i++) {
                     if (connectionsOfTwoVersions.get(i).getLeftLocalId() == null)
                         continue;
 
-                    for (int j=i+1; j<connectionsOfTwoVersions.size(); j++) {
-                        if(connectionsOfTwoVersions.get(j).getLeftLocalId() == null || connectionsOfTwoVersions.get(i).getPostBlockTypeId() != connectionsOfTwoVersions.get(j).getPostBlockTypeId())
+                    for (int j = i + 1; j < connectionsOfTwoVersions.size(); j++) {
+                        if (connectionsOfTwoVersions.get(j).getLeftLocalId() == null || connectionsOfTwoVersions.get(i).getPostBlockTypeId() != connectionsOfTwoVersions.get(j).getPostBlockTypeId())
                             continue;
 
                         if (Objects.equals(connectionsOfTwoVersions.get(i).getLeftLocalId(), connectionsOfTwoVersions.get(j).getLeftLocalId())) {
@@ -217,7 +219,7 @@ public class MetricsComparisonTest {
     }
 
     @Test
-    public void checkWhetherPostVersionListConnectionsWillBeResetRight(){
+    public void checkWhetherPostVersionListConnectionsWillBeResetRight() {
         int postId = 3758880;
         //TextBlockVersion.similarityMetric = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingTokenDiceVariant;
 
@@ -229,7 +231,7 @@ public class MetricsComparisonTest {
 
         System.out.println("\n\nComputed Metric after processVersionHistory: ");
         System.out.println("All text blocks:");
-        for(int i=0; i<connectionsOfAllVersionsComputedMetric_text.size(); i++){
+        for (int i = 0; i < connectionsOfAllVersionsComputedMetric_text.size(); i++) {
             System.out.println(connectionsOfAllVersionsComputedMetric_text.get(i));
         }
 
@@ -239,7 +241,7 @@ public class MetricsComparisonTest {
 
         System.out.println("\n\nComputed Metric after resetting of links: ");
         System.out.println("All text blocks:");
-        for(int i=0; i<connectionsOfAllVersionsComputedMetric_text.size(); i++){
+        for (int i = 0; i < connectionsOfAllVersionsComputedMetric_text.size(); i++) {
             System.out.println(connectionsOfAllVersionsComputedMetric_text.get(i));
         }
     }

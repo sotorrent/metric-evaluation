@@ -1,25 +1,24 @@
-package csvExtraction;
+package de.unitrier.st.soposthistory.metricscomparison.csvExtraction;
 
 import de.unitrier.st.soposthistory.blocks.CodeBlockVersion;
 import de.unitrier.st.soposthistory.blocks.TextBlockVersion;
+import de.unitrier.st.soposthistory.metricscomparison.util.ConnectedBlocks;
+import de.unitrier.st.soposthistory.metricscomparison.util.ConnectionsOfAllVersions;
+import de.unitrier.st.soposthistory.metricscomparison.util.ConnectionsOfTwoVersions;
 import de.unitrier.st.soposthistory.version.PostVersion;
 import de.unitrier.st.soposthistory.version.PostVersionList;
 import de.unitrier.st.soposthistorygt.util.anchorsURLs.AnchorTextAndUrlHandler;
-import util.ConnectedBlocks;
-import util.ConnectionsOfAllVersions;
-import util.ConnectionsOfTwoVersions;
 
 import java.io.File;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.LinkedList;
 import java.util.regex.Pattern;
 
 import static de.unitrier.st.soposthistorygt.GroundTruthApp.GroundTruthCreator.normalizeURLsInTextBlocksOfAllVersions;
 
-
-public class PostVersionsListManagement{
+public class PostVersionsListManagement {
 
     private String pathToDirectory;
 
@@ -28,21 +27,21 @@ public class PostVersionsListManagement{
 
 
     // constructor
-    public PostVersionsListManagement(String pathToDirectoryOfPostHistories){
+    public PostVersionsListManagement(String pathToDirectoryOfPostHistories) {
         parseAllPostVersionLists(pathToDirectoryOfPostHistories);
     }
 
 
-    private void parseAllPostVersionLists(String pathToDirectoryOfPostHistories){
+    private void parseAllPostVersionLists(String pathToDirectoryOfPostHistories) {
         this.pathToDirectory = pathToDirectoryOfPostHistories;
 
         File file = new File(pathToDirectoryOfPostHistories);
         File[] allPostHistoriesInFolder = file.listFiles((dir, name) -> name.matches(pattern_groundTruth.pattern())); // https://stackoverflow.com/questions/4852531/find-files-in-a-folder-using-java
 
         assert allPostHistoriesInFolder != null;
-        for(File postHistory : allPostHistoriesInFolder){
+        for (File postHistory : allPostHistoriesInFolder) {
             PostVersionList tmpPostVersionList = new PostVersionList();
-            int postId = Integer.valueOf(postHistory.getName().substring(0, postHistory.getName().length()-4));
+            int postId = Integer.valueOf(postHistory.getName().substring(0, postHistory.getName().length() - 4));
 
             tmpPostVersionList.readFromCSV(pathToDirectory, postId, 2, false);
 
@@ -59,9 +58,9 @@ public class PostVersionsListManagement{
     }
 
     // access to post verion lists
-    public PostVersionList getPostVersionListWithID(int postID){
-        for(PostVersionList postVersionList : postVersionLists){
-            if(postID == postVersionList.getFirst().getPostId()){
+    public PostVersionList getPostVersionListWithID(int postID) {
+        for (PostVersionList postVersionList : postVersionLists) {
+            if (postID == postVersionList.getFirst().getPostId()) {
                 return postVersionList;
             }
         }
@@ -71,16 +70,16 @@ public class PostVersionsListManagement{
 
 
     // converting post verion lists to make them easier to compare with ground truth
-    private ConnectionsOfTwoVersions getAllConnectionsBetweenTwoVersions_text(int leftVersionId, PostVersion leftPostVersion, PostVersion rightPostVersion){
+    private ConnectionsOfTwoVersions getAllConnectionsBetweenTwoVersions_text(int leftVersionId, PostVersion leftPostVersion, PostVersion rightPostVersion) {
         ConnectionsOfTwoVersions connectionsOfTwoVersions = new ConnectionsOfTwoVersions(leftVersionId);
 
-        for(int i=0; i<rightPostVersion.getPostBlocks().size(); i++){
-            if(rightPostVersion.getPostBlocks().get(i) instanceof CodeBlockVersion)
+        for (int i = 0; i < rightPostVersion.getPostBlocks().size(); i++) {
+            if (rightPostVersion.getPostBlocks().get(i) instanceof CodeBlockVersion)
                 continue;
 
             int rightLocalId = rightPostVersion.getPostBlocks().get(i).getLocalId();
             Integer leftLocalId = null;
-            if(rightPostVersion.getPostBlocks().get(i).getPred() != null) {
+            if (rightPostVersion.getPostBlocks().get(i).getPred() != null) {
                 for (int j = 0; j < leftPostVersion.getPostBlocks().size(); j++) {
                     if (Objects.equals(leftPostVersion.getPostBlocks().get(j).getLocalId(), rightPostVersion.getPostBlocks().get(i).getPred().getLocalId())) {
                         leftLocalId = leftPostVersion.getPostBlocks().get(j).getLocalId();
@@ -101,16 +100,16 @@ public class PostVersionsListManagement{
         return connectionsOfTwoVersions;
     }
 
-    private ConnectionsOfTwoVersions getAllConnectionsBetweenTwoVersions_code(int leftVersionId, PostVersion leftPostVersion, PostVersion rightPostVersion){
+    private ConnectionsOfTwoVersions getAllConnectionsBetweenTwoVersions_code(int leftVersionId, PostVersion leftPostVersion, PostVersion rightPostVersion) {
         ConnectionsOfTwoVersions connectionsOfTwoVersions = new ConnectionsOfTwoVersions(leftVersionId);
 
-        for(int i=0; i<rightPostVersion.getPostBlocks().size(); i++){
-            if(rightPostVersion.getPostBlocks().get(i) instanceof TextBlockVersion)
+        for (int i = 0; i < rightPostVersion.getPostBlocks().size(); i++) {
+            if (rightPostVersion.getPostBlocks().get(i) instanceof TextBlockVersion)
                 continue;
 
             int rightLocalId = rightPostVersion.getPostBlocks().get(i).getLocalId();
             Integer leftLocalId = null;
-            if(rightPostVersion.getPostBlocks().get(i).getPred() != null) {
+            if (rightPostVersion.getPostBlocks().get(i).getPred() != null) {
                 for (int j = 0; j < leftPostVersion.getPostBlocks().size(); j++) {
                     if (Objects.equals(leftPostVersion.getPostBlocks().get(j).getLocalId(), rightPostVersion.getPostBlocks().get(i).getPred().getLocalId())) {
                         leftLocalId = leftPostVersion.getPostBlocks().get(j).getLocalId();
@@ -132,29 +131,28 @@ public class PostVersionsListManagement{
     }
 
 
-    public ConnectionsOfAllVersions getAllConnectionsOfAllConsecutiveVersions_text(int postId){
+    public ConnectionsOfAllVersions getAllConnectionsOfAllConsecutiveVersions_text(int postId) {
         ConnectionsOfAllVersions connectionsOfAllVersions = new ConnectionsOfAllVersions(postId);
 
-        for(int i=0; i<getPostVersionListWithID(postId).size()-1; i++){
+        for (int i = 0; i < getPostVersionListWithID(postId).size() - 1; i++) {
             connectionsOfAllVersions.add(
-                    getAllConnectionsBetweenTwoVersions_text(i, getPostVersionListWithID(postId).get(i), getPostVersionListWithID(postId).get(i+1))
+                    getAllConnectionsBetweenTwoVersions_text(i, getPostVersionListWithID(postId).get(i), getPostVersionListWithID(postId).get(i + 1))
             );
         }
 
         return connectionsOfAllVersions;
     }
 
-    public ConnectionsOfAllVersions getAllConnectionsOfAllConsecutiveVersions_code(int postId){
+    public ConnectionsOfAllVersions getAllConnectionsOfAllConsecutiveVersions_code(int postId) {
         ConnectionsOfAllVersions connectionsOfAllVersions = new ConnectionsOfAllVersions(postId);
 
-        for(int i=0; i<getPostVersionListWithID(postId).size()-1; i++){
+        for (int i = 0; i < getPostVersionListWithID(postId).size() - 1; i++) {
             connectionsOfAllVersions.add(
-                    getAllConnectionsBetweenTwoVersions_code(i, getPostVersionListWithID(postId).get(i), getPostVersionListWithID(postId).get(i+1))
+                    getAllConnectionsBetweenTwoVersions_code(i, getPostVersionListWithID(postId).get(i), getPostVersionListWithID(postId).get(i + 1))
             );
         }
 
         return connectionsOfAllVersions;
     }
-
 
 }
