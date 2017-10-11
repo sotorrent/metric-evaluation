@@ -5,7 +5,7 @@
     <name>SOPostHistoryMetricsComparison</name>
     <groupId>de.unitrier.st.soposthistory</groupId>
     <artifactId>so-posthistory-metricscomparision</artifactId>
-    <version>0.1</version>
+    <version>0.1.1</version>
     <url>https://github.com/sotorrent/metrics-comparison</url>
 
     <distributionManagement>
@@ -60,7 +60,7 @@
         <dependency>
             <groupId>de.unitrier.st.soposthistory</groupId>
             <artifactId>so-posthistory-gt</artifactId>
-            <version>0.1.12</version>
+            <version>0.2.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.atlassian.commonmark/commonmark -->
         <dependency>
@@ -135,6 +135,7 @@
 
     <build>
         <sourceDirectory>src</sourceDirectory>
+        <!-- TODO: add tests again after todos are handled -->
         <!--testSourceDirectory>src/de/unitrier/st/soposthistory/metricscomparison/tests</testSourceDirectory-->
         <plugins>
             <plugin>

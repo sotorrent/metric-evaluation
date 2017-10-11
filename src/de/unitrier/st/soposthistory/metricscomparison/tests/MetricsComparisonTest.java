@@ -10,7 +10,7 @@ import de.unitrier.st.soposthistory.metricscomparison.util.ConnectionsOfAllVersi
 import de.unitrier.st.soposthistory.metricscomparison.util.ConnectionsOfTwoVersions;
 import de.unitrier.st.soposthistory.version.PostVersion;
 import de.unitrier.st.soposthistory.version.PostVersionList;
-import de.unitrier.st.soposthistorygt.util.anchorsURLs.AnchorTextAndUrlHandler;
+import de.unitrier.st.soposthistory.gt.util.anchorsURLs.AnchorTextAndUrlHandler;
 import de.unitrier.st.stringsimilarity.profile.Variants;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.BeforeAll;
@@ -24,8 +24,9 @@ import java.util.List;
 import java.util.Objects;
 
 import static de.unitrier.st.soposthistory.metricscomparison.csvExtraction.PostVersionsListManagement.pattern_groundTruth;
-import static de.unitrier.st.soposthistorygt.GroundTruthApp.GroundTruthCreator.normalizeURLsInTextBlocksOfAllVersions;
+import static de.unitrier.st.soposthistory.gt.GroundTruthApp.GroundTruthCreator.normalizeURLsInTextBlocksOfAllVersions;
 
+// TODO: get rid of dependency to soposthistory.gt
 
 public class MetricsComparisonTest {
 

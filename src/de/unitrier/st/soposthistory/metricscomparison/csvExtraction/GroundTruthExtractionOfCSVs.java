@@ -3,7 +3,7 @@ package de.unitrier.st.soposthistory.metricscomparison.csvExtraction;
 import de.unitrier.st.soposthistory.metricscomparison.util.ConnectedBlocks;
 import de.unitrier.st.soposthistory.metricscomparison.util.ConnectionsOfAllVersions;
 import de.unitrier.st.soposthistory.metricscomparison.util.ConnectionsOfTwoVersions;
-import de.unitrier.st.soposthistorygt.util.BlockLifeSpanSnapshot;
+import de.unitrier.st.soposthistory.gt.util.BlockLifeSpanSnapshot;
 
 import java.io.*;
 import java.util.Comparator;
@@ -11,6 +11,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
+
+// TODO: get rid of dependency to soposthistory.gt?
 
 public class GroundTruthExtractionOfCSVs {
 

@@ -7,7 +7,7 @@ import de.unitrier.st.soposthistory.metricscomparison.util.ConnectionsOfAllVersi
 import de.unitrier.st.soposthistory.metricscomparison.util.ConnectionsOfTwoVersions;
 import de.unitrier.st.soposthistory.version.PostVersion;
 import de.unitrier.st.soposthistory.version.PostVersionList;
-import de.unitrier.st.soposthistorygt.util.anchorsURLs.AnchorTextAndUrlHandler;
+import de.unitrier.st.soposthistory.gt.util.anchorsURLs.AnchorTextAndUrlHandler;
 
 import java.io.File;
 import java.util.Comparator;
@@ -16,7 +16,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-import static de.unitrier.st.soposthistorygt.GroundTruthApp.GroundTruthCreator.normalizeURLsInTextBlocksOfAllVersions;
+import static de.unitrier.st.soposthistory.gt.GroundTruthApp.GroundTruthCreator.normalizeURLsInTextBlocksOfAllVersions;
+
+// TODO: get rid of dependency to soposthistory.gt?
 
 public class PostVersionsListManagement {
 
