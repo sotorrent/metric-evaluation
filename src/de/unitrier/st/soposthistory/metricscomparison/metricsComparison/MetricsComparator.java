@@ -270,8 +270,7 @@ public class MetricsComparator {
                             printWriter.write(tmpMetricResult_code.measuredDataList.get(l).falsePositives_code + "; ");
                             printWriter.write(tmpMetricResult_code.measuredDataList.get(l).falseNegatives_code + "\n");
                         }
-
-                    } catch (IllegalArgumentException e) {
+                    } catch (IllegalArgumentException | NullPointerException e) {
                         printWriter.write("null" + "\n");
                     }
                 }
