@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -444,4 +445,172 @@ public class Statistics {
         System.out.println("code block length: " + codeBlockLength);
         System.out.println("average code block length: " + (double) codeBlockLength / numberOfCodeBlocks);
     }
+
+
+    @Test
+    public void getPostsWithMultipleChoicesForBlocksAndFirstChoiceIsNotTheRightOne(){
+
+        TextBlockVersion.similarityMetric = de.unitrier.st.stringsimilarity.edit.Variants::levenshtein; // Levenshtein does not need a minimum size length so it has been chosen
+        TextBlockVersion.similarityThreshold = 1; // Conclusions for blocks that matches with a similarity of 1.0 can be assigned to a lower threshold more easily
+
+        CodeBlockVersion.similarityMetric = de.unitrier.st.stringsimilarity.edit.Variants::levenshtein; // Levenshtein does not need a minimum size length so it has been chosen
+        CodeBlockVersion.similarityThreshold = 1; // Conclusions for blocks that matches with a similarity of 1.0 can be assigned to a lower threshold more easily
+
+        PostVersionsListManagement postVersionsListManagement = new PostVersionsListManagement(
+                FileSystems.getDefault().getPath("Metrics comparison", "testdata", "PostId_VersionCount_SO_17-06_sample_500_multiple_possible_links").toString());
+
+        List<String> suspectedPostsList = new ArrayList<>();
+
+        for(PostVersionList postVersionList : postVersionsListManagement.postVersionLists){
+            postVersionList.processVersionHistory();
+
+            for(int i=1; i<postVersionList.size(); i++){
+                // collect equal block pairs
+                List<EqualBlockPairs> clonePairs = new ArrayList<>();
+                for(int k=0; k<postVersionList.get(i).getPostBlocks().size(); k++){
+                    for(int j=0; j<postVersionList.get(i-1).getPostBlocks().size(); j++){
+                        PostBlockVersion blockLeft = postVersionList.get(i-1).getPostBlocks().get(j);
+                        PostBlockVersion blockRight = postVersionList.get(i).getPostBlocks().get(k);
+
+                        if(blockLeft instanceof TextBlockVersion != blockRight instanceof TextBlockVersion)
+                            continue;
+
+                        if(blockLeft.getContent().equals(blockRight.getContent())){
+                            boolean clonePairsAlreadyExists = false;
+                            int position = 0;
+                            for(int l=0; l<clonePairs.size(); l++){
+                                if(clonePairs.get(l).content.equals(blockLeft.getContent())){
+                                    clonePairsAlreadyExists = true;
+                                    position = l;
+                                    break;
+                                }
+                            }
+                            if(!clonePairsAlreadyExists){
+                                clonePairs.add(new EqualBlockPairs(blockLeft.getContent()));
+                                position = clonePairs.size()-1;
+                            }
+
+                            if(!clonePairs.get(position).localIdsLeft.contains(blockLeft.getLocalId()))
+                                clonePairs.get(position).localIdsLeft.add(blockLeft.getLocalId());
+
+                            if(!clonePairs.get(position).localIdsRight.contains(blockRight.getLocalId()))
+                                clonePairs.get(position).localIdsRight.add(blockRight.getLocalId());
+                        }
+                    }
+                }
+
+                // delete pairs with only one possible link from tmp list
+                for(int j=clonePairs.size()-1; j>=0; j--) {
+                    if (clonePairs.get(j).localIdsLeft.size() == 1 && clonePairs.get(j).localIdsRight.size() == 1) {
+                        clonePairs.remove(j);
+                    }
+                }
+
+                // delete pairs with equal positions of matches
+                for(int j=clonePairs.size()-1; j>=0; j--) {
+                    boolean remove = false;
+                    if(clonePairs.get(j).localIdsLeft.equals(clonePairs.get(j).localIdsRight)){
+                        remove = true;
+                        for(int k=0; k<clonePairs.get(j).localIdsRight.size(); k++){
+
+                            for(int l=0; l<postVersionList.get(i).getPostBlocks().size(); l++){
+                                if(Objects.equals(postVersionList.get(i).getPostBlocks().get(l).getLocalId(), clonePairs.get(j).localIdsRight.get(k))){
+                                    if(postVersionList.get(i).getPostBlocks().get(l).getPred() != null){
+                                        int leftId = postVersionList.get(i).getPostBlocks().get(l).getPred().getLocalId();
+                                        int rightId = postVersionList.get(i).getPostBlocks().get(l).getLocalId();
+
+                                        if(leftId != rightId){
+                                            remove = false;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if(remove)
+                        clonePairs.remove(j);
+                }
+
+                // check whether first choice has not been set but another
+                List<String> connections = new ArrayList<>();
+                for(int j=clonePairs.size()-1; j>=0; j--){
+                    List<Integer> remainingLocalIdsLeft = new ArrayList<>(clonePairs.get(j).localIdsLeft);
+                    for(int k=0; k<clonePairs.get(j).localIdsRight.size(); k++){
+                        Integer leftId = null;
+
+                        for(int l=0; l<postVersionList.get(i).getPostBlocks().size(); l++){
+                            if(Objects.equals(postVersionList.get(i).getPostBlocks().get(l).getLocalId(), clonePairs.get(j).localIdsRight.get(k))){
+                                if(postVersionList.get(i).getPostBlocks().get(l).getPred() != null){
+                                    leftId = postVersionList.get(i).getPostBlocks().get(l).getPred().getLocalId();
+                                }
+                            }
+                        }
+                        connections.add(leftId + " <- " + clonePairs.get(j).localIdsRight.get(k));
+                        remainingLocalIdsLeft.remove(leftId);
+                    }
+
+                    for (Integer leftLocalId : remainingLocalIdsLeft) {
+                        connections.add(leftLocalId + " <- " + null);
+                    }
+                }
+
+                connections.sort((o1, o2) -> {
+                    StringTokenizer connection1 = new StringTokenizer(o1, " <-");
+                    StringTokenizer connection2 = new StringTokenizer(o2, " <-");
+
+                    Integer c_1_1 = null;
+                    Integer c_1_2 = null;
+                    Integer c_2_1 = null;
+                    Integer c_2_2 = null;
+
+                    try {
+                        c_1_1 = Integer.valueOf(connection1.nextToken());
+                    }catch(NumberFormatException ignored){}
+
+                    try {
+                        c_1_2 = Integer.valueOf(connection1.nextToken());
+                    }catch(NumberFormatException ignored){}
+
+                    try {
+                        c_2_1 = Integer.valueOf(connection2.nextToken());
+                    }catch(NumberFormatException ignored){}
+
+                    try {
+                        c_2_2 = Integer.valueOf(connection2.nextToken());
+                    }catch(NumberFormatException ignored){}
+
+
+                    return (c_1_1 != null ? c_1_1 : c_1_2) - (c_2_1 != null ? c_2_1 : c_2_2);
+                });
+
+                boolean reachedNull = false;
+                for (String connection : connections) {
+                    if (!reachedNull && connection.matches(".*null.*")) {
+                        reachedNull = true;
+                    } else if (reachedNull && !connection.matches(".*null.*")) {
+                        suspectedPostsList.add(postVersionList.getFirst().getPostId() + ":" + i + ": (" + connection + ")" + "\n");
+
+                        /*
+                        System.out.println(postVersionList.getFirst().getPostId());
+
+                        if(!connections.isEmpty())
+                            System.out.println(connections);
+                        for(int j=0; j<clonePairs.size(); j++){
+                            System.out.println(postVersionList.getFirst().getPostId() + ":" + (i) + ": " + clonePairs.get(j).localIdsLeft + " : " + clonePairs.get(j).localIdsRight);
+                            System.out.println();
+                        }
+                        */
+
+                        break;
+                    }
+                }
+            }
+        }
+
+        Collections.sort(suspectedPostsList);
+        System.out.println(suspectedPostsList);
+    }
+
 }
