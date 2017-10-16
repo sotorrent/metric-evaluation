@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 
 import static de.unitrier.st.soposthistory.gt.GroundTruthApp.GroundTruthCreator.normalizeURLsInTextBlocksOfAllVersions;
 
-// TODO: get rid of dependency to soposthistory.gt?
+// TODO: move code needed from soposthistory.gt to package de.unitrier.st.soposthistory.lifespan?
 
 public class PostVersionsListManagement {
 

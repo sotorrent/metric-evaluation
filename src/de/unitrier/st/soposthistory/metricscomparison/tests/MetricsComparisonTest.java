@@ -26,29 +26,23 @@ import java.util.Objects;
 import static de.unitrier.st.soposthistory.metricscomparison.csvExtraction.PostVersionsListManagement.pattern_groundTruth;
 import static de.unitrier.st.soposthistory.gt.GroundTruthApp.GroundTruthCreator.normalizeURLsInTextBlocksOfAllVersions;
 
-// TODO: get rid of dependency to soposthistory.gt
+// TODO: move code needed from soposthistory.gt to package de.unitrier.st.soposthistory.lifespan?
 
 public class MetricsComparisonTest {
 
-    // TODO: make paths relative or configurable
     // TODO: do not start time-consuming test cases automatically
 
     private static String pathToCSVs = Paths.get("testdata", "representative CSVs").toString();
     private static String pathToFewCompletedFiles = Paths.get("testdata", "fewCompletedFiles").toString();
+    // C:\Users\Lorik\Desktop\5. Semester\Master-Arbeit\PostVersionLists\
+    private static String pathToPostVersionLists = "/Users/sebastian/Desktop/test";
     private static LinkedList<String> pathToAllDirectories = new LinkedList<>();
 
     @BeforeAll
     public static void init() {
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_1\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_2\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_3\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_4\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_5\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_6\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_7\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_8\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_9\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_10\\files");
+        for (int i=1; i<=10; i++) {
+            pathToAllDirectories.add(Paths.get(pathToPostVersionLists, "PostId_VersionCount_SO_17-06_sample_10000_"+i, "files").toString());
+        }
     }
 
 

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
-// TODO: get rid of dependency to soposthistory.gt?
+// TODO: move code needed from soposthistory.gt to package de.unitrier.st.soposthistory.lifespan?
 
 public class GroundTruthExtractionOfCSVs {
 
