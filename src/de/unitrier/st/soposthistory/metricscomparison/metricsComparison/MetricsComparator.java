@@ -218,11 +218,9 @@ public class MetricsComparator {
         printWriter.write("\n");
 
 
-        List<Double> thresholds = Arrays.asList(0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9);
+        List<Double> thresholds = Arrays.asList(0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9);
 
         for (Double threshold : thresholds) {
-
-            int count = 1;
 
             CodeBlockVersion.similarityThreshold = threshold;
             TextBlockVersion.similarityThreshold = threshold;
@@ -250,7 +248,6 @@ public class MetricsComparator {
 
 
                         for (int l = 0; l < postVersionList.size() - 1; l++) {
-
                             printWriter.write(pathToSample + "; ");
                             printWriter.write(metric + "; ");
                             printWriter.write(threshold + "; ");
@@ -270,16 +267,29 @@ public class MetricsComparator {
                             printWriter.write(tmpMetricResult_code.measuredDataList.get(l).falsePositives_code + "; ");
                             printWriter.write(tmpMetricResult_code.measuredDataList.get(l).falseNegatives_code + "\n");
                         }
-                    } catch (IllegalArgumentException | NullPointerException e) {
+
+                    } catch (IllegalArgumentException e) {
+                        printWriter.write(pathToSample + "; ");
+                        printWriter.write(metric + "; ");
+                        printWriter.write(threshold + "; ");
+
+                        printWriter.write(postVersionList.getFirst().getPostId() + "; ");
+
+                        for(int i=0; i<9; i++)
+                            printWriter.write("null" + "; ");
                         printWriter.write("null" + "\n");
                     }
                 }
                 printWriter.flush();
 
-                System.out.println("metric " + metric + " with threshold " + threshold + " completed (" + count++ + " of " + metrics.length + ")");
+                // System.out.println("metric " + metric + " with threshold " + threshold + " completed (" + count++ + " of " + metrics.length + ")");
             }
+
+            System.out.println("completed threshold " + threshold + " in sample " + pathToSample);
         }
 
         printWriter.close();
+
+        System.out.println("completed sample: " + pathToSample);
     }
 }

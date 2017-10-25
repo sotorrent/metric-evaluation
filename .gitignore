@@ -43,3 +43,5 @@ target/
 ########
 # Misc #
 ########
+Metrics comparison/testdata/
+testdata/

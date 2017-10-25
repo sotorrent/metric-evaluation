@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
-// TODO: move code needed from soposthistory.gt to package de.unitrier.st.soposthistory.lifespan?
-
 public class GroundTruthExtractionOfCSVs {
 
     private LinkedList<ConnectionsOfAllVersions> groundTruth = new LinkedList<>();
@@ -28,19 +26,45 @@ public class GroundTruthExtractionOfCSVs {
         divideGroundTruthIntoTextAndCode();
     }
 
-    public LinkedList<ConnectionsOfAllVersions> getGroundTruth() {
+
+    private LinkedList<ConnectionsOfAllVersions> extractListOfConnectionsOfAllVersionsOfAllExportedCSVs(String directoryOfGroundTruthCSVs) {
+
+        File file = new File(directoryOfGroundTruthCSVs);
+        Pattern pattern = Pattern.compile("completed_" + "[0-9]+" + "\\.csv");
+        File[] allCompletedPostVersionListsInFolder = file.listFiles((dir, name) -> name.matches(pattern.pattern())); // https://stackoverflow.com/questions/4852531/find-files-in-a-folder-using-java
+
+        assert allCompletedPostVersionListsInFolder != null;
+        for (File completedCSV : allCompletedPostVersionListsInFolder) {
+            try {
+                groundTruth.add(getAllConnectionsOfAllConsecutiveVersions(completedCSV.getCanonicalPath()));
+            } catch (IOException e) {
+                System.err.println("Failed to read canonical path of data '" + completedCSV.getName() + "'.");
+                System.exit(0);
+            }
+        }
+
+        //groundTruth.sort(Comparator.comparingInt(o -> o.getFirst().getFirst()));
+
         return groundTruth;
     }
 
-    public LinkedList<ConnectionsOfAllVersions> getGroundTruthText() {
-        return groundTruth_text;
+    private ConnectionsOfAllVersions getAllConnectionsOfAllConsecutiveVersions(String pathToCSV) {
+        List<String> lines = parseLines(pathToCSV);
+        List<PostBlockLifeSpanVersion> listOfBlockLifeSpanSnapshots = extractBlockLifeSpanSnapshotsUnordered(lines);
+        LinkedList<LinkedList<PostBlockLifeSpanVersion>> listOfListOfBlockLifeSpanSnapshots = orderBlockLifeSpanSnapshotsByPostHistoryId(listOfBlockLifeSpanSnapshots);
+
+        ConnectionsOfAllVersions connectionsOfAllVersions = new ConnectionsOfAllVersions(listOfListOfBlockLifeSpanSnapshots.getFirst().getFirst().getPostId());
+
+        for (int i = 1; i < listOfListOfBlockLifeSpanSnapshots.size(); i++) {
+            connectionsOfAllVersions.add(
+                    getAllConnectionsBetweenTwoVersions(i + 1, listOfListOfBlockLifeSpanSnapshots.get(i))
+            );
+        }
+
+        return connectionsOfAllVersions;
     }
 
-    public LinkedList<ConnectionsOfAllVersions> getGroundTruthCode() {
-        return groundTruth_code;
-    }
-
-    public static LinkedList<String> parseLines(String pathToExportedCSV) {
+    private LinkedList<String> parseLines(String pathToExportedCSV) {
 
         BufferedReader bufferedReader = null;
         try {
@@ -130,43 +154,6 @@ public class GroundTruthExtractionOfCSVs {
         return connectionsOfTwoVersions;
     }
 
-    private ConnectionsOfAllVersions getAllConnectionsOfAllConsecutiveVersions(String pathToCSV) {
-        List<String> lines = parseLines(pathToCSV);
-        List<PostBlockLifeSpanVersion> listOfBlockLifeSpanSnapshots = extractBlockLifeSpanSnapshotsUnordered(lines);
-        LinkedList<LinkedList<PostBlockLifeSpanVersion>> listOfListOfBlockLifeSpanSnapshots = orderBlockLifeSpanSnapshotsByPostHistoryId(listOfBlockLifeSpanSnapshots);
-
-        ConnectionsOfAllVersions connectionsOfAllVersions = new ConnectionsOfAllVersions(listOfListOfBlockLifeSpanSnapshots.getFirst().getFirst().getPostId());
-
-        for (int i = 1; i < listOfListOfBlockLifeSpanSnapshots.size(); i++) {
-            connectionsOfAllVersions.add(
-                    getAllConnectionsBetweenTwoVersions(i + 1, listOfListOfBlockLifeSpanSnapshots.get(i))
-            );
-        }
-
-        return connectionsOfAllVersions;
-    }
-
-    private LinkedList<ConnectionsOfAllVersions> extractListOfConnectionsOfAllVersionsOfAllExportedCSVs(String directoryOfGroundTruthCSVs) {
-
-        File file = new File(directoryOfGroundTruthCSVs);
-        Pattern pattern = Pattern.compile("completed_" + "[0-9]+" + "\\.csv");
-        File[] allCompletedPostVersionListsInFolder = file.listFiles((dir, name) -> name.matches(pattern.pattern())); // https://stackoverflow.com/questions/4852531/find-files-in-a-folder-using-java
-
-        assert allCompletedPostVersionListsInFolder != null;
-        for (File completedCSV : allCompletedPostVersionListsInFolder) {
-            try {
-                groundTruth.add(getAllConnectionsOfAllConsecutiveVersions(completedCSV.getCanonicalPath()));
-            } catch (IOException e) {
-                System.err.println("Failed to read canonical path of data '" + completedCSV.getName() + "'.");
-                System.exit(0);
-            }
-        }
-
-        //groundTruth.sort(Comparator.comparingInt(o -> o.getFirst().getFirst()));
-
-        return groundTruth;
-    }
-
     private void divideGroundTruthIntoTextAndCode() {
         for (ConnectionsOfAllVersions allVersionsOfConnections : groundTruth) {
             groundTruth_text.add(new ConnectionsOfAllVersions(allVersionsOfConnections.getPostId()));
@@ -202,5 +189,18 @@ public class GroundTruthExtractionOfCSVs {
                 return groundTruth_code;
 
         return null;
+    }
+
+
+    public LinkedList<ConnectionsOfAllVersions> getGroundTruth() {
+        return groundTruth;
+    }
+
+    public LinkedList<ConnectionsOfAllVersions> getGroundTruthText() {
+        return groundTruth_text;
+    }
+
+    public LinkedList<ConnectionsOfAllVersions> getGroundTruthCode() {
+        return groundTruth_code;
     }
 }

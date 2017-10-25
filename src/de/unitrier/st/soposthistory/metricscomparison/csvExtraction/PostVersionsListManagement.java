@@ -5,7 +5,6 @@ import de.unitrier.st.soposthistory.blocks.TextBlockVersion;
 import de.unitrier.st.soposthistory.metricscomparison.util.ConnectedBlocks;
 import de.unitrier.st.soposthistory.metricscomparison.util.ConnectionsOfAllVersions;
 import de.unitrier.st.soposthistory.metricscomparison.util.ConnectionsOfTwoVersions;
-import de.unitrier.st.soposthistory.urls.Link;
 import de.unitrier.st.soposthistory.version.PostVersion;
 import de.unitrier.st.soposthistory.version.PostVersionList;
 
@@ -29,7 +28,6 @@ public class PostVersionsListManagement {
         parseAllPostVersionLists(pathToDirectoryOfPostHistories);
     }
 
-
     private void parseAllPostVersionLists(String pathToDirectoryOfPostHistories) {
         this.pathToDirectory = pathToDirectoryOfPostHistories;
 
@@ -44,7 +42,6 @@ public class PostVersionsListManagement {
             tmpPostVersionList.readFromCSV(pathToDirectory, postId, 2, false);
 
             tmpPostVersionList.normalizeLinks();
-            // removeEmptyTextAndCodeBlocks(tmpPostVersionList);
 
             postVersionLists.add(
                     tmpPostVersionList
@@ -53,6 +50,7 @@ public class PostVersionsListManagement {
 
         postVersionLists.sort(Comparator.comparingInt(o -> o.getFirst().getPostId()));
     }
+
 
     // access to post verion lists
     public PostVersionList getPostVersionListWithID(int postID) {
@@ -131,6 +129,9 @@ public class PostVersionsListManagement {
     public ConnectionsOfAllVersions getAllConnectionsOfAllConsecutiveVersions_text(int postId) {
         ConnectionsOfAllVersions connectionsOfAllVersions = new ConnectionsOfAllVersions(postId);
 
+        if(getPostVersionListWithID(postId) == null)
+            return null;
+
         for (int i = 0; i < getPostVersionListWithID(postId).size() - 1; i++) {
             connectionsOfAllVersions.add(
                     getAllConnectionsBetweenTwoVersions_text(i, getPostVersionListWithID(postId).get(i), getPostVersionListWithID(postId).get(i + 1))
@@ -142,6 +143,9 @@ public class PostVersionsListManagement {
 
     public ConnectionsOfAllVersions getAllConnectionsOfAllConsecutiveVersions_code(int postId) {
         ConnectionsOfAllVersions connectionsOfAllVersions = new ConnectionsOfAllVersions(postId);
+
+        if(getPostVersionListWithID(postId) == null)
+            return null;
 
         for (int i = 0; i < getPostVersionListWithID(postId).size() - 1; i++) {
             connectionsOfAllVersions.add(

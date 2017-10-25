@@ -6,12 +6,12 @@ import de.unitrier.st.soposthistory.blocks.TextBlockVersion;
 import de.unitrier.st.soposthistory.metricscomparison.csvExtraction.PostVersionsListManagement;
 import de.unitrier.st.soposthistory.version.PostVersion;
 import de.unitrier.st.soposthistory.version.PostVersionList;
-import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.FileSystems;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -19,26 +19,41 @@ public class Statistics {
 
     // TODO: find more ideas for de.unitrier.st.soposthistory.metricscomparison.statistics
 
-    // TODO: make paths relative or configurable
+    LinkedList<String> pathToAllDirectories = new LinkedList<>();
 
-    @Test
-    public void testPostVersionListManagement() {
-        LinkedList<String> pathToAllDirectories = new LinkedList<>();
 
-        /*
+    Statistics(){
+
         pathToAllDirectories.add("testdata\\representative CSVs");
-        */
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_1\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_2\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_3\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_4\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_5\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_6\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_7\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_8\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_9\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_10\\files");
+/*
+        pathToAllDirectories.add(Paths.get("testdata", "PostId_VersionCount_SO_17-06_sample_10000_1", "files").toString());
+        pathToAllDirectories.add(Paths.get("testdata", "PostId_VersionCount_SO_17-06_sample_10000_2", "files").toString());
+        pathToAllDirectories.add(Paths.get("testdata", "PostId_VersionCount_SO_17-06_sample_10000_3", "files").toString());
+        pathToAllDirectories.add(Paths.get("testdata", "PostId_VersionCount_SO_17-06_sample_10000_4", "files").toString());
+        pathToAllDirectories.add(Paths.get("testdata", "PostId_VersionCount_SO_17-06_sample_10000_5", "files").toString());
+        pathToAllDirectories.add(Paths.get("testdata", "PostId_VersionCount_SO_17-06_sample_10000_6", "files").toString());
+        pathToAllDirectories.add(Paths.get("testdata", "PostId_VersionCount_SO_17-06_sample_10000_7", "files").toString());
+        pathToAllDirectories.add(Paths.get("testdata", "PostId_VersionCount_SO_17-06_sample_10000_8", "files").toString());
+        pathToAllDirectories.add(Paths.get("testdata", "PostId_VersionCount_SO_17-06_sample_10000_9", "files").toString());
+        pathToAllDirectories.add(Paths.get("testdata", "PostId_VersionCount_SO_17-06_sample_10000_10", "files").toString());
+                */
+    }
 
+
+    public static void main(String[] args){
+
+        Statistics statistics = new Statistics();
+
+        statistics.findPostsWithPossibleMultipleConnections();
+        statistics.testFindPostVersionListsWithEmptyBlocks();
+        statistics.getStatisticsOfBlockSizes();
+        statistics.getStatisticsOfBlocksWithMultipleLinkingPossibilities();
+        statistics.getAverageSizesOfBlocksAndVersions();
+        statistics.getPostsWithMultipleChoicesForBlocksAndFirstChoiceIsNotTheRightOne();
+    }
+
+
+    private void findPostsWithPossibleMultipleConnections() {
 
         StringBuilder output = new StringBuilder();
 
@@ -116,23 +131,7 @@ public class Statistics {
         System.out.println(output);
     }
 
-    @Test
-    public void testFindPostVersionListsWithEmptyBlocks() {
-        LinkedList<String> pathToAllDirectories = new LinkedList<>();
-
-        pathToAllDirectories.add("testdata\\representative CSVs");
-        /*
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_1\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_2\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_3\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_4\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_5\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_6\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_7\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_8\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_9\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_10\\files");
-*/
+    private void testFindPostVersionListsWithEmptyBlocks() {
         ArrayList<Integer> postIdsEmptyBlocks = new ArrayList<>();
 
 
@@ -153,22 +152,7 @@ public class Statistics {
         }
     }
 
-    @Test
-    public void getStatisticsOfBlockSizes() {
-        LinkedList<String> pathToAllDirectories = new LinkedList<>();
-
-        // pathToAllDirectories.add("testdata\\representative CSVs");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_1\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_2\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_3\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_4\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_5\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_6\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_7\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_8\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_9\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_10\\files");
-
+    private void getStatisticsOfBlockSizes() {
 
         LinkedList<Integer> distinctValuesOfBlockLenghtsText = new LinkedList<>();
         HashMap<Integer, Integer> frequenciesOfBlockLenghtsText = new HashMap<>();
@@ -255,10 +239,9 @@ public class Statistics {
         System.out.println("number of affected posts for code: " + affectedPostsCode.size());
     }
 
-    @Test
-    public void getStatisticsOfBlocksWithMultipleLinkingPossibilities() {
+    private void getStatisticsOfBlocksWithMultipleLinkingPossibilities() {
         try {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader("testdata\\de.unitrier.st.soposthistory.metricscomparison.statistics\\possible multiple connections.csv"));
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(Paths.get("testdata", "statistics", "possible multiple connections.csv").toString()));
 
             LinkedList<Integer> postIdWithMultipleChoices = new LinkedList<>();
 
@@ -381,22 +364,7 @@ public class Statistics {
 
     }
 
-
-    @Test
-    public void getAverageSizesOfBlocksAndVersions() {
-        LinkedList<String> pathToAllDirectories = new LinkedList<>();
-
-        // pathToAllDirectories.add("testdata\\representative CSVs");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_1\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_2\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_3\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_4\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_5\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_6\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_7\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_8\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_9\\files");
-        pathToAllDirectories.add("C:\\Users\\Lorik\\Desktop\\5. Semester\\Master-Arbeit\\PostVersionLists\\PostId_VersionCount_SO_17-06_sample_10000_10\\files");
+    private void getAverageSizesOfBlocksAndVersions() {
 
         long textBlockLength = 0;
         int numberOfTextBlocks = 0;
@@ -446,9 +414,7 @@ public class Statistics {
         System.out.println("average code block length: " + (double) codeBlockLength / numberOfCodeBlocks);
     }
 
-
-    @Test
-    public void getPostsWithMultipleChoicesForBlocksAndFirstChoiceIsNotTheRightOne(){
+    private void getPostsWithMultipleChoicesForBlocksAndFirstChoiceIsNotTheRightOne(){
 
         TextBlockVersion.similarityMetric = de.unitrier.st.stringsimilarity.edit.Variants::levenshtein; // Levenshtein does not need a minimum size length so it has been chosen
         TextBlockVersion.similarityThreshold = 1; // Conclusions for blocks that matches with a similarity of 1.0 can be assigned to a lower threshold more easily
