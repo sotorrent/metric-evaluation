@@ -76,8 +76,7 @@
     <build>
         <!-- configure source and test directories-->
         <sourceDirectory>src</sourceDirectory>
-        <!-- TODO: add tests again after todos are handled -->
-        <!--testSourceDirectory>src/de/unitrier/st/soposthistory/metricscomparison/tests</testSourceDirectory-->
+        <testSourceDirectory>src/de/unitrier/st/soposthistory/metricscomparison/tests</testSourceDirectory>
 
         <plugins>
             <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
