@@ -101,7 +101,7 @@ public class MetricsComparisonTest {
                     int postId = Integer.valueOf(postHistory.getName().substring(0, postHistory.getName().length() - 4));
                     tmpPostVersionList.readFromCSV(path + "\\", postId, 2);
                     tmpPostVersionList.processVersionHistory();
-                    Link.normalizeLinks(tmpPostVersionList);
+                    tmpPostVersionList.normalizeLinks();
                 } catch (Exception e) {
 
                     System.out.println("Failed to parse " + postHistory.getPath());

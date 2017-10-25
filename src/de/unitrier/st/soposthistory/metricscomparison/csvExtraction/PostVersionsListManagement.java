@@ -43,7 +43,7 @@ public class PostVersionsListManagement {
 
             tmpPostVersionList.readFromCSV(pathToDirectory, postId, 2, false);
 
-            Link.normalizeLinks(tmpPostVersionList);
+            tmpPostVersionList.normalizeLinks();
             // removeEmptyTextAndCodeBlocks(tmpPostVersionList);
 
             postVersionLists.add(
