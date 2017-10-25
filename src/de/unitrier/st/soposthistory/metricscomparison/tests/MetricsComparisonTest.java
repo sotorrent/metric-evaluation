@@ -8,9 +8,9 @@ import de.unitrier.st.soposthistory.metricscomparison.csvExtraction.PostVersions
 import de.unitrier.st.soposthistory.metricscomparison.metricsComparison.MetricsComparator;
 import de.unitrier.st.soposthistory.metricscomparison.util.ConnectionsOfAllVersions;
 import de.unitrier.st.soposthistory.metricscomparison.util.ConnectionsOfTwoVersions;
+import de.unitrier.st.soposthistory.urls.Link;
 import de.unitrier.st.soposthistory.version.PostVersion;
 import de.unitrier.st.soposthistory.version.PostVersionList;
-import de.unitrier.st.soposthistory.gt.util.anchorsURLs.AnchorTextAndUrlHandler;
 import de.unitrier.st.stringsimilarity.profile.Variants;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.BeforeAll;
@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Objects;
 
 import static de.unitrier.st.soposthistory.metricscomparison.csvExtraction.PostVersionsListManagement.pattern_groundTruth;
-import static de.unitrier.st.soposthistory.gt.GroundTruthApp.GroundTruthCreator.normalizeURLsInTextBlocksOfAllVersions;
 
 // TODO: move code needed from soposthistory.gt to package de.unitrier.st.soposthistory.lifespan?
 
@@ -102,9 +101,7 @@ public class MetricsComparisonTest {
                     int postId = Integer.valueOf(postHistory.getName().substring(0, postHistory.getName().length() - 4));
                     tmpPostVersionList.readFromCSV(path + "\\", postId, 2);
                     tmpPostVersionList.processVersionHistory();
-
-                    AnchorTextAndUrlHandler anchorTextAndUrlHandler = new AnchorTextAndUrlHandler();
-                    normalizeURLsInTextBlocksOfAllVersions(tmpPostVersionList, anchorTextAndUrlHandler);
+                    Link.normalizeLinks(tmpPostVersionList);
                 } catch (Exception e) {
 
                     System.out.println("Failed to parse " + postHistory.getPath());

@@ -3,7 +3,7 @@ package de.unitrier.st.soposthistory.metricscomparison.csvExtraction;
 import de.unitrier.st.soposthistory.metricscomparison.util.ConnectedBlocks;
 import de.unitrier.st.soposthistory.metricscomparison.util.ConnectionsOfAllVersions;
 import de.unitrier.st.soposthistory.metricscomparison.util.ConnectionsOfTwoVersions;
-import de.unitrier.st.soposthistory.gt.util.BlockLifeSpanSnapshot;
+import de.unitrier.st.soposthistory.util.PostBlockLifeSpanVersion;
 
 import java.io.*;
 import java.util.Comparator;
@@ -66,9 +66,9 @@ public class GroundTruthExtractionOfCSVs {
         return lines;
     }
 
-    private List<BlockLifeSpanSnapshot> extractBlockLifeSpanSnapshotsUnordered(List<String> lines) {
+    private List<PostBlockLifeSpanVersion> extractBlockLifeSpanSnapshotsUnordered(List<String> lines) {
 
-        List<BlockLifeSpanSnapshot> blockLifeSpanSnapshots = new LinkedList<>();
+        List<PostBlockLifeSpanVersion> blockLifeSpanSnapshots = new LinkedList<>();
 
         for (String line : lines) {
             StringTokenizer tokens = new StringTokenizer(line, "; ");
@@ -89,20 +89,20 @@ public class GroundTruthExtractionOfCSVs {
             } catch (NumberFormatException ignored) {
             }
 
-            BlockLifeSpanSnapshot blockLifeSpanSnapshot = new BlockLifeSpanSnapshot(postId, postHistoryId, postBlockTypeId, -1, localId, predLocalId, succLocalId);
+            PostBlockLifeSpanVersion blockLifeSpanSnapshot = new PostBlockLifeSpanVersion(postId, postHistoryId, postBlockTypeId, -1, localId, predLocalId, succLocalId);
             blockLifeSpanSnapshots.add(blockLifeSpanSnapshot);
         }
 
         return blockLifeSpanSnapshots;
     }
 
-    private LinkedList<LinkedList<BlockLifeSpanSnapshot>> orderBlockLifeSpanSnapshotsByPostHistoryId(List<BlockLifeSpanSnapshot> blockLifeSpanSnapshots) {
-        blockLifeSpanSnapshots.sort(Comparator.comparingInt(BlockLifeSpanSnapshot::getPostHistoryId));
+    private LinkedList<LinkedList<PostBlockLifeSpanVersion>> orderBlockLifeSpanSnapshotsByPostHistoryId(List<PostBlockLifeSpanVersion> blockLifeSpanSnapshots) {
+        blockLifeSpanSnapshots.sort(Comparator.comparingInt(PostBlockLifeSpanVersion::getPostHistoryId));
 
         int count = 1;
-        LinkedList<LinkedList<BlockLifeSpanSnapshot>> listOfListOfBlockLifeSnapshotsOrderedByVersions = new LinkedList<>();
+        LinkedList<LinkedList<PostBlockLifeSpanVersion>> listOfListOfBlockLifeSnapshotsOrderedByVersions = new LinkedList<>();
 
-        for (BlockLifeSpanSnapshot snapshot : blockLifeSpanSnapshots) {
+        for (PostBlockLifeSpanVersion snapshot : blockLifeSpanSnapshots) {
             if (!listOfListOfBlockLifeSnapshotsOrderedByVersions.isEmpty()
                     && listOfListOfBlockLifeSnapshotsOrderedByVersions.getLast().getLast().getPostHistoryId() == snapshot.getPostHistoryId()) {
                 listOfListOfBlockLifeSnapshotsOrderedByVersions.getLast().add(snapshot);
@@ -117,7 +117,7 @@ public class GroundTruthExtractionOfCSVs {
         return listOfListOfBlockLifeSnapshotsOrderedByVersions;
     }
 
-    private ConnectionsOfTwoVersions getAllConnectionsBetweenTwoVersions(int leftVersionId, LinkedList<BlockLifeSpanSnapshot> rightVersionOfBlocks) {
+    private ConnectionsOfTwoVersions getAllConnectionsBetweenTwoVersions(int leftVersionId, LinkedList<PostBlockLifeSpanVersion> rightVersionOfBlocks) {
         ConnectionsOfTwoVersions connectionsOfTwoVersions = new ConnectionsOfTwoVersions(leftVersionId);
         for (int i = 0; i < rightVersionOfBlocks.size(); i++) {
             connectionsOfTwoVersions.add(
@@ -132,8 +132,8 @@ public class GroundTruthExtractionOfCSVs {
 
     private ConnectionsOfAllVersions getAllConnectionsOfAllConsecutiveVersions(String pathToCSV) {
         List<String> lines = parseLines(pathToCSV);
-        List<BlockLifeSpanSnapshot> listOfBlockLifeSpanSnapshots = extractBlockLifeSpanSnapshotsUnordered(lines);
-        LinkedList<LinkedList<BlockLifeSpanSnapshot>> listOfListOfBlockLifeSpanSnapshots = orderBlockLifeSpanSnapshotsByPostHistoryId(listOfBlockLifeSpanSnapshots);
+        List<PostBlockLifeSpanVersion> listOfBlockLifeSpanSnapshots = extractBlockLifeSpanSnapshotsUnordered(lines);
+        LinkedList<LinkedList<PostBlockLifeSpanVersion>> listOfListOfBlockLifeSpanSnapshots = orderBlockLifeSpanSnapshotsByPostHistoryId(listOfBlockLifeSpanSnapshots);
 
         ConnectionsOfAllVersions connectionsOfAllVersions = new ConnectionsOfAllVersions(listOfListOfBlockLifeSpanSnapshots.getFirst().getFirst().getPostId());
 

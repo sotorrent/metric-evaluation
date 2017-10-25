@@ -33,14 +33,6 @@
                 <updatePolicy>always</updatePolicy>
             </snapshots>
         </repository>
-        <repository>
-            <id>soposthistorygt</id>
-            <url>https://raw.github.com/sotorrent/so-posthistory-gt/master/releases/</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-        </repository>
     </repositories>
 
     <dependencies>
@@ -48,19 +40,13 @@
         <dependency>
             <groupId>de.unitrier.st.soposthistory</groupId>
             <artifactId>so-posthistory-extractor</artifactId>
-            <version>1.5.2</version>
+            <version>1.6.0</version>
         </dependency>
         <!-- https://github.com/sotorrent/string-similarity/tree/master/releases/ -->
         <dependency>
             <groupId>de.unitrier.st</groupId>
             <artifactId>string-similarity</artifactId>
             <version>1.2.3</version>
-        </dependency>
-        <!-- https://github.com/sotorrent/so-posthistory-gt/tree/master/releases/ -->
-        <dependency>
-            <groupId>de.unitrier.st.soposthistory</groupId>
-            <artifactId>so-posthistory-gt</artifactId>
-            <version>0.2.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.atlassian.commonmark/commonmark -->
         <dependency>

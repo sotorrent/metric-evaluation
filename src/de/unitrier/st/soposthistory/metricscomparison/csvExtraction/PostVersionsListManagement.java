@@ -5,9 +5,9 @@ import de.unitrier.st.soposthistory.blocks.TextBlockVersion;
 import de.unitrier.st.soposthistory.metricscomparison.util.ConnectedBlocks;
 import de.unitrier.st.soposthistory.metricscomparison.util.ConnectionsOfAllVersions;
 import de.unitrier.st.soposthistory.metricscomparison.util.ConnectionsOfTwoVersions;
+import de.unitrier.st.soposthistory.urls.Link;
 import de.unitrier.st.soposthistory.version.PostVersion;
 import de.unitrier.st.soposthistory.version.PostVersionList;
-import de.unitrier.st.soposthistory.gt.util.anchorsURLs.AnchorTextAndUrlHandler;
 
 import java.io.File;
 import java.util.Comparator;
@@ -15,10 +15,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
-
-import static de.unitrier.st.soposthistory.gt.GroundTruthApp.GroundTruthCreator.normalizeURLsInTextBlocksOfAllVersions;
-
-// TODO: move code needed from soposthistory.gt to package de.unitrier.st.soposthistory.lifespan?
 
 public class PostVersionsListManagement {
 
@@ -47,8 +43,7 @@ public class PostVersionsListManagement {
 
             tmpPostVersionList.readFromCSV(pathToDirectory, postId, 2, false);
 
-            AnchorTextAndUrlHandler anchorTextAndUrlHandler = new AnchorTextAndUrlHandler();
-            normalizeURLsInTextBlocksOfAllVersions(tmpPostVersionList, anchorTextAndUrlHandler);
+            Link.normalizeLinks(tmpPostVersionList);
             // removeEmptyTextAndCodeBlocks(tmpPostVersionList);
 
             postVersionLists.add(
