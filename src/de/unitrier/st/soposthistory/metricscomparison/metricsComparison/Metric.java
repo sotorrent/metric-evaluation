@@ -617,16 +617,6 @@ class Metric {
     private static BiFunction<String, String, Double> winnowingFourGramDiceNormalized = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingFourGramDiceNormalized;
     private static BiFunction<String, String, Double> winnowingFiveGramDiceNormalized = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingFiveGramDiceNormalized;
 
-    private static BiFunction<String, String, Double> winnowingTwoGramDiceVariant = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingTwoGramDiceVariant;
-    private static BiFunction<String, String, Double> winnowingThreeGramDiceVariant = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingThreeGramDiceVariant;
-    private static BiFunction<String, String, Double> winnowingFourGramDiceVariant = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingFourGramDiceVariant;
-    private static BiFunction<String, String, Double> winnowingFiveGramDiceVariant = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingFiveGramDiceVariant;
-
-    private static BiFunction<String, String, Double> winnowingTwoGramDiceVariantNormalized = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingTwoGramDiceVariantNormalized;
-    private static BiFunction<String, String, Double> winnowingThreeGramDiceVariantNormalized = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingThreeGramDiceVariantNormalized;
-    private static BiFunction<String, String, Double> winnowingFourGramDiceVariantNormalized = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingFourGramDiceVariantNormalized;
-    private static BiFunction<String, String, Double> winnowingFiveGramDiceVariantNormalized = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingFiveGramDiceVariantNormalized;
-
     private static BiFunction<String, String, Double> winnowingTwoGramOverlap = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingTwoGramOverlap;
     private static BiFunction<String, String, Double> winnowingThreeGramOverlap = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingThreeGramOverlap;
     private static BiFunction<String, String, Double> winnowingFourGramOverlap = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingFourGramOverlap;
@@ -717,30 +707,6 @@ class Metric {
 
     private static BiFunction<String, String, Double> twoShingleDiceNormalized = de.unitrier.st.stringsimilarity.set.Variants::twoShingleDiceNormalized;
     private static BiFunction<String, String, Double> threeShingleDiceNormalized = de.unitrier.st.stringsimilarity.set.Variants::threeShingleDiceNormalized;
-
-    private static BiFunction<String, String, Double> tokenDiceVariant = de.unitrier.st.stringsimilarity.set.Variants::tokenDiceVariant;
-    private static BiFunction<String, String, Double> tokenDiceVariantNormalized = de.unitrier.st.stringsimilarity.set.Variants::tokenDiceVariantNormalized;
-
-    private static BiFunction<String, String, Double> twoGramDiceVariant = de.unitrier.st.stringsimilarity.set.Variants::twoGramDiceVariant;
-    private static BiFunction<String, String, Double> threeGramDiceVariant = de.unitrier.st.stringsimilarity.set.Variants::threeGramDiceVariant;
-    private static BiFunction<String, String, Double> fourGramDiceVariant = de.unitrier.st.stringsimilarity.set.Variants::fourGramDiceVariant;
-    private static BiFunction<String, String, Double> fiveGramDiceVariant = de.unitrier.st.stringsimilarity.set.Variants::fiveGramDiceVariant;
-
-    private static BiFunction<String, String, Double> twoGramDiceVariantNormalized = de.unitrier.st.stringsimilarity.set.Variants::twoGramDiceVariantNormalized;
-    private static BiFunction<String, String, Double> threeGramDiceVariantNormalized = de.unitrier.st.stringsimilarity.set.Variants::threeGramDiceVariantNormalized;
-    private static BiFunction<String, String, Double> fourGramDiceVariantNormalized = de.unitrier.st.stringsimilarity.set.Variants::fourGramDiceVariantNormalized;
-    private static BiFunction<String, String, Double> fiveGramDiceVariantNormalized = de.unitrier.st.stringsimilarity.set.Variants::fiveGramDiceVariantNormalized;
-
-    private static BiFunction<String, String, Double> twoGramDiceVariantNormalizedPadding = de.unitrier.st.stringsimilarity.set.Variants::twoGramDiceVariantNormalizedPadding;
-    private static BiFunction<String, String, Double> threeGramDiceVariantNormalizedPadding = de.unitrier.st.stringsimilarity.set.Variants::threeGramDiceVariantNormalizedPadding;
-    private static BiFunction<String, String, Double> fourGramDiceVariantNormalizedPadding = de.unitrier.st.stringsimilarity.set.Variants::fourGramDiceVariantNormalizedPadding;
-    private static BiFunction<String, String, Double> fiveGramDiceVariantNormalizedPadding = de.unitrier.st.stringsimilarity.set.Variants::fiveGramDiceVariantNormalizedPadding;
-
-    private static BiFunction<String, String, Double> twoShingleDiceVariant = de.unitrier.st.stringsimilarity.set.Variants::twoShingleDiceVariant;
-    private static BiFunction<String, String, Double> threeShingleDiceVariant = de.unitrier.st.stringsimilarity.set.Variants::threeShingleDiceVariant;
-
-    private static BiFunction<String, String, Double> twoShingleDiceVariantNormalized = de.unitrier.st.stringsimilarity.set.Variants::twoShingleDiceVariantNormalized;
-    private static BiFunction<String, String, Double> threeShingleDiceVariantNormalized = de.unitrier.st.stringsimilarity.set.Variants::threeShingleDiceVariantNormalized;
 
     private static BiFunction<String, String, Double> tokenOverlap = de.unitrier.st.stringsimilarity.set.Variants::tokenOverlap;
     private static BiFunction<String, String, Double> tokenOverlapNormalized = de.unitrier.st.stringsimilarity.set.Variants::tokenOverlapNormalized;
