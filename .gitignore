@@ -43,5 +43,6 @@ target/
 ########
 # Misc #
 ########
-Metrics comparison/testdata/
-testdata/
+testdata/Samples_100
+testdata/Samples_10000
+testdata/PostId_VersionCount_SO_17-06_sample_500_multiple_possible_links
