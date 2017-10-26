@@ -15,8 +15,6 @@ public class GroundTruthExtractionOfCSVsTest {
     void testGroundTruthExtractionOfCSV(){
         GroundTruthExtractionOfCSVs groundTruthExtractionOfCSVs = new GroundTruthExtractionOfCSVs(Paths.get("testdata", "Samples_test", "fewCompletedFiles").toString());
 
-        // TODO: add missing files to git
-
         // testing text
         assertNull(groundTruthExtractionOfCSVs.getAllConnectionsOfAllConsecutiveVersions_text(4711));    // post with id 4711 is not listed in ground truth
         assertEquals(2, groundTruthExtractionOfCSVs.getGroundTruthText().size());
