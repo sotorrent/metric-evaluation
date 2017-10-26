@@ -9,7 +9,6 @@ import de.unitrier.st.soposthistory.metricscomparison.util.ConnectionsOfAllVersi
 import de.unitrier.st.soposthistory.metricscomparison.util.ConnectionsOfTwoVersions;
 import de.unitrier.st.soposthistory.version.PostVersion;
 import de.unitrier.st.soposthistory.version.PostVersionList;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Paths;
@@ -23,17 +22,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class MetricsComparisonTest {
 
-    private static String pathToCSVs = Paths.get("testdata", "representative CSVs").toString();
-    static String pathToFewCompletedFiles = Paths.get("testdata", "fewCompletedFiles").toString();
-    private static String pathToPostVersionLists = "testdata";
+    private static String pathToCSVs = Paths.get("testdata", "Samples_test", "representative CSVs").toString();
+    static String pathToFewCompletedFiles = Paths.get("testdata", "Samples_test", "fewCompletedFiles").toString();
     static LinkedList<String> pathToAllDirectories = new LinkedList<>();
-
-    @BeforeAll
-    static void init() {
-        for (int i=1; i<=10; i++) {
-            pathToAllDirectories.add(Paths.get(pathToPostVersionLists, "PostId_VersionCount_SO_17-06_sample_10000_"+i, "files").toString());
-        }
-    }
 
 
     @Test
@@ -110,7 +101,7 @@ public class MetricsComparisonTest {
     @Test
     void testNumberOfPredecessorsGroundTruth() {
 
-        GroundTruthExtractionOfCSVs groundTruthExtractionOfCSVs = new GroundTruthExtractionOfCSVs(Paths.get("testdata", "representative CSVs").toString());
+        GroundTruthExtractionOfCSVs groundTruthExtractionOfCSVs = new GroundTruthExtractionOfCSVs(Paths.get("testdata","Samples_test",  "representative CSVs").toString());
 
         for (ConnectionsOfAllVersions connectionsOfAllVersions : groundTruthExtractionOfCSVs.getGroundTruth()) {
             for (ConnectionsOfTwoVersions connectionsOfTwoVersions : connectionsOfAllVersions) {
@@ -120,7 +111,8 @@ public class MetricsComparisonTest {
                         continue;
 
                     for (int j = i + 1; j < connectionsOfTwoVersions.size(); j++) {
-                        if (connectionsOfTwoVersions.get(j).getLeftLocalId() == null || connectionsOfTwoVersions.get(i).getPostBlockTypeId() != connectionsOfTwoVersions.get(j).getPostBlockTypeId())
+                        if (connectionsOfTwoVersions.get(j).getLeftLocalId() == null ||
+                                connectionsOfTwoVersions.get(i).getPostBlockTypeId() != connectionsOfTwoVersions.get(j).getPostBlockTypeId())
                             continue;
 
                         assertNotEquals(connectionsOfTwoVersions.get(i).getLeftLocalId(), connectionsOfTwoVersions.get(j).getLeftLocalId());

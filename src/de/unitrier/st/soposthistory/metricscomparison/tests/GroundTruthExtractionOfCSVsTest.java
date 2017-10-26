@@ -13,7 +13,7 @@ public class GroundTruthExtractionOfCSVsTest {
 
     @Test
     void testGroundTruthExtractionOfCSV(){
-        GroundTruthExtractionOfCSVs groundTruthExtractionOfCSVs = new GroundTruthExtractionOfCSVs(Paths.get("testdata", "fewCompletedFiles").toString());
+        GroundTruthExtractionOfCSVs groundTruthExtractionOfCSVs = new GroundTruthExtractionOfCSVs(Paths.get("testdata", "Samples_test", "fewCompletedFiles").toString());
 
         // TODO: add missing files to git
 

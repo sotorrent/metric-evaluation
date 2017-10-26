@@ -4,19 +4,31 @@ import de.unitrier.st.soposthistory.metricscomparison.metricsComparison.MetricsC
 import de.unitrier.st.soposthistory.version.PostVersionList;
 import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.apache.commons.lang3.time.StopWatch;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.LinkedList;
 
 import static de.unitrier.st.soposthistory.metricscomparison.csvExtraction.PostVersionsListManagement.pattern_groundTruth;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 // https://stackoverflow.com/a/7535602
 @Ignore
-class IgnoredTests extends MetricsComparisonTest{
+class IgnoredTests{
 
     // These are time-consuming test cases which were checked manually and were successful
+
+    static LinkedList<String> pathToAllDirectories = new LinkedList<>();
+
+    @BeforeAll
+    static void init() {
+        for (int i=1; i<=10; i++) {
+            pathToAllDirectories.add(Paths.get("testdata", "Samples_10000", "PostId_VersionCount_SO_17-06_sample_10000_" + i, "files").toString());
+        }
+    }
 
     @Test
     void testSetIfAllPostVersionListsAreParsable() throws IOException {
@@ -48,10 +60,10 @@ class IgnoredTests extends MetricsComparisonTest{
         stopWatch.start();
 
         MetricsComparator metricsComparator = new MetricsComparator(
-                pathToFewCompletedFiles,
-                pathToFewCompletedFiles);
+                Paths.get("testdata", "Samples_test", "fewCompletedFiles").toString(),
+                Paths.get("testdata", "Samples_test", "fewCompletedFiles").toString());
 
-        metricsComparator.createStatisticsFiles(pathToFewCompletedFiles);
+        metricsComparator.createStatisticsFiles(Paths.get("testdata", "Samples_test", "fewCompletedFiles").toString());
 
         stopWatch.stop();
 

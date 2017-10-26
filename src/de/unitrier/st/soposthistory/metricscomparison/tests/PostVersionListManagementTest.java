@@ -14,7 +14,7 @@ public class PostVersionListManagementTest {
     @Test
     void testPostVersionListManagement(){
 
-        PostVersionsListManagement postVersionsListManagement = new PostVersionsListManagement(Paths.get("testdata", "fewCompletedFiles").toString());
+        PostVersionsListManagement postVersionsListManagement = new PostVersionsListManagement(Paths.get("testdata", "Samples_test", "fewCompletedFiles").toString());
         postVersionsListManagement.postVersionLists.get(0).processVersionHistory();
 
         // testing text
