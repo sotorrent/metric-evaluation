@@ -17,8 +17,6 @@ import java.util.regex.Pattern;
 
 public class Statistics {
 
-    // TODO: find more ideas for de.unitrier.st.soposthistory.metricscomparison.statistics
-
     LinkedList<String> pathToAllDirectories = new LinkedList<>();
 
 
@@ -41,6 +39,8 @@ public class Statistics {
 
 
     public static void main(String[] args){
+
+        // TODO: find more ideas for other statistics?
 
         Statistics statistics = new Statistics();
 
