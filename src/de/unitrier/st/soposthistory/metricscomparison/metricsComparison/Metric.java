@@ -96,20 +96,20 @@ class Metric {
 
         // winnowingTokenDiceVariant,
 
-        winnowing2GramDiceVariant,
-        winnowing3GramDiceVariant,
-        winnowing4GramDiceVariant,
-        winnowing5GramDiceVariant,
+        // winnowing2GramDiceVariant,
+        // winnowing3GramDiceVariant,
+        // winnowing4GramDiceVariant,
+        // winnowing5GramDiceVariant,
 
         // winnowingShingle2DiceVariant,
         // winnowingShingle3DiceVariant,
 
         // winnowingNormalizedTokenDiceVariant,
 
-        winnowingNormalized2GramDiceVariant,
-        winnowingNormalized3GramDiceVariant,
-        winnowingNormalized4GramDiceVariant,
-        winnowingNormalized5GramDiceVariant,
+        // winnowingNormalized2GramDiceVariant,
+        // winnowingNormalized3GramDiceVariant,
+        // winnowingNormalized4GramDiceVariant,
+        // winnowingNormalized5GramDiceVariant,
 
         // winnowingNormalizedShingle2DiceVariant,
         // winnowingNormalizedShingle3DiceVariant,
@@ -220,28 +220,28 @@ class Metric {
         diceNormalizedShingles2,
         diceNormalizedShingles3,
 
-        diceVariantTokens,
-        diceVariantNormalizedTokens,
+        // diceVariantTokens,
+        // diceVariantNormalizedTokens,
 
-        diceVariant2Grams,
-        diceVariant3Grams,
-        diceVariant4Grams,
-        diceVariant5Grams,
+        // diceVariant2Grams,
+        // diceVariant3Grams,
+        // diceVariant4Grams,
+        // diceVariant5Grams,
 
-        diceVariantNormalized2Grams,
-        diceVariantNormalized3Grams,
-        diceVariantNormalized4Grams,
-        diceVariantNormalized5Grams,
+        // diceVariantNormalized2Grams,
+        // diceVariantNormalized3Grams,
+        // diceVariantNormalized4Grams,
+        // diceVariantNormalized5Grams,
 
-        diceVariantNormalizedPadding2grams,
-        diceVariantNormalizedPadding3grams,
-        diceVariantNormalizedPadding4grams,
-        diceVariantNormalizedPadding5grams,
+        // diceVariantNormalizedPadding2grams,
+        // diceVariantNormalizedPadding3grams,
+        // diceVariantNormalizedPadding4grams,
+        // diceVariantNormalizedPadding5grams,
 
-        diceVariantShingles2,
-        diceVariantShingles3,
-        diceVariantNormalizedShingles2,
-        diceVariantNormalizedShingles3,
+        // diceVariantShingles2,
+        // diceVariantShingles3,
+        // diceVariantNormalizedShingles2,
+        // diceVariantNormalizedShingles3,
 
         overlapTokens,
         overlapNormalizedTokens,
@@ -347,22 +347,6 @@ class Metric {
                 return winnowingFourGramDiceNormalized;
             case winnowingNormalized5GramDice:
                 return winnowingFiveGramDiceNormalized;
-            case winnowing2GramDiceVariant:
-                return winnowingTwoGramDiceVariant;
-            case winnowing3GramDiceVariant:
-                return winnowingThreeGramDiceVariant;
-            case winnowing4GramDiceVariant:
-                return winnowingFourGramDiceVariant;
-            case winnowing5GramDiceVariant:
-                return winnowingFiveGramDiceVariant;
-            case winnowingNormalized2GramDiceVariant:
-                return winnowingTwoGramDiceVariantNormalized;
-            case winnowingNormalized3GramDiceVariant:
-                return winnowingThreeGramDiceVariantNormalized;
-            case winnowingNormalized4GramDiceVariant:
-                return winnowingFourGramDiceVariantNormalized;
-            case winnowingNormalized5GramDiceVariant:
-                return winnowingFiveGramDiceVariantNormalized;
             case winnowing2GramOverlap:
                 return winnowingTwoGramOverlap;
             case winnowing3GramOverlap:
@@ -512,43 +496,6 @@ class Metric {
                 return twoShingleDiceNormalized;
             case diceNormalizedShingles3:
                 return threeShingleDiceNormalized;
-
-            case diceVariantTokens:
-                return tokenDiceVariant;
-            case diceVariantNormalizedTokens:
-                return tokenDiceVariantNormalized;
-            case diceVariant2Grams:
-                return twoGramDiceVariant;
-            case diceVariant3Grams:
-                return threeGramDiceVariant;
-            case diceVariant4Grams:
-                return fourGramDiceVariant;
-            case diceVariant5Grams:
-                return fiveGramDiceVariant;
-            case diceVariantNormalized2Grams:
-                return twoGramDiceVariantNormalized;
-            case diceVariantNormalized3Grams:
-                return threeGramDiceVariantNormalized;
-            case diceVariantNormalized4Grams:
-                return fourGramDiceVariantNormalized;
-            case diceVariantNormalized5Grams:
-                return fiveGramDiceVariantNormalized;
-            case diceVariantNormalizedPadding2grams:
-                return twoGramDiceVariantNormalizedPadding;
-            case diceVariantNormalizedPadding3grams:
-                return threeGramDiceVariantNormalizedPadding;
-            case diceVariantNormalizedPadding4grams:
-                return fourGramDiceVariantNormalizedPadding;
-            case diceVariantNormalizedPadding5grams:
-                return fiveGramDiceVariantNormalizedPadding;
-            case diceVariantShingles2:
-                return twoShingleDiceVariant;
-            case diceVariantShingles3:
-                return threeShingleDiceVariant;
-            case diceVariantNormalizedShingles2:
-                return twoShingleDiceVariantNormalized;
-            case diceVariantNormalizedShingles3:
-                return threeShingleDiceVariantNormalized;
 
             case overlapTokens:
                 return tokenOverlap;
