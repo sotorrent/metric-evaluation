@@ -1,10 +1,9 @@
 package de.unitrier.st.soposthistory.metricscomparison.metricsComparison;
 
-import de.unitrier.st.soposthistory.blocks.CodeBlockVersion;
-import de.unitrier.st.soposthistory.blocks.TextBlockVersion;
 import de.unitrier.st.soposthistory.metricscomparison.csvExtraction.GroundTruthExtractionOfCSVs;
 import de.unitrier.st.soposthistory.metricscomparison.csvExtraction.PostVersionsListManagement;
 import de.unitrier.st.soposthistory.metricscomparison.util.ConnectionsOfAllVersions;
+import de.unitrier.st.soposthistory.util.Config;
 import de.unitrier.st.soposthistory.version.PostVersionList;
 
 import java.io.File;
@@ -145,14 +144,22 @@ public class MetricsComparator {
 
 
     // computing similarity
-    public MetricResult computeSimilarity_writeInResult_text(int postVersionListID, BiFunction<String, String, Double> metric) {
+    public MetricResult computeSimilarity_writeInResult_text(int postVersionListID, BiFunction<String, String, Double> metric, double threshold) {
 
         MetricResult metricResult = new MetricResult();
 
         metricResult.stopWatch.reset();
         metricResult.stopWatch.start();
-        TextBlockVersion.similarityMetric = metric;
-        postVersionsListManagement.getPostVersionListWithID(postVersionListID).processVersionHistory(PostVersionList.PostBlockTypeFilter.TEXT);
+        postVersionsListManagement
+                .getPostVersionListWithID(postVersionListID)
+                .processVersionHistory(
+                        PostVersionList.PostBlockTypeFilter.TEXT,
+                        Config.DEFAULT
+                                .withTextSimilarityMetric(metric)
+                                .withTextBackupSimilarityMetric(null)
+                                .withTextSimilarityThreshold(threshold)
+
+                );
         metricResult.stopWatch.stop();
         metricResult.stopWatch.getNanoTime();
 
@@ -164,14 +171,21 @@ public class MetricsComparator {
         return metricResult;
     }
 
-    public MetricResult computeSimilarity_writeInResult_code(int postVersionListID, BiFunction<String, String, Double> metric) {
+    public MetricResult computeSimilarity_writeInResult_code(int postVersionListID, BiFunction<String, String, Double> metric, double threshold) {
 
         MetricResult metricResult = new MetricResult();
 
         metricResult.stopWatch.reset();
         metricResult.stopWatch.start();
-        CodeBlockVersion.similarityMetric = metric;
-        postVersionsListManagement.getPostVersionListWithID(postVersionListID).processVersionHistory(PostVersionList.PostBlockTypeFilter.CODE);
+        postVersionsListManagement
+                .getPostVersionListWithID(postVersionListID)
+                .processVersionHistory(
+                        PostVersionList.PostBlockTypeFilter.CODE,
+                        Config.DEFAULT
+                                .withCodeSimilarityMetric(metric)
+                                .withCodeBackupSimilarityMetric(null)
+                                .withCodeSimilarityThreshold(threshold)
+                );
         metricResult.stopWatch.stop();
         metricResult.stopWatch.getNanoTime();
 
@@ -222,9 +236,6 @@ public class MetricsComparator {
 
         for (Double threshold : thresholds) {
 
-            CodeBlockVersion.similarityThreshold = threshold;
-            TextBlockVersion.similarityThreshold = threshold;
-
             for (Metric.Type metric : metrics) {
 
                 if (Metric.getBiFunctionMetric(metric) == null) {
@@ -239,12 +250,14 @@ public class MetricsComparator {
                         MetricResult tmpMetricResult_text
                                 = this.computeSimilarity_writeInResult_text(
                                 postVersionList.getFirst().getPostId(),
-                                Metric.getBiFunctionMetric(metric));
+                                Metric.getBiFunctionMetric(metric),
+                                threshold);
 
                         MetricResult tmpMetricResult_code
                                 = this.computeSimilarity_writeInResult_code(
                                 postVersionList.getFirst().getPostId(),
-                                Metric.getBiFunctionMetric(metric));
+                                Metric.getBiFunctionMetric(metric),
+                                threshold);
 
 
                         for (int l = 0; l < postVersionList.size() - 1; l++) {

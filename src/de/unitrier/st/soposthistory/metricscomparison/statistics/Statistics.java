@@ -4,6 +4,7 @@ import de.unitrier.st.soposthistory.blocks.CodeBlockVersion;
 import de.unitrier.st.soposthistory.blocks.PostBlockVersion;
 import de.unitrier.st.soposthistory.blocks.TextBlockVersion;
 import de.unitrier.st.soposthistory.metricscomparison.csvExtraction.PostVersionsListManagement;
+import de.unitrier.st.soposthistory.util.Config;
 import de.unitrier.st.soposthistory.version.PostVersion;
 import de.unitrier.st.soposthistory.version.PostVersionList;
 
@@ -415,20 +416,19 @@ public class Statistics {
     }
 
     private void getPostsWithMultipleChoicesForBlocksAndFirstChoiceIsNotTheRightOne(){
-
-        TextBlockVersion.similarityMetric = de.unitrier.st.stringsimilarity.edit.Variants::levenshtein; // Levenshtein does not need a minimum size length so it has been chosen
-        TextBlockVersion.similarityThreshold = 1; // Conclusions for blocks that matches with a similarity of 1.0 can be assigned to a lower threshold more easily
-
-        CodeBlockVersion.similarityMetric = de.unitrier.st.stringsimilarity.edit.Variants::levenshtein; // Levenshtein does not need a minimum size length so it has been chosen
-        CodeBlockVersion.similarityThreshold = 1; // Conclusions for blocks that matches with a similarity of 1.0 can be assigned to a lower threshold more easily
-
         PostVersionsListManagement postVersionsListManagement = new PostVersionsListManagement(
                 FileSystems.getDefault().getPath("Metrics comparison", "testdata", "PostId_VersionCount_SO_17-06_sample_500_multiple_possible_links").toString());
 
         List<String> suspectedPostsList = new ArrayList<>();
 
         for(PostVersionList postVersionList : postVersionsListManagement.postVersionLists){
-            postVersionList.processVersionHistory();
+            postVersionList.processVersionHistory(
+                    Config.DEFAULT
+                            .withTextSimilarityMetric(de.unitrier.st.stringsimilarity.edit.Variants::levenshtein)   // Levenshtein does not need a minimum size length so it has been chosen
+                            .withTextSimilarityThreshold(1)                                                         // Conclusions for blocks that matches with a similarity of 1.0 can be assigned to a lower threshold more easily
+                            .withCodeSimilarityMetric(de.unitrier.st.stringsimilarity.edit.Variants::levenshtein)   // Levenshtein does not need a minimum size length so it has been chosen
+                            .withCodeSimilarityThreshold(1)                                                         // Conclusions for blocks that matches with a similarity of 1.0 can be assigned to a lower threshold more easily
+            );
 
             for(int i=1; i<postVersionList.size(); i++){
                 // collect equal block pairs

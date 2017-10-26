@@ -7,6 +7,7 @@ import de.unitrier.st.soposthistory.metricscomparison.csvExtraction.PostVersions
 import de.unitrier.st.soposthistory.metricscomparison.util.ConnectedBlocks;
 import de.unitrier.st.soposthistory.metricscomparison.util.ConnectionsOfAllVersions;
 import de.unitrier.st.soposthistory.metricscomparison.util.ConnectionsOfTwoVersions;
+import de.unitrier.st.soposthistory.util.Config;
 import de.unitrier.st.soposthistory.version.PostVersion;
 import de.unitrier.st.soposthistory.version.PostVersionList;
 import org.junit.jupiter.api.Test;
@@ -53,10 +54,11 @@ public class MetricsComparisonTest {
     @Test
     void testNumberOfPredecessorsOfOnePost() {
         int postId = 3758880;
-        TextBlockVersion.similarityMetric = de.unitrier.st.stringsimilarity.set.Variants::twoGramDiceVariant;
 
         PostVersionsListManagement postVersionsListManagement = new PostVersionsListManagement(pathToCSVs);
-        postVersionsListManagement.getPostVersionListWithID(postId).processVersionHistory(PostVersionList.PostBlockTypeFilter.TEXT);
+        postVersionsListManagement.getPostVersionListWithID(postId).processVersionHistory(
+                PostVersionList.PostBlockTypeFilter.TEXT,
+                Config.DEFAULT.withTextSimilarityMetric(de.unitrier.st.stringsimilarity.set.Variants::twoGramDice));
 
         List<TextBlockVersion> textBlocks = postVersionsListManagement.getPostVersionListWithID(postId).get(postVersionsListManagement.getPostVersionListWithID(postId).size() - 1).getTextBlocks();
         assertEquals(new Integer(1), textBlocks.get(0).getPred().getLocalId());
@@ -72,12 +74,10 @@ public class MetricsComparisonTest {
     @Test
     void testNumberOfPredecessorsComputedMetric() {
 
-        TextBlockVersion.similarityMetric = de.unitrier.st.stringsimilarity.set.Variants::twoGramDiceVariant;
-
         PostVersionsListManagement postVersionsListManagement = new PostVersionsListManagement(pathToCSVs);
 
         for (PostVersionList postVersionList : postVersionsListManagement.postVersionLists) {
-            postVersionList.processVersionHistory();
+            postVersionList.processVersionHistory(Config.DEFAULT.withTextSimilarityMetric(de.unitrier.st.stringsimilarity.set.Variants::twoGramDice));
 
             for (PostVersion postVersion : postVersionList) {
                 List<PostBlockVersion> postBlocks = postVersion.getPostBlocks();
