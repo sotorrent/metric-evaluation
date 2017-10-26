@@ -275,7 +275,7 @@ public class MetricsComparator {
 
                         printWriter.write(postVersionList.getFirst().getPostId() + "; ");
 
-                        for(int i=0; i<9; i++)
+                        for(int i=0; i<10; i++)
                             printWriter.write("null" + "; ");
                         printWriter.write("null" + "\n");
                     }
