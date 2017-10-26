@@ -12,6 +12,7 @@ import java.io.IOException;
 import static de.unitrier.st.soposthistory.metricscomparison.csvExtraction.PostVersionsListManagement.pattern_groundTruth;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
+// https://stackoverflow.com/a/7535602
 @Ignore
 class IgnoredTests extends MetricsComparisonTest{
 
