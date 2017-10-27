@@ -16,35 +16,17 @@ public class CompletedCSVConverterTest {
 
     @Test
     void testStringConverting() {
-        Path pathToTargetFile = Paths.get("testdata", "gt", "completed_3758880.csv");
         Path pathToSourceFile = Paths.get("testdata", "fileConverting", "wrongCSVformat", "completed_3758880.csv");
+        Path pathToTargetFile = Paths.get("testdata", "gt", "completed_3758880.csv");
 
-        StringBuilder targetString = new StringBuilder();
         StringBuilder sourceString = new StringBuilder();
+        StringBuilder targetString = new StringBuilder();
 
         // get test
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(pathToSourceFile.toString()));
-            String line;
-            while ((line = br.readLine()) != null) {
-                sourceString.append(line).append("\n");
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        getContent(sourceString, String.valueOf(pathToSourceFile));
 
         // get target
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(pathToTargetFile.toString()));
-            String line;
-            while ((line = br.readLine()) != null) {
-                targetString.append(line).append("\n");
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        getContent(targetString, String.valueOf(pathToTargetFile));
 
         assertNotEquals(sourceString, targetString);
         assertThat(CompletedCSVConverter.convertString(new File(String.valueOf(pathToSourceFile))), is(targetString.toString()));
