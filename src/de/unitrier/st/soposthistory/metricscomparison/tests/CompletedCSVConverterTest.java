@@ -17,7 +17,7 @@ public class CompletedCSVConverterTest {
     @Test
     void testStringConverting() {
         Path pathToTargetFile = Paths.get("testdata", "gt", "completed_3758880.csv");
-        Path pathToSourceFile = Paths.get("testdata", "Samples_test", "fewCompletedFiles", "completed_3758880.csv");
+        Path pathToSourceFile = Paths.get("testdata", "fileConverting", "wrongCSVformat", "completed_3758880.csv");
 
         StringBuilder targetString = new StringBuilder();
         StringBuilder sourceString = new StringBuilder();
@@ -53,7 +53,7 @@ public class CompletedCSVConverterTest {
     @Test
     void testFileConvertingInDirectory() {
         Path pathToTargetFile = Paths.get("testdata", "gt", "completed_3758880.csv");
-        Path pathToSourceFile = Paths.get("testdata", "Samples_test", "fewCompletedFiles", "completed_3758880.csv");
+        Path pathToSourceFile = Paths.get("testdata", "fileConverting", "wrongCSVformat", "completed_3758880.csv");
         Path pathToTestFileSource = Paths.get("testdata", "fileConverting", "completed_3758880.csv");
         Path pathToTestFileTarget = Paths.get("testdata", "fileConverting", "completed_3758880.csv_new");
 
