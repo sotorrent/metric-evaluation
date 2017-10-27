@@ -1,6 +1,9 @@
 package de.unitrier.st.soposthistory.metricscomparison.util;
 
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.LinkedList;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
@@ -73,5 +76,18 @@ public class CompletedCSVConverter{
 
     public static void main(String[] args){
 
+        LinkedList<Path> samplesToConvert = new LinkedList<>();
+
+        samplesToConvert.add(Paths.get("testdata", "Samples_100", "PostId_VersionCount_SO_17-06_sample_100_1"));
+        samplesToConvert.add(Paths.get("testdata", "Samples_100", "PostId_VersionCount_SO_17-06_sample_100_1+"));
+        samplesToConvert.add(Paths.get("testdata", "Samples_100", "PostId_VersionCount_SO_17-06_sample_100_2"));
+        samplesToConvert.add(Paths.get("testdata", "Samples_100", "PostId_VersionCount_SO_17-06_sample_100_2+"));
+        samplesToConvert.add(Paths.get("testdata", "Samples_100", "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links"));
+        samplesToConvert.add(Paths.get("testdata", "Samples_100", "PostId_VersionCount_SO_Java_17-06_sample_100_1"));
+        samplesToConvert.add(Paths.get("testdata", "Samples_100", "PostId_VersionCount_SO_Java_17-06_sample_100_2"));
+
+        for(Path path : samplesToConvert){
+            convertFiles(path.toString());
+        }
     }
 }
