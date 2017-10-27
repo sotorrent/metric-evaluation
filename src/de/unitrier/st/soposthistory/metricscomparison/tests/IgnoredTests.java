@@ -39,14 +39,14 @@ class IgnoredTests{
 
             assert allPostHistoriesInFolder != null;
             for (File postHistory : allPostHistoriesInFolder) {
-                PostVersionList tmpPostVersionList = new PostVersionList();
+                int postId = Integer.parseInt(postHistory.getName().replace(".csv", ""));
+                PostVersionList tmpPostVersionList;
                 try {
-                    int postId = Integer.valueOf(postHistory.getName().substring(0, postHistory.getName().length() - 4));
-                    tmpPostVersionList.readFromCSV(path + "\\", postId, 2);
+                    tmpPostVersionList = PostVersionList.readFromCSV(path + "\\", postId, 2);
                     tmpPostVersionList.processVersionHistory();
                     tmpPostVersionList.normalizeLinks();
                 } catch (Exception e) {
-                    assertNotEquals(0, tmpPostVersionList.size());
+                    e.printStackTrace();
                 }
             }
             System.out.println("Finished: " + path);

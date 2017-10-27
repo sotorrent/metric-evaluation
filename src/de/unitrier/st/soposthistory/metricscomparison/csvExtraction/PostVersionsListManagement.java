@@ -36,10 +36,9 @@ public class PostVersionsListManagement {
 
         assert allPostHistoriesInFolder != null;
         for (File postHistory : allPostHistoriesInFolder) {
-            PostVersionList tmpPostVersionList = new PostVersionList();
-            int postId = Integer.valueOf(postHistory.getName().substring(0, postHistory.getName().length() - 4));
+            int postId = Integer.parseInt(postHistory.getName().replace(".csv", ""));
 
-            tmpPostVersionList.readFromCSV(pathToDirectory, postId, 2, false);
+            PostVersionList tmpPostVersionList = PostVersionList.readFromCSV(pathToDirectory, postId, 2, false);
 
             tmpPostVersionList.normalizeLinks();
 
