@@ -20,7 +20,7 @@ import static de.unitrier.st.soposthistory.util.Util.getClassLogger;
 
 // TODO: move to metrics comparison project
 public class MetricComparisonManager {
-    private static Logger logger = null;
+    public static Logger logger = null;
     public static final CSVFormat csvFormatPostIds;
     public static final CSVFormat csvFormatMetricComparison;
 
@@ -212,15 +212,15 @@ public class MetricComparisonManager {
     public void compareMetrics() {
         prepareComparison();
 
-        for (int i = 1; i <= repetitionCount; i++) {
+        for (int currentRepetition = 1; currentRepetition <= repetitionCount; currentRepetition++) {
             if (randomizeOrder) {
                 logger.info("Randomizing order...");
                 randomizeOrder();
             }
 
-            logger.info("Starting comparison run " + i + "...");
+            logger.info("Starting comparison run " + currentRepetition + "...");
             for (MetricComparison metricComparison : metricComparisons) {
-                metricComparison.start();
+                metricComparison.start(currentRepetition);
             }
         }
     }

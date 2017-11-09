@@ -15,6 +15,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
 
+import static de.unitrier.st.soposthistory.metricscomparison.MetricComparisonManager.logger;
+
 // TODO: move to metrics comparison project
 public class MetricComparison {
     final private int postId;
@@ -69,7 +71,7 @@ public class MetricComparison {
         stopWatch = new StopWatch();
     }
 
-    public void start() {
+    public void start(int currentRepetition) {
         Config config = Config.METRICS_COMPARISON
                 .withTextSimilarityMetric(similarityMetric)
                 .withTextSimilarityThreshold(similarityThreshold)
@@ -78,7 +80,14 @@ public class MetricComparison {
 
         // the post version list is shared by all metric comparisons conducted for the corresponding post
         synchronized (postVersionList) {
-            currentRepetition++;
+            this.currentRepetition++;
+
+            if (this.currentRepetition != currentRepetition) {
+                throw new IllegalStateException("Repetition count does not match (expected: " + currentRepetition
+                        + "; actual: " + this.currentRepetition);
+            }
+
+            logger.info("Current metric: " + similarityMetricName);
 
             // process version history of text blocks
             stopWatch.reset();
