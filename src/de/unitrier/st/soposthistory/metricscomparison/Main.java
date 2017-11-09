@@ -1,9 +1,13 @@
 package de.unitrier.st.soposthistory.metricscomparison;
 
+import de.unitrier.st.soposthistory.util.Util;
 import org.apache.commons.cli.*;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.stream.Stream;
 
 class Main {
 
@@ -12,13 +16,9 @@ class Main {
 
         Options options = new Options();
 
-        Option gtDir = new Option("gt", "gt-dir", true, "path to directory with GT files");
+        Option gtDir = new Option("s", "samples-dir", true, "path to directory with samples");
         gtDir.setRequired(true);
         options.addOption(gtDir);
-
-        Option soDir = new Option("so", "so-dir", true, "path to directory with SO post history files");
-        soDir.setRequired(true);
-        options.addOption(soDir);
 
         Option outputDir = new Option("o", "output-dir", true, "path to output directory");
         outputDir.setRequired(true);
@@ -37,21 +37,34 @@ class Main {
             return;
         }
 
-        Path gtDirPath = Paths.get(commandLine.getOptionValue("gt-dir"));
-        Path soDirPath = Paths.get(commandLine.getOptionValue("so-dir"));
+        Path samplesDirPath = Paths.get(commandLine.getOptionValue("samples-dir"));
         Path outputDirPath = Paths.get(commandLine.getOptionValue("output-dir"));
 
-//        List<GroundTruth> gtList = GroundTruth.readFromDirectory(gtDirPath);
-//
-//        for (GroundTruth gt : gtList) {
-//            System.out.println(gt);
-//        }
-//
-//        List<PostVersionList> postVersionList = PostVersionList.readFromDirectory(soDirPath);
-//
-//        for (PostVersionList so : postVersionList) {
-//            System.out.println(so);
-//        }
+        try (Stream<Path> paths = Files.list(samplesDirPath)) {
 
+            Util.ensureEmptyDirectoryExists(outputDirPath);
+
+            paths.forEach(
+                    path -> {
+                        String name = path.toFile().getName();
+                        Path pathToPostIdList = Paths.get(path.toString(), name + ".csv");
+                        Path pathToPostHistory = Paths.get(path.toString(), "files");
+                        Path pathToGroundTruth = Paths.get(path.toString(), "completed");
+                        Path outputFilePath = Paths.get(outputDirPath.toString(), name+"_comparison.csv");
+
+                        MetricComparisonManager manager = MetricComparisonManager.create(
+                                name,
+                                pathToPostIdList,
+                                pathToPostHistory,
+                                pathToGroundTruth
+                        );
+
+                        manager.compareMetrics();
+                        manager.writeToCSV(outputFilePath);
+                    }
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

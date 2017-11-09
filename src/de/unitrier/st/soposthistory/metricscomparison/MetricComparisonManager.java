@@ -40,7 +40,7 @@ public class MetricComparisonManager {
     static {
         // configure logger
         try {
-            logger = getClassLogger(MetricComparisonManager.class, false);
+            logger = getClassLogger(MetricComparisonManager.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -133,6 +133,8 @@ public class MetricComparisonManager {
 
         MetricComparisonManager manager = new MetricComparisonManager(name, addDefaultMetricsAndThresholds,
                 repetitionCount, randomizeOrder);
+
+        logger.info("Creating new MetricComparisonManager " + name + " ...");
 
         try (CSVParser csvParser = new CSVParser(new FileReader(postIdPath.toFile()),
                 csvFormatPostIds.withFirstRecordAsHeader())) {
