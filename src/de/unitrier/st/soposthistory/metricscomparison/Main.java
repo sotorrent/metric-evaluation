@@ -5,7 +5,7 @@ import org.apache.commons.cli.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class Main {
+class Main {
 
     public static void main (String[] args) {
         System.out.println("SOPostHistory (Metrics Comparison)\n");

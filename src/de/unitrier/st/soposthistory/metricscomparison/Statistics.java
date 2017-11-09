@@ -26,10 +26,10 @@ public class Statistics {
     private static Logger logger = null;
 
     private static final Path rootPathToGTSamples = Paths.get("testdata", "samples_gt");
-    public static final List<Path> pathsToGTSamples = getGTSamples(rootPathToGTSamples);
+    public static final List<Path> pathsToGTSamples = getGTSamples();
 
     private static final Path rootPathToTestSamples = Paths.get("testdata", "samples_test");
-    public static final List<Path> pathsToTestSamples = getTestSamples(rootPathToTestSamples);
+    public static final List<Path> pathsToTestSamples = getTestSamples();
 
     public static final Path pathToMultipleConnectionsDir = Paths.get("testdata", "multiple_connections");
     public static final Path pathToMultipleConnectionsFile = Paths.get(pathToMultipleConnectionsDir.toString(), "multiple_possible_connections.csv");
@@ -58,11 +58,11 @@ public class Statistics {
 
     public static void main(String[] args) {
         Statistics statistics = new Statistics();
-        //statistics.getMultiplePossibleConnections();
+        statistics.getMultiplePossibleConnections();
         statistics.copyPostsWithPossibleMultipleConnectionsIntoDirectory();
     }
 
-    private static List<Path> getGTSamples(Path rootPathToGTSamples) {
+    private static List<Path> getGTSamples() {
         ArrayList<Path> pathsToGTSamples = new ArrayList<>(6);
         pathsToGTSamples.add(Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_1"));
         pathsToGTSamples.add(Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_2"));
@@ -75,7 +75,7 @@ public class Statistics {
         return pathsToGTSamples;
     }
 
-    private static List<Path> getTestSamples(Path rootPathToTestSamples) {
+    private static List<Path> getTestSamples() {
         ArrayList<Path> pathsToTestSamples = new ArrayList<>(12);
         for (int i = 1; i <= 10; i++) {
             // test data
