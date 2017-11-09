@@ -50,15 +50,12 @@ class Main {
                         Path pathToPostIdList = Paths.get(path.toString(), name + ".csv");
                         Path pathToPostHistory = Paths.get(path.toString(), "files");
                         Path pathToGroundTruth = Paths.get(path.toString(), "completed");
-                        Path outputFilePath = Paths.get(outputDirPath.toString(), name+"_comparison.csv");
 
-                        MetricComparisonManager manager = MetricComparisonManager.create(
-                                name,
-                                pathToPostIdList,
-                                pathToPostHistory,
-                                pathToGroundTruth,
-                                outputFilePath
-                        );
+                        MetricComparisonManager manager = MetricComparisonManager.DEFAULT
+                                .withName(name)
+                                .withInputPaths(pathToPostIdList, pathToPostHistory, pathToGroundTruth)
+                                .withOutputDirPath(outputDirPath)
+                                .initialize();
 
                         new Thread(manager).start();
                     }

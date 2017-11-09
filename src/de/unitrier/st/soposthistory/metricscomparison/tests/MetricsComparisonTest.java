@@ -21,14 +21,12 @@ class MetricsComparisonTest {
 
     @Test
     void testMetricComparisonManager() {
-        MetricComparisonManager manager = MetricComparisonManager.create(
-                "TestManager",
-                pathToPostIdList,
-                pathToPostHistory,
-                pathToGroundTruth,
-                false,
-                outputDir
-        );
+        MetricComparisonManager manager = MetricComparisonManager.DEFAULT
+                .withName("TestManager")
+                .withInputPaths(pathToPostIdList, pathToPostHistory, pathToGroundTruth)
+                .withOutputDirPath(outputDir)
+                .withAddDefaultMetricsAndThresholds(false)
+                .initialize();
 
         assertEquals(manager.getPostVersionLists().size(), manager.getPostGroundTruth().size());
         assertThat(manager.getPostVersionLists().keySet(), is(manager.getPostGroundTruth().keySet()));

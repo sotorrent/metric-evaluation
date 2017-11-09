@@ -40,12 +40,12 @@ class DisabledTests {
 
     @Test
     void testCompareMetricComparisonManagerWithComparisonFromOldProject() {
-        MetricComparisonManager manager = MetricComparisonManager.create(
-                "TestManager", MetricsComparisonTest.pathToPostIdList,
-                MetricsComparisonTest.pathToPostHistory, MetricsComparisonTest.pathToGroundTruth,
-                true,
-                MetricsComparisonTest.outputDir
-        );
+        MetricComparisonManager manager = MetricComparisonManager.DEFAULT
+                .withName("TestManager")
+                .withInputPaths(MetricsComparisonTest.pathToPostIdList, MetricsComparisonTest.pathToPostHistory,
+                        MetricsComparisonTest.pathToGroundTruth)
+                .withOutputDirPath(MetricsComparisonTest.outputDir)
+                .initialize();
 
         List<Integer> postHistoryIds_3758880 = manager.getPostVersionLists().get(3758880).getPostHistoryIds();
         List<Integer> postHistoryIds_22037280 = manager.getPostVersionLists().get(22037280).getPostHistoryIds();
@@ -339,14 +339,11 @@ class DisabledTests {
             Path pathToFiles = Paths.get(samplePath.toString(), "files");
             Path pathToGTs = Paths.get(samplePath.toString(), "completed");
 
-            MetricComparisonManager manager = MetricComparisonManager.create(
-                    "TestManager",
-                    pathToPostIdList,
-                    pathToFiles,
-                    pathToGTs,
-                    false,
-                    false
-            );
+            MetricComparisonManager manager = MetricComparisonManager.DEFAULT
+                    .withName("TestManager")
+                    .withInputPaths(pathToPostIdList, pathToFiles, pathToGTs)
+                    .withValidate(false)
+                    .initialize();
 
             assertTrue(manager.validate());
         }

@@ -27,18 +27,28 @@ public class MetricComparisonManager implements Runnable {
     private static final Path DEFAULT_OUTPUT_DIR = Paths.get("output");
 
     private String name;
-    private int numberOfRepetitions;
+    private boolean addDefaultMetricsAndThresholds;
     private boolean randomizeOrder;
+    private boolean validate;
+    private int numberOfRepetitions;
+
+    private Path postIdPath;
+    private Path postHistoryPath;
+    private Path groundTruthPath;
+    private Path outputDirPath;
+
     private Set<Integer> postIds;
     private Map<Integer, List<Integer>> postHistoryIds;
     private Map<Integer, PostGroundTruth> postGroundTruth; // postId -> PostGroundTruth
     private Map<Integer, PostVersionList> postVersionLists; // postId -> PostVersionList
     private List<BiFunction<String, String, Double>> similarityMetrics;
+
     private List<String> similarityMetricsNames;
     private List<Double> similarityThresholds;
-    private Path outputDir;
 
     private List<MetricComparison> metricComparisons;
+
+    private boolean initialized;
 
     static {
         // configure logger
@@ -66,11 +76,22 @@ public class MetricComparisonManager implements Runnable {
                 .withNullString("null");
     }
 
-    private MetricComparisonManager(String name, boolean addDefaultMetricsAndThresholds,
-                                    int numberOfRepetitions, boolean randomizeOrder, Path outputDir) {
+    private MetricComparisonManager(String name, Path postIdPath,
+                                    Path postHistoryPath, Path groundTruthPath, Path outputDirPath,
+                                    boolean validate, boolean addDefaultMetricsAndThresholds, boolean randomizeOrder,
+                                    int numberOfRepetitions) {
         this.name = name;
-        this.numberOfRepetitions = numberOfRepetitions;
+
+        this.postIdPath = postIdPath;
+        this.postHistoryPath = postHistoryPath;
+        this.groundTruthPath = groundTruthPath;
+        this.outputDirPath = outputDirPath;
+
+        this.validate = validate;
+        this.addDefaultMetricsAndThresholds = addDefaultMetricsAndThresholds;
         this.randomizeOrder = randomizeOrder;
+        this.numberOfRepetitions = numberOfRepetitions;
+
         this.postIds = new HashSet<>();
         this.postHistoryIds = new HashMap<>();
         this.postGroundTruth = new HashMap<>();
@@ -79,97 +100,74 @@ public class MetricComparisonManager implements Runnable {
         this.similarityMetricsNames = new LinkedList<>();
         this.similarityThresholds = new LinkedList<>();
         this.metricComparisons = new LinkedList<>();
-        this.outputDir = outputDir;
+
+        this.initialized = false;
+    }
+
+    public static final MetricComparisonManager DEFAULT = new MetricComparisonManager(
+            "MetricComparisonManager",
+            null,
+            null,
+            null,
+            DEFAULT_OUTPUT_DIR,
+            true,
+            true,
+            true,
+            5
+    );
+
+    public MetricComparisonManager withName(String name) {
+        return new MetricComparisonManager(name, postIdPath, postHistoryPath, groundTruthPath, outputDirPath,
+                validate, addDefaultMetricsAndThresholds, randomizeOrder, numberOfRepetitions
+        );
+    }
+
+    public MetricComparisonManager withInputPaths(Path postIdPath, Path postHistoryPath, Path groundTruthPath) {
+        return new MetricComparisonManager(name, postIdPath, postHistoryPath, groundTruthPath, outputDirPath,
+                validate, addDefaultMetricsAndThresholds, randomizeOrder, numberOfRepetitions
+        );
+    }
+
+    public MetricComparisonManager withOutputDirPath(Path outputDirPath) {
+        return new MetricComparisonManager(name, postIdPath, postHistoryPath, groundTruthPath, outputDirPath,
+                validate, addDefaultMetricsAndThresholds, randomizeOrder, numberOfRepetitions
+        );
+    }
+
+    public MetricComparisonManager withValidate(boolean validate) {
+        return new MetricComparisonManager(name, postIdPath, postHistoryPath, groundTruthPath, outputDirPath,
+                validate, addDefaultMetricsAndThresholds, randomizeOrder, numberOfRepetitions
+        );
+    }
+
+    public MetricComparisonManager withAddDefaultMetricsAndThresholds(boolean addDefaultMetricsAndThresholds) {
+        return new MetricComparisonManager(name, postIdPath, postHistoryPath, groundTruthPath, outputDirPath,
+                validate, addDefaultMetricsAndThresholds, randomizeOrder, numberOfRepetitions
+        );
+    }
+
+    public MetricComparisonManager withRandomizeOrder(boolean randomizeOrder) {
+        return new MetricComparisonManager(name, postIdPath, postHistoryPath, groundTruthPath, outputDirPath,
+                validate, addDefaultMetricsAndThresholds, randomizeOrder, numberOfRepetitions
+        );
+    }
+
+    public MetricComparisonManager withNumberOfRepetitions(int numberOfRepetitions) {
+        return new MetricComparisonManager(name, postIdPath, postHistoryPath, groundTruthPath, outputDirPath,
+                validate, addDefaultMetricsAndThresholds, randomizeOrder, numberOfRepetitions
+        );
+    }
+
+    public MetricComparisonManager initialize() {
         if (addDefaultMetricsAndThresholds) {
             addDefaultSimilarityMetrics();
             addDefaultSimilarityThresholds();
         }
-    }
 
-    // TODO: change to "with" semantics
-
-    public static MetricComparisonManager create(String name,
-                                                      Path postIdPath,
-                                                      Path postHistoryPath,
-                                                      Path groundTruthPath) {
-        return create(name, postIdPath, postHistoryPath, groundTruthPath,
-                true,
-                5,
-                true,
-                true,
-                DEFAULT_OUTPUT_DIR);
-    }
-
-    public static MetricComparisonManager create(String name,
-                                                 Path postIdPath,
-                                                 Path postHistoryPath,
-                                                 Path groundTruthPath,
-                                                 Path outputDir) {
-        return create(name, postIdPath, postHistoryPath, groundTruthPath,
-                true,
-                5,
-                true,
-                true,
-                outputDir);
-    }
-
-    public static MetricComparisonManager create(String name,
-                                                 Path postIdPath,
-                                                 Path postHistoryPath,
-                                                 Path groundTruthPath,
-                                                 boolean addDefaultMetricsAndThresholds,
-                                                 Path outputDir) {
-        return create(name, postIdPath, postHistoryPath, groundTruthPath,
-                addDefaultMetricsAndThresholds,
-                5,
-                true,
-                true,
-                outputDir);
-    }
-
-    public static MetricComparisonManager create(String name,
-                                                 Path postIdPath,
-                                                 Path postHistoryPath,
-                                                 Path groundTruthPath,
-                                                 boolean addDefaultMetricsAndThresholds) {
-        return create(name, postIdPath, postHistoryPath, groundTruthPath,
-                addDefaultMetricsAndThresholds,
-                5,
-                true,
-                true,
-                DEFAULT_OUTPUT_DIR);
-    }
-
-    public static MetricComparisonManager create(String name,
-                                                 Path postIdPath,
-                                                 Path postHistoryPath,
-                                                 Path groundTruthPath,
-                                                 boolean addDefaultMetricsAndThresholds,
-                                                 boolean validate) {
-        return create(name, postIdPath, postHistoryPath, groundTruthPath,
-                addDefaultMetricsAndThresholds,
-                5,
-                true,
-                validate,
-                DEFAULT_OUTPUT_DIR);
-    }
-
-    public static MetricComparisonManager create(String name,
-                                                 Path postIdPath,
-                                                 Path postHistoryPath,
-                                                 Path groundTruthPath,
-                                                 boolean addDefaultMetricsAndThresholds,
-                                                 int numberOfRepetitions,
-                                                 boolean randomizeOrder,
-                                                 boolean validate,
-                                                 Path outputDir) {
         // ensure that input file exists (directories are tested in read methods)
         if (!Files.exists(postIdPath) || Files.isDirectory(postIdPath)) {
             throw new IllegalArgumentException("File not found: " + postIdPath);
         }
-
-        MetricComparisonManager manager = new MetricComparisonManager(name, addDefaultMetricsAndThresholds,
-                numberOfRepetitions, randomizeOrder, outputDir);
 
         logger.info("Creating new MetricComparisonManager " + name + " ...");
 
@@ -183,42 +181,44 @@ public class MetricComparisonManager implements Runnable {
                 int versionCount = Integer.parseInt(currentRecord.get("VersionCount"));
 
                 // add post id to set
-                manager.postIds.add(postId);
+                postIds.add(postId);
 
                 // read post version list
-                PostVersionList postVersionList = PostVersionList.readFromCSV(
+                PostVersionList newPostVersionList = PostVersionList.readFromCSV(
                         postHistoryPath, postId, postTypeId, false
                 );
-                postVersionList.normalizeLinks();
+                newPostVersionList.normalizeLinks();
 
-                if (postVersionList.size() != versionCount) {
+                if (newPostVersionList.size() != versionCount) {
                     throw new IllegalArgumentException("Version count expected to be " + versionCount
-                            + ", but was " + postVersionList.size()
+                            + ", but was " + newPostVersionList.size()
                     );
                 }
 
-                manager.postVersionLists.put(postId, postVersionList);
-                manager.postHistoryIds.put(postId, postVersionList.getPostHistoryIds());
+                postVersionLists.put(postId, newPostVersionList);
+                postHistoryIds.put(postId, newPostVersionList.getPostHistoryIds());
 
                 // read ground truth
-                PostGroundTruth postGroundTruth = PostGroundTruth.readFromCSV(groundTruthPath, postId);
+                PostGroundTruth newPostGroundTruth = PostGroundTruth.readFromCSV(groundTruthPath, postId);
 
-                if (postGroundTruth.getPossibleConnections() != postVersionList.getPossibleConnections()) {
+                if (newPostGroundTruth.getPossibleConnections() != newPostVersionList.getPossibleConnections()) {
                     throw new IllegalArgumentException("Number of possible connections in ground truth is different " +
                             "from number of possible connections in post history.");
                 }
 
-                manager.postGroundTruth.put(postId, postGroundTruth);
+                postGroundTruth.put(postId, newPostGroundTruth);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        if (validate && !manager.validate()) {
+        if (validate && !validate()) {
             throw new IllegalArgumentException("Post ground truth files and post version history files do not match.");
         }
 
-        return manager;
+        initialized = true;
+
+        return this;
     }
 
     public boolean validate() {
@@ -292,12 +292,12 @@ public class MetricComparisonManager implements Runnable {
     public void writeToCSV() {
         // create output directory if it does not exist
         try {
-            Files.createDirectories(outputDir);
+            Files.createDirectories(outputDirPath);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        File outputFile = Paths.get(this.outputDir.toString(), name + ".csv").toFile();
+        File outputFile = Paths.get(this.outputDirPath.toString(), name + ".csv").toFile();
 
         if (outputFile.exists()) {
             if (!outputFile.delete()) {
@@ -376,6 +376,9 @@ public class MetricComparisonManager implements Runnable {
 
     @Override
     public void run() {
+        if (!initialized) {
+            initialize();
+        }
         compareMetrics();
         writeToCSV();
     }
