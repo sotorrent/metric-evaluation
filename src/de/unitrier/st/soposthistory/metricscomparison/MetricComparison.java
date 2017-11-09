@@ -87,7 +87,7 @@ public class MetricComparison {
                         + "; actual: " + this.currentRepetition);
             }
 
-            logger.info("Current metric: " + similarityMetricName);
+            logger.info("Repetition " + repetitionCount + ", current metric: " + similarityMetricName);
 
             // process version history of text blocks
             stopWatch.reset();
@@ -235,6 +235,10 @@ public class MetricComparison {
 
     public MetricResult getResultsCode(int postHistoryId) {
         return resultsCode.get(postHistoryId);
+    }
+
+    public PostVersionList getPostVersionList() {
+        return postVersionList;
     }
 
     public class MetricResult {

@@ -220,6 +220,8 @@ public class MetricComparisonManager {
 
             logger.info("Starting comparison run " + currentRepetition + "...");
             for (MetricComparison metricComparison : metricComparisons) {
+                logger.info("Current post: " + metricComparison.getPostId() + "("
+                        + metricComparison.getPostVersionList().size() + " versions)");
                 metricComparison.start(currentRepetition);
             }
         }
