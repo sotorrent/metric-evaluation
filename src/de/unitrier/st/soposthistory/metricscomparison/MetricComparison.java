@@ -71,6 +71,10 @@ public class MetricComparison {
         stopWatch = new StopWatch();
     }
 
+    private void reset() {
+        this.inputTooShort = false;
+    }
+
     public void start(int currentRepetition) {
         Config config = Config.METRICS_COMPARISON
                 .withTextSimilarityMetric(similarityMetric)
@@ -99,6 +103,8 @@ public class MetricComparison {
             }
             stopWatch.stop();
             setResultsText();
+            // reset flag inputTooShort
+            this.reset();
 
             // reset post block version history
             postVersionList.resetPostBlockVersionHistory();
@@ -113,6 +119,9 @@ public class MetricComparison {
             }
             stopWatch.stop();
             setResultsCode();
+            // reset flag inputTooShort
+            this.reset();
+
         }
     }
 
