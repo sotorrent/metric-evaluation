@@ -43,6 +43,10 @@ target/
 ########
 # Misc #
 ########
-testdata/Samples_100
-testdata/Samples_10000
-testdata/PostId_VersionCount_SO_17-06_sample_500_multiple_possible_links
+*.log
+*.log.*
+*.lck
+testdata/samples_comparison
+testdata/samples_gt
+testdata/samples_test
+testdata/metrics_comparison/TestManager.csv

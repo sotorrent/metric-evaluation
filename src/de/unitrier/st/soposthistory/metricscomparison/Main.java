@@ -1,12 +1,9 @@
 package de.unitrier.st.soposthistory.metricscomparison;
 
-import de.unitrier.st.soposthistory.gt.GroundTruth;
-import de.unitrier.st.soposthistory.version.PostVersionList;
 import org.apache.commons.cli.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 
 public class Main {
 
@@ -44,17 +41,17 @@ public class Main {
         Path soDirPath = Paths.get(commandLine.getOptionValue("so-dir"));
         Path outputDirPath = Paths.get(commandLine.getOptionValue("output-dir"));
 
-        List<GroundTruth> gtList = GroundTruth.readFromDirectory(gtDirPath);
-
-        for (GroundTruth gt : gtList) {
-            System.out.println(gt);
-        }
-
-        List<PostVersionList> postVersionList = PostVersionList.readFromDirectory(soDirPath);
-
-        for (PostVersionList so : postVersionList) {
-            System.out.println(so);
-        }
+//        List<GroundTruth> gtList = GroundTruth.readFromDirectory(gtDirPath);
+//
+//        for (GroundTruth gt : gtList) {
+//            System.out.println(gt);
+//        }
+//
+//        List<PostVersionList> postVersionList = PostVersionList.readFromDirectory(soDirPath);
+//
+//        for (PostVersionList so : postVersionList) {
+//            System.out.println(so);
+//        }
 
     }
 }

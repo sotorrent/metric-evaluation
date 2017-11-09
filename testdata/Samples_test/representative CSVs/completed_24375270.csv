@@ -1,5 +1,0 @@
-PostId; PostHistoryId; PostBlockTypeId; LocalId; PredLocalId; SuccLocalId; Comment
-"24375270"; "67898678"; "1"; "1"; "null"; "1"; ""; 
-"24375270"; "67899725"; "1"; "1"; "1"; "null"; ""; 
-"24375270"; "67898678"; "2"; "2"; "null"; "2"; ""; 
-"24375270"; "67899725"; "2"; "2"; "2"; "null"; ""; 

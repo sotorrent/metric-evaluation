@@ -1,2 +1,0 @@
-PostId; PostHistoryId; PostBlockTypeId; LocalId; PredLocalId; SuccLocalId; Comment
-"4711"; "43"; "1"; "1"; "null"; "null"; ""; 

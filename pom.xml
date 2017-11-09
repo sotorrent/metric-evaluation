@@ -5,7 +5,7 @@
     <name>SOPostHistoryMetricsComparison</name>
     <groupId>de.unitrier.st.soposthistory</groupId>
     <artifactId>so-posthistory-metricscomparision</artifactId>
-    <version>0.2.0</version>
+    <version>1.0.0</version>
     <url>https://github.com/sotorrent/metrics-comparison</url>
 
     <properties>
@@ -45,7 +45,7 @@
         <dependency>
             <groupId>de.unitrier.st.soposthistory</groupId>
             <artifactId>so-posthistory-extractor</artifactId>
-            <version>1.6.3</version>
+            <version>1.7.0</version>
         </dependency>
         <!-- https://github.com/sotorrent/string-similarity/tree/master/releases/ -->
         <dependency>
@@ -107,7 +107,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>de.unitrier.st.soposthistory.metricscomparison.MainMetricsComparator</mainClass>
+                            <mainClass>de.unitrier.st.soposthistory.metricscomparison.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -119,7 +119,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>de.unitrier.st.soposthistory.metricscomparison.MainMetricsComparator</mainClass>
+                            <mainClass>de.unitrier.st.soposthistory.metricscomparison.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

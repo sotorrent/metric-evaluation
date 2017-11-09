@@ -1,148 +1,155 @@
 package de.unitrier.st.soposthistory.metricscomparison.tests;
 
-import de.unitrier.st.soposthistory.blocks.PostBlockVersion;
-import de.unitrier.st.soposthistory.blocks.TextBlockVersion;
-import de.unitrier.st.soposthistory.metricscomparison.csvExtraction.GroundTruthExtractionOfCSVs;
-import de.unitrier.st.soposthistory.metricscomparison.csvExtraction.PostVersionsListManagement;
-import de.unitrier.st.soposthistory.metricscomparison.util.ConnectedBlocks;
-import de.unitrier.st.soposthistory.metricscomparison.util.ConnectionsOfAllVersions;
-import de.unitrier.st.soposthistory.metricscomparison.util.ConnectionsOfTwoVersions;
-import de.unitrier.st.soposthistory.util.Config;
-import de.unitrier.st.soposthistory.version.PostVersion;
-import de.unitrier.st.soposthistory.version.PostVersionList;
+import de.unitrier.st.soposthistory.metricscomparison.MetricComparison;
+import de.unitrier.st.soposthistory.metricscomparison.MetricComparisonManager;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.LinkedList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.junit.MatcherAssert.assertThat;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class MetricsComparisonTest {
-
-    private static String pathToCSVs = Paths.get("testdata", "Samples_test", "representative CSVs").toString();
-    static String pathToFewCompletedFiles = Paths.get("testdata", "Samples_test", "fewCompletedFiles").toString();
-    static LinkedList<String> pathToAllDirectories = new LinkedList<>();
-
+class MetricsComparisonTest {
+    static Path pathToPostIdList = Paths.get("testdata", "gt_test", "post_ids.csv");
+    static Path pathToPostHistory = Paths.get("testdata", "gt_test", "files");
+    static Path pathToGroundTruth = Paths.get("testdata", "gt_test", "gt");
+    static Path outputDir = Paths.get("testdata", "metrics_comparison");
 
     @Test
-    void testExtractionsForOnePost() {
+    void testMetricComparisonManager() {
+        MetricComparisonManager manager = MetricComparisonManager.create(
+                "TestManager",
+                pathToPostIdList,
+                pathToPostHistory,
+                pathToGroundTruth,
+                false
+        );
 
-        int postId = 22037280;
+        assertEquals(manager.getPostVersionLists().size(), manager.getPostGroundTruth().size());
+        assertThat(manager.getPostVersionLists().keySet(), is(manager.getPostGroundTruth().keySet()));
 
-        GroundTruthExtractionOfCSVs groundTruthExtractionOfCSVs = new GroundTruthExtractionOfCSVs(pathToFewCompletedFiles);
-        ConnectionsOfAllVersions connectionsOfAllVersionsGroundTruth_text = groundTruthExtractionOfCSVs.getAllConnectionsOfAllConsecutiveVersions_text(postId);
-        ConnectionsOfAllVersions connectionsOfAllVersionsGroundTruth_code = groundTruthExtractionOfCSVs.getAllConnectionsOfAllConsecutiveVersions_code(postId);
+        manager.addSimilarityMetric(
+                "fourGramOverlap",
+                de.unitrier.st.stringsimilarity.set.Variants::fourGramOverlap
+        );
+        manager.addSimilarityThreshold(0.6);
 
-        PostVersionsListManagement postVersionsListManagement = new PostVersionsListManagement(pathToFewCompletedFiles);
-        postVersionsListManagement.getPostVersionListWithID(postId).processVersionHistory();
-        ConnectionsOfAllVersions connectionsOfAllVersionsComputedMetric_text = postVersionsListManagement.getAllConnectionsOfAllConsecutiveVersions_text(postId);
-        ConnectionsOfAllVersions connectionsOfAllVersionsComputedMetric_code = postVersionsListManagement.getAllConnectionsOfAllConsecutiveVersions_code(postId);
+        manager.compareMetrics();
 
+        List<Integer> postHistoryIds_3758880 = manager.getPostGroundTruth().get(3758880).getPostHistoryIds();
+        MetricComparison comparison_a_3758880 = manager.getMetricComparison(3758880, "fourGramOverlap", 0.6);
 
-        assertEquals(6, connectionsOfAllVersionsGroundTruth_text.size());
+        /* compare a 3758880 */
+        // first version has never predecessors
+        int postHistoryId = postHistoryIds_3758880.get(0);
 
-        assertThat(connectionsOfAllVersionsComputedMetric_text, is(connectionsOfAllVersionsComputedMetric_text));
-        assertThat(connectionsOfAllVersionsComputedMetric_code, is(connectionsOfAllVersionsComputedMetric_code));
+        MetricComparison.MetricResult resultsText = comparison_a_3758880.getResultsText(postHistoryId);
+        assertEquals(new Integer(0), resultsText.getTruePositives());
+        assertEquals(new Integer(0), resultsText.getFalsePositives());
+        assertEquals(new Integer(0), resultsText.getTrueNegatives());
+        assertEquals(new Integer(0), resultsText.getFalseNegatives());
 
-    }
+        MetricComparison.MetricResult resultsCode = comparison_a_3758880.getResultsCode(postHistoryId);
+        assertEquals(new Integer(0), resultsCode.getTruePositives());
+        assertEquals(new Integer(0), resultsCode.getFalsePositives());
+        assertEquals(new Integer(0), resultsCode.getTrueNegatives());
+        assertEquals(new Integer(0), resultsCode.getFalseNegatives());
 
+        // second version
+        postHistoryId = postHistoryIds_3758880.get(1);
 
-    @Test
-    void testNumberOfPredecessorsOfOnePost() {
-        int postId = 3758880;
+        resultsText = comparison_a_3758880.getResultsText(postHistoryId);
+        assertEquals(new Integer(1), resultsText.getTruePositives());
+        assertEquals(new Integer(0), resultsText.getFalsePositives());
+        assertEquals(new Integer(5), resultsText.getTrueNegatives());
+        assertEquals(new Integer(0), resultsText.getFalseNegatives());
 
-        PostVersionsListManagement postVersionsListManagement = new PostVersionsListManagement(pathToCSVs);
-        postVersionsListManagement.getPostVersionListWithID(postId).processVersionHistory(
-                PostVersionList.PostBlockTypeFilter.TEXT,
-                Config.DEFAULT.withTextSimilarityMetric(de.unitrier.st.stringsimilarity.set.Variants::twoGramDice));
+        resultsCode = comparison_a_3758880.getResultsCode(postHistoryId);
+        assertEquals(new Integer(2), resultsCode.getTruePositives());
+        assertEquals(new Integer(0), resultsCode.getFalsePositives());
+        assertEquals(new Integer(4), resultsCode.getTrueNegatives());
+        assertEquals(new Integer(0), resultsCode.getFalseNegatives());
 
-        List<TextBlockVersion> textBlocks = postVersionsListManagement.getPostVersionListWithID(postId).get(postVersionsListManagement.getPostVersionListWithID(postId).size() - 1).getTextBlocks();
-        assertEquals(new Integer(1), textBlocks.get(0).getPred().getLocalId());
-        assertEquals(new Integer(1), textBlocks.get(0).getLocalId());
+        // version 3 to 10 only for text blocks (they don't differ)
+        for (int i = 2; i < 10; i++) {
+            postHistoryId = postHistoryIds_3758880.get(i);
 
-        assertEquals(new Integer(3), textBlocks.get(1).getPred().getLocalId());
-        assertEquals(new Integer(3), textBlocks.get(1).getLocalId());
-
-        assertEquals(null, textBlocks.get(2).getPred());
-        assertEquals(new Integer(5), textBlocks.get(2).getLocalId());
-    }
-
-    @Test
-    void testNumberOfPredecessorsComputedMetric() {
-
-        PostVersionsListManagement postVersionsListManagement = new PostVersionsListManagement(pathToCSVs);
-
-        for (PostVersionList postVersionList : postVersionsListManagement.postVersionLists) {
-            postVersionList.processVersionHistory(Config.DEFAULT.withTextSimilarityMetric(de.unitrier.st.stringsimilarity.set.Variants::twoGramDice));
-
-            for (PostVersion postVersion : postVersionList) {
-                List<PostBlockVersion> postBlocks = postVersion.getPostBlocks();
-
-                for (int i = 0; i < postBlocks.size(); i++) {
-                    if (postBlocks.get(i).getPred() == null)
-                        continue;
-
-                    for (int j = i + 1; j < postBlocks.size(); j++) {
-                        if (postBlocks.get(j).getPred() == null || postBlocks.get(i) instanceof TextBlockVersion != postBlocks.get(j) instanceof TextBlockVersion)
-                            continue;
-
-                        assertNotEquals(postBlocks.get(i).getPred().getLocalId(), postBlocks.get(j).getPred().getLocalId());
-                    }
-                }
-
-            }
+            resultsText = comparison_a_3758880.getResultsText(postHistoryId);
+            assertEquals(new Integer(2), resultsText.getTruePositives());
+            assertEquals(new Integer(0), resultsText.getFalsePositives());
+            assertEquals(new Integer(2), resultsText.getTrueNegatives());
+            assertEquals(new Integer(0), resultsText.getFalseNegatives());
         }
-    }
 
-    @Test
-    void testNumberOfPredecessorsGroundTruth() {
+        postHistoryId = postHistoryIds_3758880.get(10);
+        resultsText = comparison_a_3758880.getResultsText(postHistoryId);
+        assertEquals(new Integer(2), resultsText.getTruePositives());
+        assertEquals(new Integer(0), resultsText.getFalsePositives());
+        assertEquals(new Integer(4), resultsText.getTrueNegatives());
+        assertEquals(new Integer(0), resultsText.getFalseNegatives());
 
-        GroundTruthExtractionOfCSVs groundTruthExtractionOfCSVs = new GroundTruthExtractionOfCSVs(Paths.get("testdata","Samples_test",  "representative CSVs").toString());
+        // version 3 and 6 for code
+        List<Integer> versions = Arrays.asList(2, 5);
+        for (Integer version_number : versions) {
+            postHistoryId = postHistoryIds_3758880.get(version_number);
 
-        for (ConnectionsOfAllVersions connectionsOfAllVersions : groundTruthExtractionOfCSVs.getGroundTruth()) {
-            for (ConnectionsOfTwoVersions connectionsOfTwoVersions : connectionsOfAllVersions) {
-
-                for (int i = 0; i < connectionsOfTwoVersions.size(); i++) {
-                    if (connectionsOfTwoVersions.get(i).getLeftLocalId() == null)
-                        continue;
-
-                    for (int j = i + 1; j < connectionsOfTwoVersions.size(); j++) {
-                        if (connectionsOfTwoVersions.get(j).getLeftLocalId() == null ||
-                                connectionsOfTwoVersions.get(i).getPostBlockTypeId() != connectionsOfTwoVersions.get(j).getPostBlockTypeId())
-                            continue;
-
-                        assertNotEquals(connectionsOfTwoVersions.get(i).getLeftLocalId(), connectionsOfTwoVersions.get(j).getLeftLocalId());
-                    }
-                }
-
-            }
+            resultsCode = comparison_a_3758880.getResultsCode(postHistoryId);
+            assertEquals(new Integer(1), resultsCode.getTruePositives());
+            assertEquals(new Integer(0), resultsCode.getFalsePositives());
+            assertEquals(new Integer(2), resultsCode.getTrueNegatives());
+            assertEquals(new Integer(1), resultsCode.getFalseNegatives());
         }
-    }
 
-    @Test
-    void checkWhetherPostVersionListConnectionsWillBeResetRight() {
-        int postId = 3758880;
-        //TextBlockVersion.similarityMetric = de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingTokenDiceVariant;
+        // version 4,5,7,8,9,10,11 for code
+        versions = Arrays.asList(3, 4, 6, 7, 8, 9, 10);
+        for (Integer version_number : versions) {
+            postHistoryId = postHistoryIds_3758880.get(version_number);
 
-        PostVersionsListManagement postVersionsListManagement = new PostVersionsListManagement(pathToCSVs);
-        postVersionsListManagement.getPostVersionListWithID(postId).processVersionHistory(PostVersionList.PostBlockTypeFilter.TEXT);
-
-
-        // This sets predecessors
-        ConnectionsOfAllVersions connectionsOfAllVersionsComputedMetric_text = postVersionsListManagement.getAllConnectionsOfAllConsecutiveVersions_text(postId);
-
-        // This resets the predecessors again
-        postVersionsListManagement = new PostVersionsListManagement(pathToCSVs);
-        connectionsOfAllVersionsComputedMetric_text = postVersionsListManagement.getAllConnectionsOfAllConsecutiveVersions_text(postId);
-        for (ConnectionsOfTwoVersions connections : connectionsOfAllVersionsComputedMetric_text) {
-            for (ConnectedBlocks connection : connections) {
-                assertNull(connection.getLeftLocalId());
-                assertNotNull(connection.getRightLocalId());
-            }
+            resultsCode = comparison_a_3758880.getResultsCode(postHistoryId);
+            assertEquals(new Integer(2), resultsCode.getTruePositives());
+            assertEquals(new Integer(0), resultsCode.getFalsePositives());
+            assertEquals(new Integer(2), resultsCode.getTrueNegatives());
+            assertEquals(new Integer(0), resultsCode.getFalseNegatives());
         }
+
+        /* compare a 22037280 */
+        List<Integer> postHistoryIds_22037280 = manager.getPostGroundTruth().get(22037280).getPostHistoryIds();
+        MetricComparison comparison_a_22037280 = manager.getMetricComparison(22037280, "fourGramOverlap", 0.6);
+
+        postHistoryId = postHistoryIds_22037280.get(0);
+
+        resultsText = comparison_a_22037280.getResultsText(postHistoryId);
+        assertEquals(new Integer(0), resultsText.getTruePositives());
+        assertEquals(new Integer(0), resultsText.getFalsePositives());
+        assertEquals(new Integer(0), resultsText.getTrueNegatives());
+        assertEquals(new Integer(0), resultsText.getFalseNegatives());
+
+        resultsCode = comparison_a_22037280.getResultsCode(postHistoryId);
+        assertEquals(new Integer(0), resultsCode.getTruePositives());
+        assertEquals(new Integer(0), resultsCode.getFalsePositives());
+        assertEquals(new Integer(0), resultsCode.getTrueNegatives());
+        assertEquals(new Integer(0), resultsCode.getFalseNegatives());
+
+        for (int i = 1; i < postHistoryIds_22037280.size(); i++) {
+            postHistoryId = postHistoryIds_22037280.get(i);
+
+            resultsText = comparison_a_22037280.getResultsText(postHistoryId);
+            assertEquals(new Integer(3), resultsText.getTruePositives());
+            assertEquals(new Integer(0), resultsText.getFalsePositives());
+            assertEquals(new Integer(6), resultsText.getTrueNegatives());
+            assertEquals(new Integer(0), resultsText.getFalseNegatives());
+
+            resultsCode = comparison_a_22037280.getResultsCode(postHistoryId);
+            assertEquals(new Integer(2), resultsCode.getTruePositives());
+            assertEquals(new Integer(0), resultsCode.getFalsePositives());
+            assertEquals(new Integer(2), resultsCode.getTrueNegatives());
+            assertEquals(new Integer(0), resultsCode.getFalseNegatives());
+        }
+
+        manager.writeToCSV(outputDir);
     }
 }
