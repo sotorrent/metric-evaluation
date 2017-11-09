@@ -56,11 +56,11 @@ class Main {
                                 name,
                                 pathToPostIdList,
                                 pathToPostHistory,
-                                pathToGroundTruth
+                                pathToGroundTruth,
+                                outputFilePath
                         );
 
-                        manager.compareMetrics();
-                        manager.writeToCSV(outputFilePath);
+                        new Thread(manager).start();
                     }
             );
         } catch (IOException e) {

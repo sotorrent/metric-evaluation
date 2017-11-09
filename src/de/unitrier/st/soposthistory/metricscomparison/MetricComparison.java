@@ -28,7 +28,7 @@ public class MetricComparison {
     final private double similarityThreshold;
     final private StopWatch stopWatch;
     private boolean inputTooShort;
-    private int repetitionCount;
+    private int numberOfRepetitions;
     private int currentRepetition;
 
     // text
@@ -47,7 +47,7 @@ public class MetricComparison {
                             BiFunction<String, String, Double> similarityMetric,
                             String similarityMetricName,
                             double similarityThreshold,
-                            int repetitionCount) {
+                            int numberOfRepetitions) {
         this.postId = postId;
         this.postVersionList = postVersionList;
         // normalize links so that post version list and ground truth are comparable
@@ -66,7 +66,7 @@ public class MetricComparison {
         this.resultsText = new HashMap<>();
         this.resultsCode = new HashMap<>();
 
-        this.repetitionCount = repetitionCount;
+        this.numberOfRepetitions = numberOfRepetitions;
         this.currentRepetition = 0;
         stopWatch = new StopWatch();
     }
@@ -91,7 +91,7 @@ public class MetricComparison {
                         + "; actual: " + this.currentRepetition);
             }
 
-            logger.info("Repetition " + repetitionCount + ", current metric: " + similarityMetricName);
+            logger.info("Repetition " + currentRepetition + ", current metric: " + similarityMetricName);
 
             // process version history of text blocks
             stopWatch.reset();
@@ -169,12 +169,12 @@ public class MetricComparison {
                 }
             }
 
-            if (currentRepetition < repetitionCount) {
+            if (currentRepetition < numberOfRepetitions) {
                 // return sum of runtimes
                 return runtime + stopWatch.getTime();
             } else {
                 // calculate and return mean runtime after last run
-                return (runtime + stopWatch.getTime()) / (double) repetitionCount;
+                return (runtime + stopWatch.getTime()) / (double) numberOfRepetitions;
             }
         }
     }

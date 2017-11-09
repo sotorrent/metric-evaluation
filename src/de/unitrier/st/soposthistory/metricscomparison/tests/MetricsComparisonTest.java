@@ -26,7 +26,8 @@ class MetricsComparisonTest {
                 pathToPostIdList,
                 pathToPostHistory,
                 pathToGroundTruth,
-                false
+                false,
+                outputDir
         );
 
         assertEquals(manager.getPostVersionLists().size(), manager.getPostGroundTruth().size());
@@ -150,6 +151,6 @@ class MetricsComparisonTest {
             assertEquals(new Integer(0), resultsCode.getFalseNegatives());
         }
 
-        manager.writeToCSV(outputDir);
+        manager.writeToCSV();
     }
 }

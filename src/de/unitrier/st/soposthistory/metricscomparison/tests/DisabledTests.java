@@ -43,14 +43,15 @@ class DisabledTests {
         MetricComparisonManager manager = MetricComparisonManager.create(
                 "TestManager", MetricsComparisonTest.pathToPostIdList,
                 MetricsComparisonTest.pathToPostHistory, MetricsComparisonTest.pathToGroundTruth,
-                true
+                true,
+                MetricsComparisonTest.outputDir
         );
 
         List<Integer> postHistoryIds_3758880 = manager.getPostVersionLists().get(3758880).getPostHistoryIds();
         List<Integer> postHistoryIds_22037280 = manager.getPostVersionLists().get(22037280).getPostHistoryIds();
 
         manager.compareMetrics();
-        manager.writeToCSV(MetricsComparisonTest.outputDir);
+        manager.writeToCSV();
 
         CSVParser csvParser;
 

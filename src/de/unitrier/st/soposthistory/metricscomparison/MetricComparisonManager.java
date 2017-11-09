@@ -19,13 +19,15 @@ import java.util.logging.Logger;
 import static de.unitrier.st.soposthistory.util.Util.getClassLogger;
 
 // TODO: move to metrics comparison project
-public class MetricComparisonManager {
+public class MetricComparisonManager implements Runnable {
     public static Logger logger = null;
     public static final CSVFormat csvFormatPostIds;
     public static final CSVFormat csvFormatMetricComparison;
 
+    private static final Path DEFAULT_OUTPUT_DIR = Paths.get("output");
+
     private String name;
-    private int repetitionCount;
+    private int numberOfRepetitions;
     private boolean randomizeOrder;
     private Set<Integer> postIds;
     private Map<Integer, List<Integer>> postHistoryIds;
@@ -34,6 +36,7 @@ public class MetricComparisonManager {
     private List<BiFunction<String, String, Double>> similarityMetrics;
     private List<String> similarityMetricsNames;
     private List<Double> similarityThresholds;
+    private Path outputDir;
 
     private List<MetricComparison> metricComparisons;
 
@@ -64,9 +67,9 @@ public class MetricComparisonManager {
     }
 
     private MetricComparisonManager(String name, boolean addDefaultMetricsAndThresholds,
-                                    int repetitionCount, boolean randomizeOrder) {
+                                    int numberOfRepetitions, boolean randomizeOrder, Path outputDir) {
         this.name = name;
-        this.repetitionCount = repetitionCount;
+        this.numberOfRepetitions = numberOfRepetitions;
         this.randomizeOrder = randomizeOrder;
         this.postIds = new HashSet<>();
         this.postHistoryIds = new HashMap<>();
@@ -76,21 +79,52 @@ public class MetricComparisonManager {
         this.similarityMetricsNames = new LinkedList<>();
         this.similarityThresholds = new LinkedList<>();
         this.metricComparisons = new LinkedList<>();
+        this.outputDir = outputDir;
         if (addDefaultMetricsAndThresholds) {
             addDefaultSimilarityMetrics();
             addDefaultSimilarityThresholds();
         }
     }
 
+    // TODO: change to "with" semantics
+
     public static MetricComparisonManager create(String name,
-                                                 Path postIdPath,
-                                                 Path postHistoryPath,
-                                                 Path groundTruthPath) {
+                                                      Path postIdPath,
+                                                      Path postHistoryPath,
+                                                      Path groundTruthPath) {
         return create(name, postIdPath, postHistoryPath, groundTruthPath,
                 true,
                 5,
                 true,
-                true);
+                true,
+                DEFAULT_OUTPUT_DIR);
+    }
+
+    public static MetricComparisonManager create(String name,
+                                                 Path postIdPath,
+                                                 Path postHistoryPath,
+                                                 Path groundTruthPath,
+                                                 Path outputDir) {
+        return create(name, postIdPath, postHistoryPath, groundTruthPath,
+                true,
+                5,
+                true,
+                true,
+                outputDir);
+    }
+
+    public static MetricComparisonManager create(String name,
+                                                 Path postIdPath,
+                                                 Path postHistoryPath,
+                                                 Path groundTruthPath,
+                                                 boolean addDefaultMetricsAndThresholds,
+                                                 Path outputDir) {
+        return create(name, postIdPath, postHistoryPath, groundTruthPath,
+                addDefaultMetricsAndThresholds,
+                5,
+                true,
+                true,
+                outputDir);
     }
 
     public static MetricComparisonManager create(String name,
@@ -102,7 +136,8 @@ public class MetricComparisonManager {
                 addDefaultMetricsAndThresholds,
                 5,
                 true,
-                true);
+                true,
+                DEFAULT_OUTPUT_DIR);
     }
 
     public static MetricComparisonManager create(String name,
@@ -115,7 +150,8 @@ public class MetricComparisonManager {
                 addDefaultMetricsAndThresholds,
                 5,
                 true,
-                validate);
+                validate,
+                DEFAULT_OUTPUT_DIR);
     }
 
     public static MetricComparisonManager create(String name,
@@ -123,16 +159,17 @@ public class MetricComparisonManager {
                                                  Path postHistoryPath,
                                                  Path groundTruthPath,
                                                  boolean addDefaultMetricsAndThresholds,
-                                                 int repetitionCount,
+                                                 int numberOfRepetitions,
                                                  boolean randomizeOrder,
-                                                 boolean validate) {
+                                                 boolean validate,
+                                                 Path outputDir) {
         // ensure that input file exists (directories are tested in read methods)
         if (!Files.exists(postIdPath) || Files.isDirectory(postIdPath)) {
             throw new IllegalArgumentException("File not found: " + postIdPath);
         }
 
         MetricComparisonManager manager = new MetricComparisonManager(name, addDefaultMetricsAndThresholds,
-                repetitionCount, randomizeOrder);
+                numberOfRepetitions, randomizeOrder, outputDir);
 
         logger.info("Creating new MetricComparisonManager " + name + " ...");
 
@@ -212,7 +249,7 @@ public class MetricComparisonManager {
     public void compareMetrics() {
         prepareComparison();
 
-        for (int currentRepetition = 1; currentRepetition <= repetitionCount; currentRepetition++) {
+        for (int currentRepetition = 1; currentRepetition <= numberOfRepetitions; currentRepetition++) {
             if (randomizeOrder) {
                 logger.info("Randomizing order...");
                 randomizeOrder();
@@ -240,7 +277,7 @@ public class MetricComparisonManager {
                             similarityMetric,
                             similarityMetricName,
                             similarityThreshold,
-                            repetitionCount
+                            numberOfRepetitions
                     );
                     metricComparisons.add(metricComparison);
                 }
@@ -252,7 +289,7 @@ public class MetricComparisonManager {
         Collections.shuffle(metricComparisons, new Random());
     }
 
-    public void writeToCSV(Path outputDir) {
+    public void writeToCSV() {
         // create output directory if it does not exist
         try {
             Files.createDirectories(outputDir);
@@ -260,7 +297,7 @@ public class MetricComparisonManager {
             e.printStackTrace();
         }
 
-        File outputFile = Paths.get(outputDir.toString(), name + ".csv").toFile();
+        File outputFile = Paths.get(this.outputDir.toString(), name + ".csv").toFile();
 
         if (outputFile.exists()) {
             if (!outputFile.delete()) {
@@ -323,6 +360,24 @@ public class MetricComparisonManager {
     public void addSimilarityMetric(String name, BiFunction<String, String, Double> metric) {
         similarityMetricsNames.add(name);
         similarityMetrics.add(metric);
+    }
+
+    public MetricComparison getMetricComparison(int postId, String similarityMetricName, double similarityThreshold) {
+        for (MetricComparison metricComparison : metricComparisons) {
+            if (metricComparison.getPostId() == postId
+                    && metricComparison.getSimilarityThreshold() == similarityThreshold
+                    && metricComparison.getSimilarityMetricName().equals(similarityMetricName)) {
+                return metricComparison;
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public void run() {
+        compareMetrics();
+        writeToCSV();
     }
 
     private void addDefaultSimilarityMetrics() {
@@ -640,17 +695,5 @@ public class MetricComparisonManager {
         similarityMetricsNames.add("fourGramSimilarityKondrak05");
         similarityMetrics.add(de.unitrier.st.stringsimilarity.set.Variants::fiveGramSimilarityKondrak05);
         similarityMetricsNames.add("fiveGramSimilarityKondrak05");
-    }
-
-    public MetricComparison getMetricComparison(int postId, String similarityMetricName, double similarityThreshold) {
-        for (MetricComparison metricComparison : metricComparisons) {
-            if (metricComparison.getPostId() == postId
-                    && metricComparison.getSimilarityThreshold() == similarityThreshold
-                    && metricComparison.getSimilarityMetricName().equals(similarityMetricName)) {
-                return metricComparison;
-            }
-        }
-
-        return null;
     }
 }
