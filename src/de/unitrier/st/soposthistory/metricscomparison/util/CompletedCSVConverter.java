@@ -11,6 +11,7 @@ public class CompletedCSVConverter{
 
     public static String convertString(File file){
 
+        // TODO: refactor to org.apache.commons.csv class CSVParser
         StringBuilder output = new StringBuilder();
 
         try {
@@ -27,19 +28,20 @@ public class CompletedCSVConverter{
 
                     if(firstLine) {
                         token = token.replaceAll("\\s+", "");
-                        token = token.replaceAll("\"", "");
+                        output.append(token);
+
+                    }else {
+                        if(count <= 6)
+                            output.append("\"");
+
                         output.append(token);
 
                         if(count <= 6)
-                            output.append(";");
-
-                    }else if(count <= 6){
-                        token = token.replaceAll("\\s+", "");
-                        token = token.replaceAll("\"", "");
-                        output.append(token).append(";");
-                    }else{
-                        output.append(token.substring(1, token.length()));
+                            output.append("\"");
                     }
+
+                    if(count <= 6)
+                        output.append(";");
                 }
                 firstLine = false;
                 output.append("\n");
@@ -78,13 +80,15 @@ public class CompletedCSVConverter{
 
         LinkedList<Path> samplesToConvert = new LinkedList<>();
 
-        samplesToConvert.add(Paths.get("testdata", "Samples_100", "PostId_VersionCount_SO_17-06_sample_100_1"));
-        samplesToConvert.add(Paths.get("testdata", "Samples_100", "PostId_VersionCount_SO_17-06_sample_100_1+"));
-        samplesToConvert.add(Paths.get("testdata", "Samples_100", "PostId_VersionCount_SO_17-06_sample_100_2"));
-        samplesToConvert.add(Paths.get("testdata", "Samples_100", "PostId_VersionCount_SO_17-06_sample_100_2+"));
+//        samplesToConvert.add(Paths.get("testdata", "Samples_100", "PostId_VersionCount_SO_17-06_sample_100_1"));
+//        samplesToConvert.add(Paths.get("testdata", "Samples_100", "PostId_VersionCount_SO_17-06_sample_100_1+"));
+//        samplesToConvert.add(Paths.get("testdata", "Samples_100", "PostId_VersionCount_SO_17-06_sample_100_2"));
+//        samplesToConvert.add(Paths.get("testdata", "Samples_100", "PostId_VersionCount_SO_17-06_sample_100_2+"));
+//        samplesToConvert.add(Paths.get("testdata", "Samples_100", "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links"));
+//        samplesToConvert.add(Paths.get("testdata", "Samples_100", "PostId_VersionCount_SO_Java_17-06_sample_100_1"));
+//        samplesToConvert.add(Paths.get("testdata", "Samples_100", "PostId_VersionCount_SO_Java_17-06_sample_100_2"));
+        // samplesToConvert.add(Paths.get("testdata", "Samples_100", "PostId_VersionCount_SO_17_06_sample_unclearMatching", "completed"));
         samplesToConvert.add(Paths.get("testdata", "Samples_100", "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links"));
-        samplesToConvert.add(Paths.get("testdata", "Samples_100", "PostId_VersionCount_SO_Java_17-06_sample_100_1"));
-        samplesToConvert.add(Paths.get("testdata", "Samples_100", "PostId_VersionCount_SO_Java_17-06_sample_100_2"));
 
         for(Path path : samplesToConvert){
             convertFiles(path.toString());

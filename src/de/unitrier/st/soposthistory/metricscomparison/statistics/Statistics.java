@@ -23,7 +23,11 @@ public class Statistics {
 
     Statistics(){
 
-        pathToAllDirectories.add("testdata\\representative CSVs");
+        // pathToAllDirectories.add("testdata\\representative CSVs");
+
+        // pathToAllDirectories.add(Paths.get("testdata", "Samples_100", "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "completed").toString());
+        pathToAllDirectories.add(Paths.get("testdata", "PostId_VersionCount_SO_17_06_sample_unclearMatching", "completed").toString());
+
 /*
         pathToAllDirectories.add(Paths.get("testdata", "PostId_VersionCount_SO_17-06_sample_10000_1", "files").toString());
         pathToAllDirectories.add(Paths.get("testdata", "PostId_VersionCount_SO_17-06_sample_10000_2", "files").toString());
