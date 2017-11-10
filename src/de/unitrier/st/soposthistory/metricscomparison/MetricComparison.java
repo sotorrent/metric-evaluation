@@ -5,10 +5,10 @@ import de.unitrier.st.soposthistory.blocks.TextBlockVersion;
 import de.unitrier.st.soposthistory.gt.PostBlockConnection;
 import de.unitrier.st.soposthistory.gt.PostGroundTruth;
 import de.unitrier.st.soposthistory.util.Config;
-import de.unitrier.st.soposthistory.util.Util;
 import de.unitrier.st.soposthistory.version.PostVersionList;
 import de.unitrier.st.stringsimilarity.util.InputTooShortException;
 
+import java.lang.management.ThreadMXBean;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +29,7 @@ public class MetricComparison {
     private boolean inputTooShort;
     private int numberOfRepetitions;
     private int currentRepetition;
+    private ThreadMXBean threadMXBean;
 
     // text
     private double runtimeText;
@@ -46,7 +47,8 @@ public class MetricComparison {
                             BiFunction<String, String, Double> similarityMetric,
                             String similarityMetricName,
                             double similarityThreshold,
-                            int numberOfRepetitions) {
+                            int numberOfRepetitions,
+                            ThreadMXBean threadMXBean) {
         this.postId = postId;
         this.postVersionList = postVersionList;
         // normalize links so that post version list and ground truth are comparable
@@ -67,6 +69,8 @@ public class MetricComparison {
 
         this.numberOfRepetitions = numberOfRepetitions;
         this.currentRepetition = 0;
+
+        this.threadMXBean = threadMXBean;
     }
 
     private void reset() {
@@ -94,13 +98,13 @@ public class MetricComparison {
             long startUserTimeNano, endUserTimeNano;
 
             // process version history of text blocks
-            startUserTimeNano = Util.getUserTimeNano( );
+            startUserTimeNano = threadMXBean.getCurrentThreadUserTime();
             try {
                 postVersionList.processVersionHistory(config, TextBlockVersion.getPostBlockTypeIdFilter());
             } catch (InputTooShortException e) {
                 inputTooShort = true;
             } finally {
-                endUserTimeNano = Util.getUserTimeNano( ) - startUserTimeNano;
+                endUserTimeNano = threadMXBean.getCurrentThreadUserTime() - startUserTimeNano;
             }
             setResultsText(endUserTimeNano);
 
@@ -110,13 +114,13 @@ public class MetricComparison {
             postVersionList.resetPostBlockVersionHistory();
 
             // process version history of code blocks
-            startUserTimeNano = Util.getUserTimeNano( );
+            startUserTimeNano = threadMXBean.getCurrentThreadUserTime();
             try {
                 postVersionList.processVersionHistory(config, CodeBlockVersion.getPostBlockTypeIdFilter());
             } catch (InputTooShortException e) {
                 inputTooShort = true;
             } finally {
-                endUserTimeNano = Util.getUserTimeNano( ) - startUserTimeNano;
+                endUserTimeNano = threadMXBean.getCurrentThreadUserTime() - startUserTimeNano;
             }
             setResultsCode(endUserTimeNano);
 

@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadMXBean;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -50,6 +52,9 @@ public class MetricComparisonManager implements Runnable {
 
     private boolean initialized;
 
+    // See: http://nadeausoftware.com/articles/2008/03/java_tip_how_get_cpu_and_user_time_benchmarking
+    private ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+
     static {
         // configure logger
         try {
@@ -68,7 +73,7 @@ public class MetricComparisonManager implements Runnable {
 
         // configure CSV format for metric comparison results
         csvFormatMetricComparison = CSVFormat.DEFAULT
-                .withHeader("Sample", "Metric", "Threshold", "PostId", "PostHistoryId", "RuntimeText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "RuntimeCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode")
+                .withHeader("Sample", "Metric", "Threshold", "PostId", "PostHistoryId", "RuntimeText", "TextBlockCount", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "RuntimeCode", "CodeBlockCount", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode")
                 .withDelimiter(';')
                 .withQuote('"')
                 .withQuoteMode(QuoteMode.MINIMAL)
@@ -246,6 +251,32 @@ public class MetricComparisonManager implements Runnable {
         return true;
     }
 
+    private void prepareComparison() {
+        for (int postId : postIds) {
+            for (double similarityThreshold : similarityThresholds) {
+                for (int i = 0; i < similarityMetrics.size(); i++) {
+                    BiFunction<String, String, Double> similarityMetric = similarityMetrics.get(i);
+                    String similarityMetricName = similarityMetricsNames.get(i);
+                    MetricComparison metricComparison = new MetricComparison(
+                            postId,
+                            postVersionLists.get(postId),
+                            postGroundTruth.get(postId),
+                            similarityMetric,
+                            similarityMetricName,
+                            similarityThreshold,
+                            numberOfRepetitions,
+                            threadMXBean
+                    );
+                    metricComparisons.add(metricComparison);
+                }
+            }
+        }
+    }
+
+    private void randomizeOrder() {
+        Collections.shuffle(metricComparisons, new Random());
+    }
+
     public void compareMetrics() {
         prepareComparison();
 
@@ -268,31 +299,6 @@ public class MetricComparisonManager implements Runnable {
                 currentMetricComparison.start(currentRepetition);
             }
         }
-    }
-
-    private void prepareComparison() {
-        for (int postId : postIds) {
-            for (double similarityThreshold : similarityThresholds) {
-                for (int i = 0; i < similarityMetrics.size(); i++) {
-                    BiFunction<String, String, Double> similarityMetric = similarityMetrics.get(i);
-                    String similarityMetricName = similarityMetricsNames.get(i);
-                    MetricComparison metricComparison = new MetricComparison(
-                            postId,
-                            postVersionLists.get(postId),
-                            postGroundTruth.get(postId),
-                            similarityMetric,
-                            similarityMetricName,
-                            similarityThreshold,
-                            numberOfRepetitions
-                    );
-                    metricComparisons.add(metricComparison);
-                }
-            }
-        }
-    }
-
-    private void randomizeOrder() {
-        Collections.shuffle(metricComparisons, new Random());
     }
 
     public void writeToCSV() {
@@ -330,11 +336,13 @@ public class MetricComparisonManager implements Runnable {
                             postId,
                             postHistoryId,
                             metricComparison.getRuntimeText(),
+                            resultsText.postBlockCount,
                             resultsText.truePositives,
                             resultsText.falsePositives,
                             resultsText.trueNegatives,
                             resultsText.falseNegatives,
                             metricComparison.getRuntimeCode(),
+                            resultsCode.postBlockCount,
                             resultsCode.truePositives,
                             resultsCode.falsePositives,
                             resultsCode.trueNegatives,
