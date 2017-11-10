@@ -105,8 +105,8 @@ public class MetricComparison {
                 inputTooShort = true;
             } finally {
                 endUserTimeNano = threadMXBean.getCurrentThreadUserTime() - startUserTimeNano;
+                setResultsText(endUserTimeNano);
             }
-            setResultsText(endUserTimeNano);
 
             // reset flag inputTooShort
             this.reset();
@@ -121,8 +121,8 @@ public class MetricComparison {
                 inputTooShort = true;
             } finally {
                 endUserTimeNano = threadMXBean.getCurrentThreadUserTime() - startUserTimeNano;
+                setResultsCode(endUserTimeNano);
             }
-            setResultsCode(endUserTimeNano);
 
             // reset flag inputTooShort
             this.reset();
