@@ -15,7 +15,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
@@ -53,7 +55,7 @@ class DisabledTests {
         manager.compareMetrics();
         manager.writeToCSV();
 
-        List<String> excludedVariants = new ArrayList<>();
+        Set<String> excludedVariants = new HashSet<>();
         excludedVariants.add("Kondrak05");
 
         CSVParser csvParser;
@@ -78,8 +80,9 @@ class DisabledTests {
                     }
                 }
 
-                if(skipRecord)
+                if(skipRecord) {
                     continue;
+                }
 
                 Double threshold = Double.valueOf(record.get("threshold"));
                 // comparison manager computes only thresholds mod 0.10 by now so unequal thresholds will be skipped
