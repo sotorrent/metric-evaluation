@@ -704,13 +704,13 @@ public class MetricComparisonManager implements Runnable {
         similarityMetrics.add(de.unitrier.st.stringsimilarity.set.Variants::threeShingleOverlapNormalized);
         similarityMetricsNames.add("threeShingleOverlapNormalized");
 
-        similarityMetrics.add(de.unitrier.st.stringsimilarity.set.Variants::twoGramSimilarityKondrak05);
-        similarityMetricsNames.add("twoGramSimilarityKondrak05");
-        similarityMetrics.add(de.unitrier.st.stringsimilarity.set.Variants::threeGramSimilarityKondrak05);
-        similarityMetricsNames.add("threeGramSimilarityKondrak05");
-        similarityMetrics.add(de.unitrier.st.stringsimilarity.set.Variants::fourGramSimilarityKondrak05);
-        similarityMetricsNames.add("fourGramSimilarityKondrak05");
-        similarityMetrics.add(de.unitrier.st.stringsimilarity.set.Variants::fiveGramSimilarityKondrak05);
-        similarityMetricsNames.add("fiveGramSimilarityKondrak05");
+//        similarityMetrics.add(de.unitrier.st.stringsimilarity.set.Variants::twoGramSimilarityKondrak05);
+//        similarityMetricsNames.add("twoGramSimilarityKondrak05");
+//        similarityMetrics.add(de.unitrier.st.stringsimilarity.set.Variants::threeGramSimilarityKondrak05);
+//        similarityMetricsNames.add("threeGramSimilarityKondrak05");
+//        similarityMetrics.add(de.unitrier.st.stringsimilarity.set.Variants::fourGramSimilarityKondrak05);
+//        similarityMetricsNames.add("fourGramSimilarityKondrak05");
+//        similarityMetrics.add(de.unitrier.st.stringsimilarity.set.Variants::fiveGramSimilarityKondrak05);
+//        similarityMetricsNames.add("fiveGramSimilarityKondrak05");
     }
 }
