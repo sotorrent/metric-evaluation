@@ -103,9 +103,9 @@ public class MetricComparison {
             }
             stopWatch.stop();
             setResultsText();
+
             // reset flag inputTooShort
             this.reset();
-
             // reset post block version history
             postVersionList.resetPostBlockVersionHistory();
 
@@ -119,9 +119,11 @@ public class MetricComparison {
             }
             stopWatch.stop();
             setResultsCode();
+
             // reset flag inputTooShort
             this.reset();
-
+            // reset post block version history
+            postVersionList.resetPostBlockVersionHistory();
         }
     }
 
