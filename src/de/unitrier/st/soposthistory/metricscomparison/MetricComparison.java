@@ -89,7 +89,7 @@ public class MetricComparison {
                         + "; actual: " + this.currentRepetition);
             }
 
-            logger.info("Repetition " + currentRepetition + ", current metric: " + similarityMetricName);
+            logger.info("Current metric: " + similarityMetricName + ", current threshold: " + similarityThreshold);
 
             long startUserTimeNano, endUserTimeNano;
 
