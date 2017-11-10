@@ -5,9 +5,9 @@ import de.unitrier.st.soposthistory.blocks.TextBlockVersion;
 import de.unitrier.st.soposthistory.gt.PostBlockConnection;
 import de.unitrier.st.soposthistory.gt.PostGroundTruth;
 import de.unitrier.st.soposthistory.util.Config;
+import de.unitrier.st.soposthistory.util.Util;
 import de.unitrier.st.soposthistory.version.PostVersionList;
 import de.unitrier.st.stringsimilarity.util.InputTooShortException;
-import org.apache.commons.lang3.time.StopWatch;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,7 +26,6 @@ public class MetricComparison {
     final private BiFunction<String, String, Double> similarityMetric;
     final private String similarityMetricName;
     final private double similarityThreshold;
-    final private StopWatch stopWatch;
     private boolean inputTooShort;
     private int numberOfRepetitions;
     private int currentRepetition;
@@ -68,7 +67,6 @@ public class MetricComparison {
 
         this.numberOfRepetitions = numberOfRepetitions;
         this.currentRepetition = 0;
-        stopWatch = new StopWatch();
     }
 
     private void reset() {
@@ -93,16 +91,17 @@ public class MetricComparison {
 
             logger.info("Repetition " + currentRepetition + ", current metric: " + similarityMetricName);
 
+            long startUserTimeNano, endUserTimeNano;
+
             // process version history of text blocks
-            stopWatch.reset();
-            stopWatch.start();
+            startUserTimeNano = Util.getUserTimeNano( );
             try {
                 postVersionList.processVersionHistory(config, TextBlockVersion.getPostBlockTypeIdFilter());
             } catch (InputTooShortException e) {
                 inputTooShort = true;
             }
-            stopWatch.stop();
-            setResultsText();
+            endUserTimeNano = Util.getUserTimeNano( ) - startUserTimeNano;
+            setResultsText(endUserTimeNano);
 
             // reset flag inputTooShort
             this.reset();
@@ -110,15 +109,14 @@ public class MetricComparison {
             postVersionList.resetPostBlockVersionHistory();
 
             // process version history of code blocks
-            stopWatch.reset();
-            stopWatch.start();
+            startUserTimeNano = Util.getUserTimeNano( );
             try {
                 postVersionList.processVersionHistory(config, CodeBlockVersion.getPostBlockTypeIdFilter());
             } catch (InputTooShortException e) {
                 inputTooShort = true;
             }
-            stopWatch.stop();
-            setResultsCode();
+            endUserTimeNano = Util.getUserTimeNano( ) - startUserTimeNano;
+            setResultsCode(endUserTimeNano);
 
             // reset flag inputTooShort
             this.reset();
@@ -127,22 +125,23 @@ public class MetricComparison {
         }
     }
 
-    private void setResultsText() {
-        runtimeText = setResults(resultsText, runtimeText, TextBlockVersion.getPostBlockTypeIdFilter());
+    private void setResultsText(long userTimeNano) {
+        runtimeText = setResults(resultsText, runtimeText, userTimeNano, TextBlockVersion.getPostBlockTypeIdFilter());
     }
 
-    private void setResultsCode() {
-        runtimeCode = setResults(resultsCode, runtimeCode, CodeBlockVersion.getPostBlockTypeIdFilter());
+    private void setResultsCode(long userTimeNano) {
+        runtimeCode = setResults(resultsCode, runtimeCode, userTimeNano, CodeBlockVersion.getPostBlockTypeIdFilter());
     }
 
-    private double setResults(Map<Integer, MetricResult> results, double runtime, Set<Integer> postBlockTypeFilter) {
+    private double setResults(Map<Integer, MetricResult> results, double runtimeOld, long runtimeNew,
+                              Set<Integer> postBlockTypeFilter) {
         if (currentRepetition == 1) {
             // set initial values after first run, return runtime
             for (int postHistoryId : postHistoryIds) {
                 MetricResult result = getResults(postHistoryId, postBlockTypeFilter);
                 results.put(postHistoryId, result);
             }
-            return runtime;
+            return runtimeNew;
         } else {
             // compare result values in later runs
             for (int postHistoryId : postHistoryIds) {
@@ -173,10 +172,10 @@ public class MetricComparison {
 
             if (currentRepetition < numberOfRepetitions) {
                 // return sum of runtimes
-                return runtime + stopWatch.getTime();
+                return runtimeOld + runtimeNew;
             } else {
                 // calculate and return mean runtime after last run
-                return (runtime + stopWatch.getTime()) / (double) numberOfRepetitions;
+                return (runtimeOld + runtimeNew) / (double) numberOfRepetitions;
             }
         }
     }
