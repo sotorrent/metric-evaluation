@@ -257,7 +257,7 @@ public class MetricComparisonManager implements Runnable {
 
             logger.info("Starting comparison run " + currentRepetition + "...");
             for (MetricComparison metricComparison : metricComparisons) {
-                logger.info("Current post: " + metricComparison.getPostId() + "("
+                logger.info("Current post: " + metricComparison.getPostId() + " ("
                         + metricComparison.getPostVersionList().size() + " versions)");
                 metricComparison.start(currentRepetition);
             }
