@@ -99,8 +99,9 @@ public class MetricComparison {
                 postVersionList.processVersionHistory(config, TextBlockVersion.getPostBlockTypeIdFilter());
             } catch (InputTooShortException e) {
                 inputTooShort = true;
+            } finally {
+                endUserTimeNano = Util.getUserTimeNano( ) - startUserTimeNano;
             }
-            endUserTimeNano = Util.getUserTimeNano( ) - startUserTimeNano;
             setResultsText(endUserTimeNano);
 
             // reset flag inputTooShort
@@ -114,8 +115,9 @@ public class MetricComparison {
                 postVersionList.processVersionHistory(config, CodeBlockVersion.getPostBlockTypeIdFilter());
             } catch (InputTooShortException e) {
                 inputTooShort = true;
+            } finally {
+                endUserTimeNano = Util.getUserTimeNano( ) - startUserTimeNano;
             }
-            endUserTimeNano = Util.getUserTimeNano( ) - startUserTimeNano;
             setResultsCode(endUserTimeNano);
 
             // reset flag inputTooShort
