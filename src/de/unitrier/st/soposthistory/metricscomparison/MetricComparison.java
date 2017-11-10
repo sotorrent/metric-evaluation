@@ -104,9 +104,14 @@ public class MetricComparison {
             } catch (InputTooShortException e) {
                 inputTooShort = true;
             } finally {
-                endUserTimeNano = threadMXBean.getCurrentThreadUserTime() - startUserTimeNano;
-                setResultsText(endUserTimeNano);
+                endUserTimeNano = threadMXBean.getCurrentThreadUserTime();
             }
+
+            // calculate runtime and set results
+            if (startUserTimeNano < 0 || endUserTimeNano < 0) {
+                throw new IllegalArgumentException("User time has not been calculated correctly.");
+            }
+            setResultsText(endUserTimeNano-startUserTimeNano);
 
             // reset flag inputTooShort
             this.reset();
@@ -120,9 +125,14 @@ public class MetricComparison {
             } catch (InputTooShortException e) {
                 inputTooShort = true;
             } finally {
-                endUserTimeNano = threadMXBean.getCurrentThreadUserTime() - startUserTimeNano;
-                setResultsCode(endUserTimeNano);
+                endUserTimeNano = threadMXBean.getCurrentThreadUserTime();
             }
+
+            // calculate runtime and set results
+            if (startUserTimeNano < 0 || endUserTimeNano < 0) {
+                throw new IllegalArgumentException("User time has not been calculated correctly.");
+            }
+            setResultsCode(endUserTimeNano-startUserTimeNano);
 
             // reset flag inputTooShort
             this.reset();
@@ -139,7 +149,7 @@ public class MetricComparison {
         runtimeCode = setResults(resultsCode, runtimeCode, userTimeNano, CodeBlockVersion.getPostBlockTypeIdFilter());
     }
 
-    private double setResults(Map<Integer, MetricResult> results, double runtimeOld, long runtimeNew,
+    private double setResults(Map<Integer, MetricResult> results, double runtime, long userTimeNano,
                               Set<Integer> postBlockTypeFilter) {
         if (currentRepetition == 1) {
             // set initial values after first run, return runtime
@@ -147,7 +157,7 @@ public class MetricComparison {
                 MetricResult result = getResults(postHistoryId, postBlockTypeFilter);
                 results.put(postHistoryId, result);
             }
-            return (double)runtimeNew;
+            return (double)userTimeNano;
         } else {
             // compare result values in later runs
             for (int postHistoryId : postHistoryIds) {
@@ -178,10 +188,10 @@ public class MetricComparison {
 
             if (currentRepetition < numberOfRepetitions) {
                 // return sum of runtimes
-                return runtimeOld + (double)runtimeNew;
+                return runtime + (double)userTimeNano;
             } else {
                 // calculate and return mean runtime after last run
-                return (runtimeOld + (double)runtimeNew) / (double)numberOfRepetitions;
+                return (runtime + (double)userTimeNano) / (double)numberOfRepetitions;
             }
         }
     }
