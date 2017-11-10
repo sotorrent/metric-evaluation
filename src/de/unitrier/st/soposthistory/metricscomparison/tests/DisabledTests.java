@@ -53,6 +53,9 @@ class DisabledTests {
         manager.compareMetrics();
         manager.writeToCSV();
 
+        List<String> excludedVariants = new ArrayList<>();
+        excludedVariants.add("Kondrak05");
+
         CSVParser csvParser;
 
         try {
@@ -66,6 +69,17 @@ class DisabledTests {
             List<CSVRecord> records = csvParser.getRecords();
             for (CSVRecord record : records) {
                 String metric = record.get("metric");
+
+                boolean skipRecord = false;
+                for(String excludedVariant : excludedVariants) {
+                    if (metric.contains(excludedVariant)) {
+                        skipRecord = true;
+                        break;
+                    }
+                }
+
+                if(skipRecord)
+                    continue;
 
                 Double threshold = Double.valueOf(record.get("threshold"));
                 // comparison manager computes only thresholds mod 0.10 by now so unequal thresholds will be skipped
@@ -110,6 +124,8 @@ class DisabledTests {
                         postHistoryIds = postHistoryIds_3758880;
                     } else if (postId == 22037280) {
                         postHistoryIds = postHistoryIds_22037280;
+                    } else {
+                        throw new IllegalArgumentException("Post with id " + postId + " has not been listed in test set");
                     }
 
                     assertNotNull(postHistoryIds);
