@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 class Main {
 
     public static void main (String[] args) {
-        System.out.println("SOPostHistory (Metrics Comparison)\n");
+        System.out.println("SOPostHistory (Metrics Comparison)");
 
         Options options = new Options();
 
