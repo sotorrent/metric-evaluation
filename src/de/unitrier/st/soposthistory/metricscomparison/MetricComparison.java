@@ -147,7 +147,7 @@ public class MetricComparison {
                 MetricResult result = getResults(postHistoryId, postBlockTypeFilter);
                 results.put(postHistoryId, result);
             }
-            return runtimeNew;
+            return (double)runtimeNew;
         } else {
             // compare result values in later runs
             for (int postHistoryId : postHistoryIds) {
@@ -178,10 +178,10 @@ public class MetricComparison {
 
             if (currentRepetition < numberOfRepetitions) {
                 // return sum of runtimes
-                return runtimeOld + runtimeNew;
+                return runtimeOld + (double)runtimeNew;
             } else {
                 // calculate and return mean runtime after last run
-                return (runtimeOld + runtimeNew) / (double) numberOfRepetitions;
+                return (runtimeOld + (double)runtimeNew) / (double)numberOfRepetitions;
             }
         }
     }
