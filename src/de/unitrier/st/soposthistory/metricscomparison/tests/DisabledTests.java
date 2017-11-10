@@ -115,18 +115,24 @@ class DisabledTests {
                     assertNotNull(postHistoryIds);
                     for (Integer tmpPostHistoryId : postHistoryIds) {
                         MetricComparison.MetricResult resultsText = tmpMetricComparison.getResultsText(tmpPostHistoryId);
-                        assertNull(resultsText.getTruePositives());
-                        assertNull(resultsText.getFalsePositives());
-                        assertNull(resultsText.getTrueNegatives());
-                        assertNull(resultsText.getFalseNegatives());
-
                         MetricComparison.MetricResult resultsCode = tmpMetricComparison.getResultsCode(tmpPostHistoryId);
-                        assertNull(resultsCode.getTruePositives());
-                        assertNull(resultsCode.getFalsePositives());
-                        assertNull(resultsCode.getTrueNegatives());
-                        assertNull(resultsCode.getFalseNegatives());
 
+                        boolean truePositives_textIsNull = (resultsText.getTruePositives() == null);
+                        boolean falsePositives_textIsNull = (resultsText.getFalsePositives() == null);
+                        boolean trueNegatives_textIsNull = (resultsText.getTrueNegatives() == null);
+                        boolean falseNegatives_textIsNull = (resultsText.getFalseNegatives() == null);
+
+                        boolean truePositives_codeIsNull = (resultsCode.getTruePositives() == null);
+                        boolean falsePositives_codeIsNull = (resultsCode.getFalsePositives() == null);
+                        boolean trueNegatives_codeIsNull = (resultsCode.getTrueNegatives() == null);
+                        boolean falseNegatives_codeIsNull = (resultsCode.getFalseNegatives() == null);
+
+                        // https://stackoverflow.com/q/19004611
+                        assertTrue(
+                                truePositives_textIsNull && falsePositives_textIsNull && trueNegatives_textIsNull && falseNegatives_textIsNull
+                                        || truePositives_codeIsNull && falsePositives_codeIsNull && trueNegatives_codeIsNull && falseNegatives_codeIsNull);
                     }
+
                 } else {
                     MetricComparison.MetricResult resultsText = tmpMetricComparison.getResultsText(postHistoryId);
                     assertEquals(truePositivesText, resultsText.getTruePositives());
