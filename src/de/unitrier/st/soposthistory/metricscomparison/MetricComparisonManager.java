@@ -256,11 +256,15 @@ public class MetricComparisonManager implements Runnable {
             }
 
             logger.info("Starting comparison run " + currentRepetition + "...");
+            int size = metricComparisons.size();
             for (int i = 0; i < metricComparisons.size(); i++) {
                 MetricComparison currentMetricComparison = metricComparisons.get(i);
+                // Locale.ROOT -> force '.' as decimal separator
+                String progress = String.format(Locale.ROOT, "%.2f%%", (((double)(i+1))/size*100));
                 logger.info("Current post: " + currentMetricComparison.getPostId() + " ("
                         + currentMetricComparison.getPostVersionList().size() + " versions)");
-                logger.info("MetricComparison " + i + " of " + metricComparisons.size());
+                logger.info("MetricComparison " + (i+1) + " of " + size + " (" + progress + "), " +
+                        "repetition " + currentRepetition + " of " + numberOfRepetitions);
                 currentMetricComparison.start(currentRepetition);
             }
         }
