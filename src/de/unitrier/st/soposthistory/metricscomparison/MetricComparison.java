@@ -198,17 +198,27 @@ public class MetricComparison {
     private MetricResult getResultAndSetRuntime(int postHistoryId, Runtime runtime, Set<Integer> postBlockTypeFilter) {
         MetricResult result = new MetricResult();
 
+        // runtime
         if (currentRepetition == 1) {
             runtime.setRuntimeTotal(runtimeTotal);
             runtime.setRuntimeUser(runtimeUser);
         } else if (currentRepetition < numberOfRepetitions) {
-            runtime.setRuntimeTotal(runtime.getRuntimeTotal() + runtimeTotal);
-            runtime.setRuntimeUser(runtime.getRuntimeUser() + runtimeUser);
+                runtime.setRuntimeTotal(runtime.getRuntimeTotal() + runtimeTotal);
+                runtime.setRuntimeUser(runtime.getRuntimeUser() + runtimeUser);
         } else {
             runtime.setRuntimeTotal(Math.round((double)(runtime.getRuntimeTotal() + runtimeTotal) / numberOfRepetitions));
             runtime.setRuntimeUser(Math.round((double)(runtime.getRuntimeUser() + runtimeUser) / numberOfRepetitions));
         }
 
+        // post block count
+        result.setPostBlockCount(0);
+        if (postBlockTypeFilter.contains(TextBlockVersion.postBlockTypeId))
+            result.setPostBlockCount(postVersionList.getPostVersion(postHistoryId).getTextBlocks().size());
+        if (postBlockTypeFilter.contains(CodeBlockVersion.postBlockTypeId))
+            result.setPostBlockCount(postVersionList.getPostVersion(postHistoryId).getCodeBlocks().size());
+
+
+        // results
         if (!inputTooShort) {
             int possibleConnections = postGroundTruth.getPossibleConnections(postHistoryId, postBlockTypeFilter);
             Set<PostBlockConnection> postBlockConnections = postVersionList.getPostVersion(postHistoryId).getConnections(postBlockTypeFilter);
@@ -231,11 +241,6 @@ public class MetricComparison {
             result.setTrueNegatives(trueNegativesCount);
             result.setFalseNegatives(falseNegativesCount);
 
-            result.setPostBlockCount(0);
-            if (postBlockTypeFilter.contains(TextBlockVersion.postBlockTypeId))
-                result.setPostBlockCount(result.getPostBlockCount() + postVersionList.getPostVersion(postHistoryId).getTextBlocks().size());
-            if (postBlockTypeFilter.contains(CodeBlockVersion.postBlockTypeId))
-                result.setPostBlockCount(result.getPostBlockCount() + postVersionList.getPostVersion(postHistoryId).getCodeBlocks().size());
         }
 
         return result;
