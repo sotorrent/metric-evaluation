@@ -330,16 +330,24 @@ public class MetricComparisonManager implements Runnable {
         }
 
         // write metric comparison results per postHistoryId and aggregate results per post
-        Map<Integer, MetricResultPost> resultsPerVersionText = new HashMap<>(); // postId -> MetricResult
-        Map<Integer, RuntimePost> runtimePerVersionText = new HashMap<>(); // postId -> Runtime
-        Map<Integer, MetricResultPost> resultsPerVersionCode = new HashMap<>(); // postId -> MetricResult
-        Map<Integer, RuntimePost> runtimePerVersionCode = new HashMap<>(); // postId -> Runtime
+        Map<Integer, MetricResultPost> resultsPerVersionText = null; // postId -> MetricResult
+        Map<Integer, RuntimePost> runtimePerVersionText = null; // postId -> Runtime
+        Map<Integer, MetricResultPost> resultsPerVersionCode = null; // postId -> MetricResult
+        Map<Integer, RuntimePost> runtimePerVersionCode = null; // postId -> Runtime
 
 
         logger.info("Writing metric comparison results per version to CSV file " + outputFilePerVersion.getName() + " ...");
         try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(outputFilePerVersion), csvFormatMetricComparisonVersion)) {
             // header is automatically written
+
             for (MetricComparison metricComparison : metricComparisons) {
+
+                // write metric comparison results per postHistoryId and aggregate results per post
+                resultsPerVersionText = new HashMap<>();
+                runtimePerVersionText = new HashMap<>();
+                resultsPerVersionCode = new HashMap<>();
+                runtimePerVersionCode = new HashMap<>();
+
                 int postId = metricComparison.getPostId();
                 List<Integer> postHistoryIdsForPost = postHistoryIds.get(postId);
                 int versionCount = metricComparison.getPostVersionList().size();
