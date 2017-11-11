@@ -73,7 +73,7 @@ public class MetricComparisonManager implements Runnable {
 
         // configure CSV format for metric comparison results
         csvFormatMetricComparison = CSVFormat.DEFAULT
-                .withHeader("Sample", "Metric", "Threshold", "PostId", "PostHistoryId", "RuntimeText", "TextBlockCount", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "RuntimeCode", "CodeBlockCount", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode")
+                .withHeader("Sample", "Metric", "Threshold", "PostId", "PostHistoryId", "RuntimeTextTotal", "RuntimeTextUser", "TextBlockCount", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "RuntimeCodeTotal", "RuntimeCodeUser", "CodeBlockCount", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode")
                 .withDelimiter(';')
                 .withQuote('"')
                 .withQuoteMode(QuoteMode.MINIMAL)
@@ -325,9 +325,12 @@ public class MetricComparisonManager implements Runnable {
                 int postId = metricComparison.getPostId();
                 List<Integer> postHistoryIdsForPost = postHistoryIds.get(postId);
 
+                MetricComparison.Runtime runtimeText = metricComparison.getRuntimeText();
+                MetricComparison.Runtime runtimeCode = metricComparison.getRuntimeCode();
+
                 for (int postHistoryId : postHistoryIdsForPost) {
-                    MetricComparison.MetricResult resultsText = metricComparison.getResultsText(postHistoryId);
-                    MetricComparison.MetricResult resultsCode = metricComparison.getResultsCode(postHistoryId);
+                    MetricComparison.MetricResult resultText = metricComparison.getResultText(postHistoryId);
+                    MetricComparison.MetricResult resultCode = metricComparison.getResultCode(postHistoryId);
 
                     csvPrinter.printRecord(
                             name,
@@ -335,18 +338,20 @@ public class MetricComparisonManager implements Runnable {
                             metricComparison.getSimilarityThreshold(),
                             postId,
                             postHistoryId,
-                            metricComparison.getRuntimeText(),
-                            resultsText.postBlockCount,
-                            resultsText.truePositives,
-                            resultsText.falsePositives,
-                            resultsText.trueNegatives,
-                            resultsText.falseNegatives,
-                            metricComparison.getRuntimeCode(),
-                            resultsCode.postBlockCount,
-                            resultsCode.truePositives,
-                            resultsCode.falsePositives,
-                            resultsCode.trueNegatives,
-                            resultsCode.falseNegatives
+                            runtimeText.getRuntimeTotal(),
+                            runtimeText.getRuntimeUser(),
+                            resultText.getPostBlockCount(),
+                            resultText.getTruePositives(),
+                            resultText.getFalsePositives(),
+                            resultText.getTrueNegatives(),
+                            resultText.getFalseNegatives(),
+                            runtimeCode.getRuntimeTotal(),
+                            runtimeCode.getRuntimeUser(),
+                            resultCode.getPostBlockCount(),
+                            resultCode.getTruePositives(),
+                            resultCode.getFalsePositives(),
+                            resultCode.getTrueNegatives(),
+                            resultCode.getFalseNegatives()
                     );
                 }
             }
@@ -704,6 +709,7 @@ public class MetricComparisonManager implements Runnable {
         similarityMetrics.add(de.unitrier.st.stringsimilarity.set.Variants::threeShingleOverlapNormalized);
         similarityMetricsNames.add("threeShingleOverlapNormalized");
 
+        // much slower than other nGram based variants -> excluded after test run
 //        similarityMetrics.add(de.unitrier.st.stringsimilarity.set.Variants::twoGramSimilarityKondrak05);
 //        similarityMetricsNames.add("twoGramSimilarityKondrak05");
 //        similarityMetrics.add(de.unitrier.st.stringsimilarity.set.Variants::threeGramSimilarityKondrak05);

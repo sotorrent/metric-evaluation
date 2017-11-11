@@ -1,5 +1,6 @@
 package de.unitrier.st.soposthistory.metricscomparison;
 
+import com.google.common.base.Stopwatch;
 import de.unitrier.st.soposthistory.blocks.CodeBlockVersion;
 import de.unitrier.st.soposthistory.blocks.TextBlockVersion;
 import de.unitrier.st.soposthistory.gt.PostBlockConnection;
@@ -30,14 +31,17 @@ public class MetricComparison {
     private int numberOfRepetitions;
     private int currentRepetition;
     private ThreadMXBean threadMXBean;
+    private Stopwatch stopWatch;
+    private long runtimeUser;
+    private long runtimeTotal;
 
     // text
-    private double runtimeText;
+    private Runtime runtimeText;
     // PostHistoryId -> metric results for text blocks
     private Map<Integer, MetricResult> resultsText;
 
     // code
-    private double runtimeCode;
+    private Runtime runtimeCode;
     // PostHistoryId -> metric results for code blocks
     private Map<Integer, MetricResult> resultsCode;
 
@@ -64,6 +68,11 @@ public class MetricComparison {
         this.similarityMetricName = similarityMetricName;
         this.similarityThreshold = similarityThreshold;
         this.inputTooShort = false;
+        this.runtimeUser = 0;
+        this.runtimeTotal = 0;
+
+        this.runtimeText = new Runtime();
+        this.runtimeCode = new Runtime();
         this.resultsText = new HashMap<>();
         this.resultsCode = new HashMap<>();
 
@@ -71,10 +80,14 @@ public class MetricComparison {
         this.currentRepetition = 0;
 
         this.threadMXBean = threadMXBean;
+        this.stopWatch = Stopwatch.createUnstarted();
     }
 
     private void reset() {
         this.inputTooShort = false;
+        this.runtimeTotal = 0;
+        this.runtimeUser = 0;
+        this.stopWatch.reset();
     }
 
     public void start(int currentRepetition) {
@@ -98,6 +111,7 @@ public class MetricComparison {
             long startUserTimeNano, endUserTimeNano;
 
             // process version history of text blocks
+            stopWatch.start();
             startUserTimeNano = threadMXBean.getCurrentThreadUserTime();
             try {
                 postVersionList.processVersionHistory(config, TextBlockVersion.getPostBlockTypeIdFilter());
@@ -105,20 +119,26 @@ public class MetricComparison {
                 inputTooShort = true;
             } finally {
                 endUserTimeNano = threadMXBean.getCurrentThreadUserTime();
+                stopWatch.stop();
             }
 
-            // calculate runtime and set results
+            // calculate runtimeUser and set results
             if (startUserTimeNano < 0 || endUserTimeNano < 0) {
                 throw new IllegalArgumentException("User time has not been calculated correctly.");
             }
-            setResultsText(endUserTimeNano-startUserTimeNano);
 
-            // reset flag inputTooShort
+            // set results for text blocks
+            runtimeUser = endUserTimeNano-startUserTimeNano;
+            runtimeTotal = stopWatch.elapsed().getNano();
+            setResultText();
+
+            // reset flag inputTooShort, stopWatch, and runtime variables
             this.reset();
             // reset post block version history
             postVersionList.resetPostBlockVersionHistory();
 
             // process version history of code blocks
+            stopWatch.start();
             startUserTimeNano = threadMXBean.getCurrentThreadUserTime();
             try {
                 postVersionList.processVersionHistory(config, CodeBlockVersion.getPostBlockTypeIdFilter());
@@ -126,43 +146,47 @@ public class MetricComparison {
                 inputTooShort = true;
             } finally {
                 endUserTimeNano = threadMXBean.getCurrentThreadUserTime();
+                stopWatch.stop();
             }
 
-            // calculate runtime and set results
+            // calculate runtimeUser and set results
             if (startUserTimeNano < 0 || endUserTimeNano < 0) {
                 throw new IllegalArgumentException("User time has not been calculated correctly.");
             }
-            setResultsCode(endUserTimeNano-startUserTimeNano);
 
-            // reset flag inputTooShort
+            // set results for code blocks
+            runtimeUser = endUserTimeNano-startUserTimeNano;
+            runtimeTotal = stopWatch.elapsed().getNano();
+            setResultCode();
+
+            // reset flag inputTooShort, stopWatch, and runtime variables
             this.reset();
             // reset post block version history
             postVersionList.resetPostBlockVersionHistory();
         }
     }
 
-    private void setResultsText(long userTimeNano) {
-        runtimeText = setResults(resultsText, runtimeText, userTimeNano, TextBlockVersion.getPostBlockTypeIdFilter());
+    private void setResultText() {
+        setResult(resultsText, runtimeText, TextBlockVersion.getPostBlockTypeIdFilter());
     }
 
-    private void setResultsCode(long userTimeNano) {
-        runtimeCode = setResults(resultsCode, runtimeCode, userTimeNano, CodeBlockVersion.getPostBlockTypeIdFilter());
+    private void setResultCode() {
+        setResult(resultsCode, runtimeCode, CodeBlockVersion.getPostBlockTypeIdFilter());
     }
 
-    private double setResults(Map<Integer, MetricResult> results, double runtime, long userTimeNano,
-                              Set<Integer> postBlockTypeFilter) {
+    private void setResult(Map<Integer, MetricResult> results, Runtime runtime,
+                           Set<Integer> postBlockTypeFilter) {
         if (currentRepetition == 1) {
-            // set initial values after first run, return runtime
+            // set initial values after first run, return runtimeUser
             for (int postHistoryId : postHistoryIds) {
-                MetricResult result = getResults(postHistoryId, postBlockTypeFilter);
+                MetricResult result = getResultsAndSetRuntime(postHistoryId, runtime, postBlockTypeFilter);
                 results.put(postHistoryId, result);
             }
-            return (double)userTimeNano;
         } else {
             // compare result values in later runs
             for (int postHistoryId : postHistoryIds) {
                 MetricResult resultInMap = results.get(postHistoryId);
-                MetricResult newResult = getResults(postHistoryId, postBlockTypeFilter);
+                MetricResult newResult = getResultsAndSetRuntime(postHistoryId, runtime, postBlockTypeFilter);
                 boolean truePositivesEqual = (resultInMap.truePositives == null && newResult.truePositives == null)
                         || (resultInMap.truePositives != null && newResult.truePositives != null
                         && resultInMap.truePositives.equals(newResult.truePositives));
@@ -185,19 +209,22 @@ public class MetricComparison {
                             + (currentRepetition - 1) + " to " + currentRepetition);
                 }
             }
-
-            if (currentRepetition < numberOfRepetitions) {
-                // return sum of runtimes
-                return runtime + (double)userTimeNano;
-            } else {
-                // calculate and return mean runtime after last run
-                return (runtime + (double)userTimeNano) / (double)numberOfRepetitions;
-            }
         }
     }
 
-    private MetricResult getResults(int postHistoryId, Set<Integer> postBlockTypeFilter) {
+    private MetricResult getResultsAndSetRuntime(int postHistoryId, Runtime runtime, Set<Integer> postBlockTypeFilter) {
         MetricResult result = new MetricResult();
+
+        if (currentRepetition == 1) {
+            runtime.runtimeTotal = runtimeTotal;
+            runtime.runtimeUser = runtimeUser;
+        } else if (currentRepetition < numberOfRepetitions) {
+            runtime.runtimeTotal = runtime.runtimeTotal + runtimeTotal;
+            runtime.runtimeUser = runtime.runtimeUser + runtimeUser;
+        } else {
+            runtime.runtimeTotal = Math.round((double)(runtime.runtimeTotal + runtimeTotal) / numberOfRepetitions);
+            runtime.runtimeUser = Math.round((double)(runtime.runtimeUser + runtimeUser) / numberOfRepetitions);
+        }
 
         if (!inputTooShort) {
             int possibleConnections = postGroundTruth.getPossibleConnections(postHistoryId, postBlockTypeFilter);
@@ -247,32 +274,49 @@ public class MetricComparison {
         return postId;
     }
 
-    public double getRuntimeText() {
-        return runtimeText;
-    }
-
-    public MetricResult getResultsText(int postHistoryId) {
-        return resultsText.get(postHistoryId);
-    }
-
-    public double getRuntimeCode() {
-        return runtimeCode;
-    }
-
-    public MetricResult getResultsCode(int postHistoryId) {
-        return resultsCode.get(postHistoryId);
-    }
-
     public PostVersionList getPostVersionList() {
         return postVersionList;
     }
 
+    public Runtime getRuntimeText() {
+        return runtimeText;
+    }
+
+    public Runtime getRuntimeCode() {
+        return runtimeCode;
+    }
+
+    public MetricResult getResultText(int postHistoryId) {
+        return resultsText.get(postHistoryId);
+    }
+
+    public MetricResult getResultCode(int postHistoryId) {
+        return resultsCode.get(postHistoryId);
+    }
+
+    public class Runtime {
+        private Long runtimeTotal = null;
+        private Long runtimeUser = null;
+
+        public Long getRuntimeTotal() {
+            return runtimeTotal;
+        }
+
+        public Long getRuntimeUser() {
+            return runtimeUser;
+        }
+    }
+
     public class MetricResult {
-        Integer truePositives = null;
-        Integer falsePositives = null;
-        Integer trueNegatives = null;
-        Integer falseNegatives = null;
-        Integer postBlockCount = null; // needed to compute true negatives in test cases
+        private Integer postBlockCount = null;
+        private Integer truePositives = null;
+        private Integer falsePositives = null;
+        private Integer trueNegatives = null;
+        private Integer falseNegatives = null;
+
+        public Integer getPostBlockCount() {
+            return postBlockCount;
+        }
 
         public Integer getTruePositives() {
             return truePositives;
@@ -288,10 +332,6 @@ public class MetricComparison {
 
         public Integer getFalseNegatives() {
             return falseNegatives;
-        }
-
-        public Integer getPostBlockCount() {
-            return postBlockCount;
         }
     }
 }
