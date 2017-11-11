@@ -433,13 +433,75 @@ public class MetricComparisonManager implements Runnable {
                         // text
                         MetricResult resultInMapText = resultsPerVersionText.get(postId);
                         resultInMapText.setPostBlockCount(resultInMapText.getPostBlockCount() + resultText.getPostBlockCount());
-                        resultInMapText.setTruePositives(resultInMapText.getTruePositives() != null ? resultInMapText.getTruePositives() + resultText.getTruePositives() : resultText.getTruePositives());
-                        resultInMapText.setFalsePositives(resultInMapText.getFalsePositives() != null ? resultInMapText.getFalsePositives() + resultText.getFalsePositives() : resultText.getFalsePositives());
-                        resultInMapText.setTrueNegatives(resultInMapText.getTrueNegatives() != null ? resultInMapText.getTrueNegatives() + resultText.getTrueNegatives() : resultText.getTrueNegatives());
-                        resultInMapText.setFalseNegatives(resultInMapText.getFalseNegatives() != null ? resultInMapText.getFalseNegatives() + resultText.getFalseNegatives() : resultText.getFalseNegatives());
+
+                        if (resultInMapText.getTruePositives() != null) {
+                            if (resultText.getTruePositives() != null) {
+                                resultInMapText.setTruePositives(resultInMapText.getTruePositives() + resultText.getTruePositives());
+                            }
+                        } else {
+                            resultInMapText.setTruePositives(resultText.getTruePositives());
+                        }
+
+                        if (resultInMapText.getFalsePositives() != null) {
+                            if (resultText.getFalsePositives() != null) {
+                                resultInMapText.setFalsePositives(resultInMapText.getFalsePositives() + resultText.getFalsePositives());
+                            }
+                        } else {
+                            resultInMapText.setFalsePositives(resultText.getFalsePositives());
+                        }
+
+                        if (resultInMapText.getTrueNegatives() != null) {
+                            if (resultText.getTrueNegatives() != null) {
+                                resultInMapText.setTrueNegatives(resultInMapText.getTrueNegatives() + resultText.getTrueNegatives());
+                            }
+                        } else {
+                            resultInMapText.setTrueNegatives(resultText.getTrueNegatives());
+                        }
+
+                        if (resultInMapText.getFalseNegatives() != null) {
+                            if (resultText.getFalseNegatives() != null) {
+                                resultInMapText.setFalseNegatives(resultInMapText.getFalseNegatives() + resultText.getFalseNegatives());
+                            }
+                        } else {
+                            resultInMapText.setFalseNegatives(resultText.getFalseNegatives());
+                        }
+
                         // code
                         MetricResult resultInMapCode = resultsPerVersionCode.get(postId);
                         resultInMapCode.setPostBlockCount(resultInMapCode.getPostBlockCount() + resultCode.getPostBlockCount());
+
+                        if (resultInMapCode.getTruePositives() != null) {
+                            if (resultCode.getTruePositives() != null) {
+                                resultInMapCode.setTruePositives(resultInMapCode.getTruePositives() + resultCode.getTruePositives());
+                            }
+                        } else {
+                            resultInMapCode.setTruePositives(resultCode.getTruePositives());
+                        }
+
+                        if (resultInMapCode.getFalsePositives() != null) {
+                            if (resultCode.getFalsePositives() != null) {
+                                resultInMapCode.setFalsePositives(resultInMapCode.getFalsePositives() + resultCode.getFalsePositives());
+                            }
+                        } else {
+                            resultInMapCode.setFalsePositives(resultCode.getFalsePositives());
+                        }
+
+                        if (resultInMapCode.getTrueNegatives() != null) {
+                            if (resultCode.getTrueNegatives() != null) {
+                                resultInMapCode.setTrueNegatives(resultInMapCode.getTrueNegatives() + resultCode.getTrueNegatives());
+                            }
+                        } else {
+                            resultInMapCode.setTrueNegatives(resultCode.getTrueNegatives());
+                        }
+
+                        if (resultInMapCode.getFalseNegatives() != null) {
+                            if (resultCode.getFalseNegatives() != null) {
+                                resultInMapCode.setFalseNegatives(resultInMapCode.getFalseNegatives() + resultCode.getFalseNegatives());
+                            }
+                        } else {
+                            resultInMapCode.setFalseNegatives(resultCode.getFalseNegatives());
+                        }
+
                         resultInMapCode.setTruePositives(resultInMapCode.getTruePositives() != null ? resultInMapCode.getTruePositives() + resultCode.getTruePositives() : resultCode.getTruePositives());
                         resultInMapCode.setFalsePositives(resultInMapCode.getFalsePositives() != null ? resultInMapCode.getFalsePositives() + resultCode.getFalsePositives() : resultCode.getFalsePositives());
                         resultInMapCode.setTrueNegatives(resultInMapCode.getTrueNegatives() != null ? resultInMapCode.getTrueNegatives() + resultCode.getTrueNegatives() : resultCode.getTrueNegatives());
