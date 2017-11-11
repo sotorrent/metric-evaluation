@@ -73,7 +73,7 @@ public class MetricComparisonManager implements Runnable {
 
         // configure CSV format for metric comparison results
         csvFormatMetricComparison = CSVFormat.DEFAULT
-                .withHeader("Sample", "Metric", "Threshold", "PostId", "PostHistoryId", "RuntimeTextTotal", "RuntimeTextUser", "TextBlockCount", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "RuntimeCodeTotal", "RuntimeCodeUser", "CodeBlockCount", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode")
+                .withHeader("Sample", "Metric", "Threshold", "PostId", "VersionCount", "PostHistoryId", "RuntimeTextTotal", "RuntimeTextUser", "TextBlockCount", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "RuntimeCodeTotal", "RuntimeCodeUser", "CodeBlockCount", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode")
                 .withDelimiter(';')
                 .withQuote('"')
                 .withQuoteMode(QuoteMode.MINIMAL)
@@ -324,6 +324,7 @@ public class MetricComparisonManager implements Runnable {
             for (MetricComparison metricComparison : metricComparisons) {
                 int postId = metricComparison.getPostId();
                 List<Integer> postHistoryIdsForPost = postHistoryIds.get(postId);
+                int versionCount = metricComparison.getPostVersionList().size();
 
                 MetricComparison.Runtime runtimeText = metricComparison.getRuntimeText();
                 MetricComparison.Runtime runtimeCode = metricComparison.getRuntimeCode();
@@ -337,6 +338,7 @@ public class MetricComparisonManager implements Runnable {
                             metricComparison.getSimilarityMetricName(),
                             metricComparison.getSimilarityThreshold(),
                             postId,
+                            versionCount,
                             postHistoryId,
                             runtimeText.getRuntimeTotal(),
                             runtimeText.getRuntimeUser(),
