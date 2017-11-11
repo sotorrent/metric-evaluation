@@ -1,5 +1,7 @@
 package de.unitrier.st.soposthistory.metricscomparison;
 
+import de.unitrier.st.soposthistory.blocks.CodeBlockVersion;
+import de.unitrier.st.soposthistory.blocks.TextBlockVersion;
 import de.unitrier.st.soposthistory.gt.PostBlockConnection;
 import de.unitrier.st.soposthistory.gt.PostGroundTruth;
 import de.unitrier.st.soposthistory.version.PostVersionList;
@@ -24,7 +26,8 @@ import static de.unitrier.st.soposthistory.util.Util.getClassLogger;
 public class MetricComparisonManager implements Runnable {
     public static Logger logger = null;
     public static final CSVFormat csvFormatPostIds;
-    public static final CSVFormat csvFormatMetricComparison;
+    public static final CSVFormat csvFormatMetricComparisonPost;
+    public static final CSVFormat csvFormatMetricComparisonVersion;
 
     private static final Path DEFAULT_OUTPUT_DIR = Paths.get("output");
 
@@ -71,9 +74,18 @@ public class MetricComparisonManager implements Runnable {
                 .withQuoteMode(QuoteMode.MINIMAL)
                 .withEscape('\\');
 
-        // configure CSV format for metric comparison results
-        csvFormatMetricComparison = CSVFormat.DEFAULT
-                .withHeader("Sample", "Metric", "Threshold", "PostId", "VersionCount", "PostHistoryId", "RuntimeTextTotal", "RuntimeTextUser", "TextBlockCount", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "RuntimeCodeTotal", "RuntimeCodeUser", "CodeBlockCount", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode")
+        // configure CSV format for metric comparison results (per version, i.e., per PostHistoryId)
+        csvFormatMetricComparisonVersion = CSVFormat.DEFAULT
+                .withHeader("Sample", "Metric", "Threshold", "PostId", "PostHistoryId", "PossibleConnections", "RuntimeTextTotal", "RuntimeTextUser", "TextBlockCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "RuntimeCodeTotal", "RuntimeCodeUser", "CodeBlockCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode")
+                .withDelimiter(';')
+                .withQuote('"')
+                .withQuoteMode(QuoteMode.MINIMAL)
+                .withEscape('\\')
+                .withNullString("null");
+
+        // configure CSV format for metric comparison results (per post, i.e., per PostVersionList)
+        csvFormatMetricComparisonPost = CSVFormat.DEFAULT
+                .withHeader("Sample", "Metric", "Threshold", "PostId", "VersionCount", "PossibleConnections", "RuntimeTextTotal", "RuntimeTextUser", "TextBlockCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "RuntimeCodeTotal", "RuntimeCodeUser", "CodeBlockCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode")
                 .withDelimiter(';')
                 .withQuote('"')
                 .withQuoteMode(QuoteMode.MINIMAL)
@@ -118,7 +130,7 @@ public class MetricComparisonManager implements Runnable {
             true,
             true,
             true,
-            5
+            4
     );
 
     public MetricComparisonManager withName(String name) {
@@ -309,40 +321,78 @@ public class MetricComparisonManager implements Runnable {
             e.printStackTrace();
         }
 
-        File outputFile = Paths.get(this.outputDirPath.toString(), name + ".csv").toFile();
+        File outputFilePerVersion = Paths.get(this.outputDirPath.toString(), name + "_per_version.csv").toFile();
 
-        if (outputFile.exists()) {
-            if (!outputFile.delete()) {
-                throw new IllegalStateException("Error while deleting output file: " + outputFile);
+        if (outputFilePerVersion.exists()) {
+            if (!outputFilePerVersion.delete()) {
+                throw new IllegalStateException("Error while deleting output file: " + outputFilePerVersion);
             }
         }
 
-        // write metric comparison results
-        logger.info("Writing metric comparison results to CSV file " + outputFile.getName() + " ...");
-        try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(outputFile), csvFormatMetricComparison)) {
+        // write metric comparison results per postHistoryId and aggregate results per post
+        Map<Integer, MetricResultPost> resultsPerVersionText = new HashMap<>(); // postId -> MetricResult
+        Map<Integer, RuntimePost> runtimePerVersionText = new HashMap<>(); // postId -> Runtime
+        Map<Integer, MetricResultPost> resultsPerVersionCode = new HashMap<>(); // postId -> MetricResult
+        Map<Integer, RuntimePost> runtimePerVersionCode = new HashMap<>(); // postId -> Runtime
+
+
+        logger.info("Writing metric comparison results per version to CSV file " + outputFilePerVersion.getName() + " ...");
+        try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(outputFilePerVersion), csvFormatMetricComparisonVersion)) {
             // header is automatically written
             for (MetricComparison metricComparison : metricComparisons) {
                 int postId = metricComparison.getPostId();
                 List<Integer> postHistoryIdsForPost = postHistoryIds.get(postId);
                 int versionCount = metricComparison.getPostVersionList().size();
 
-                MetricComparison.Runtime runtimeText = metricComparison.getRuntimeText();
-                MetricComparison.Runtime runtimeCode = metricComparison.getRuntimeCode();
+                Runtime runtimeText = metricComparison.getRuntimeText();
+                Runtime runtimeCode = metricComparison.getRuntimeCode();
+
+                // save runtime results for aggregation
+                if (!runtimePerVersionText.containsKey(postId)) {
+                    // text
+                    runtimePerVersionText.put(postId, new RuntimePost(
+                            metricComparison.getSimilarityMetricName(),
+                            metricComparison.getSimilarityThreshold(),
+                            runtimeText.getRuntimeTotal(),
+                            runtimeText.getRuntimeUser()
+                    ));
+                    // code
+                    runtimePerVersionCode.put(postId, new RuntimePost(
+                            metricComparison.getSimilarityMetricName(),
+                            metricComparison.getSimilarityThreshold(),
+                            runtimeCode.getRuntimeTotal(),
+                            runtimeCode.getRuntimeUser()
+                    ));
+                } else {
+                    // text
+                    Runtime runtimeInMapText = runtimePerVersionText.get(postId);
+                    runtimeInMapText.setRuntimeTotal(runtimeInMapText.getRuntimeTotal() + runtimeText.getRuntimeTotal());
+                    runtimeInMapText.setRuntimeUser(runtimeInMapText.getRuntimeUser() + runtimeText.getRuntimeUser());
+                    // code
+                    Runtime runtimeInMapCode = runtimePerVersionCode.get(postId);
+                    runtimeInMapCode.setRuntimeTotal(runtimeInMapCode.getRuntimeTotal() + runtimeCode.getRuntimeTotal());
+                    runtimeInMapCode.setRuntimeUser(runtimeInMapCode.getRuntimeUser() + runtimeCode.getRuntimeUser());
+                }
 
                 for (int postHistoryId : postHistoryIdsForPost) {
-                    MetricComparison.MetricResult resultText = metricComparison.getResultText(postHistoryId);
-                    MetricComparison.MetricResult resultCode = metricComparison.getResultCode(postHistoryId);
+                    MetricResult resultText = metricComparison.getResultText(postHistoryId);
+                    MetricResult resultCode = metricComparison.getResultCode(postHistoryId);
 
+                    // "Sample", "Metric", "Threshold", "PostId", "PostHistoryId", "PossibleConnections", "RuntimeTextTotal",
+                    // "RuntimeTextUser", "TextBlockCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText",
+                    // "FalsePositivesText", "FalseNegativesText", "RuntimeCodeTotal", "RuntimeCodeUser", "CodeBlockCount",
+                    // "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode"
                     csvPrinter.printRecord(
                             name,
                             metricComparison.getSimilarityMetricName(),
                             metricComparison.getSimilarityThreshold(),
                             postId,
-                            versionCount,
                             postHistoryId,
+                            metricComparison.getPostVersionList().getPostVersion(postHistoryId).getPossibleConnections(),
                             runtimeText.getRuntimeTotal(),
                             runtimeText.getRuntimeUser(),
                             resultText.getPostBlockCount(),
+                            metricComparison.getPostVersionList().getPostVersion(postHistoryId).getPossibleConnections(TextBlockVersion.getPostBlockTypeIdFilter()),
                             resultText.getTruePositives(),
                             resultText.getFalsePositives(),
                             resultText.getTrueNegatives(),
@@ -350,16 +400,113 @@ public class MetricComparisonManager implements Runnable {
                             runtimeCode.getRuntimeTotal(),
                             runtimeCode.getRuntimeUser(),
                             resultCode.getPostBlockCount(),
+                            metricComparison.getPostVersionList().getPostVersion(postHistoryId).getPossibleConnections(CodeBlockVersion.getPostBlockTypeIdFilter()),
                             resultCode.getTruePositives(),
                             resultCode.getFalsePositives(),
                             resultCode.getTrueNegatives(),
                             resultCode.getFalseNegatives()
                     );
+
+                    // save runtime results for aggregation
+                    if (!resultsPerVersionText.containsKey(postId)) {
+                        // text
+                        resultsPerVersionText.put(postId, new MetricResultPost(
+                                metricComparison.getSimilarityMetricName(),
+                                metricComparison.getSimilarityThreshold(),
+                                resultText.getPostBlockCount(),
+                                resultText.getTruePositives(),
+                                resultText.getFalsePositives(),
+                                resultText.getTrueNegatives(),
+                                resultText.getFalseNegatives()
+                        ));
+                        // code
+                        resultsPerVersionCode.put(postId, new MetricResultPost(
+                                metricComparison.getSimilarityMetricName(),
+                                metricComparison.getSimilarityThreshold(),
+                                resultCode.getPostBlockCount(),
+                                resultCode.getTruePositives(),
+                                resultCode.getFalsePositives(),
+                                resultCode.getTrueNegatives(),
+                                resultCode.getFalseNegatives()
+                        ));
+                    } else {
+                        // text
+                        MetricResult resultInMapText = resultsPerVersionText.get(postId);
+                        resultInMapText.setPostBlockCount(resultInMapText.getPostBlockCount() + resultText.getPostBlockCount());
+                        resultInMapText.setTruePositives(resultInMapText.getTruePositives() + resultText.getTruePositives());
+                        resultInMapText.setFalsePositives(resultInMapText.getFalsePositives() + resultText.getFalsePositives());
+                        resultInMapText.setTrueNegatives(resultInMapText.getTrueNegatives() + resultText.getTrueNegatives());
+                        resultInMapText.setFalseNegatives(resultInMapText.getFalseNegatives() + resultText.getFalseNegatives());
+                        // code
+                        MetricResult resultInMapCode = resultsPerVersionCode.get(postId);
+                        resultInMapCode.setPostBlockCount(resultInMapCode.getPostBlockCount() + resultCode.getPostBlockCount());
+                        resultInMapCode.setTruePositives(resultInMapCode.getTruePositives() + resultCode.getTruePositives());
+                        resultInMapCode.setFalsePositives(resultInMapCode.getFalsePositives() + resultCode.getFalsePositives());
+                        resultInMapCode.setTrueNegatives(resultInMapCode.getTrueNegatives() + resultCode.getTrueNegatives());
+                        resultInMapCode.setFalseNegatives(resultInMapCode.getFalseNegatives() + resultCode.getFalseNegatives());
+                    }
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        File outputFilePerPost = Paths.get(this.outputDirPath.toString(), name + "_per_post.csv").toFile();
+
+        if (outputFilePerPost.exists()) {
+            if (!outputFilePerPost.delete()) {
+                throw new IllegalStateException("Error while deleting output file: " + outputFilePerPost);
+            }
+        }
+
+        logger.info("Writing metric comparison results per post to CSV file " + outputFilePerPost.getName() + " ...");
+        try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(outputFilePerPost), csvFormatMetricComparisonPost)) {
+            // header is automatically written
+            for (int postId : resultsPerVersionText.keySet()) {
+                MetricResultPost resultText = resultsPerVersionText.get(postId);
+                MetricResultPost resultCode = resultsPerVersionCode.get(postId);
+                RuntimePost runtimeText = runtimePerVersionText.get(postId);
+                RuntimePost runtimeCode = runtimePerVersionCode.get(postId);
+                PostVersionList postVersionList = postVersionLists.get(postId);
+
+                if (resultText.getPostBlockCount() != postVersionList.getTextBlockVersionCount()
+                    || resultCode.getPostBlockCount() != postVersionList.getCodeBlockVersionCount()) {
+                    throw new IllegalStateException("Version count does not match.");
+                }
+
+                // "Sample", "Metric", "Threshold", "PostId", "VersionCount", "PossibleConnections", "RuntimeTextTotal",
+                // "RuntimeTextUser", "TextBlockCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText",
+                // "FalsePositivesText", "FalseNegativesText", "RuntimeCodeTotal", "RuntimeCodeUser", "CodeBlockCount",
+                // "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode"
+                csvPrinter.printRecord(
+                        name,
+                        resultText.getSimilarityMetricName(),
+                        resultText.getSimilarityThreshold(),
+                        postId,
+                        postVersionList.size(),
+                        postVersionList.getPossibleConnections(),
+                        runtimeText.getRuntimeTotal(),
+                        runtimeText.getRuntimeUser(),
+                        resultText.getPostBlockCount(),
+                        postVersionList.getPossibleConnections(TextBlockVersion.getPostBlockTypeIdFilter()),
+                        resultText.getTruePositives(),
+                        resultText.getFalsePositives(),
+                        resultText.getTrueNegatives(),
+                        resultText.getFalseNegatives(),
+                        runtimeCode.getRuntimeTotal(),
+                        runtimeCode.getRuntimeUser(),
+                        resultCode.getPostBlockCount(),
+                        postVersionList.getPossibleConnections(CodeBlockVersion.getPostBlockTypeIdFilter()),
+                        resultCode.getTruePositives(),
+                        resultCode.getFalsePositives(),
+                        resultCode.getTrueNegatives(),
+                        resultCode.getFalseNegatives()
+                );
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public Map<Integer, PostGroundTruth> getPostGroundTruth() {

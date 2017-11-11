@@ -193,7 +193,7 @@ public class Statistics {
         try (CSVParser csvParser = CSVParser.parse(
                 pathToMultipleConnectionsFile.toFile(),
                 StandardCharsets.UTF_8,
-                MetricComparisonManager.csvFormatMetricComparison.withFirstRecordAsHeader()
+                MetricComparisonManager.csvFormatMetricComparisonVersion.withFirstRecordAsHeader()
             )) {
 
             Util.ensureEmptyDirectoryExists(outputDir);

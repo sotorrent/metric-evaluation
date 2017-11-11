@@ -2,6 +2,7 @@ package de.unitrier.st.soposthistory.metricscomparison.tests;
 
 import de.unitrier.st.soposthistory.metricscomparison.MetricComparison;
 import de.unitrier.st.soposthistory.metricscomparison.MetricComparisonManager;
+import de.unitrier.st.soposthistory.metricscomparison.MetricResult;
 import de.unitrier.st.soposthistory.metricscomparison.Statistics;
 import de.unitrier.st.soposthistory.version.PostVersionList;
 import org.apache.commons.csv.CSVParser;
@@ -64,7 +65,7 @@ class DisabledTests {
             csvParser = CSVParser.parse(
                     pathToOldMetricComparisonResults.toFile(),
                     StandardCharsets.UTF_8,
-                    MetricComparisonManager.csvFormatMetricComparison.withFirstRecordAsHeader()
+                    MetricComparisonManager.csvFormatMetricComparisonVersion.withFirstRecordAsHeader()
             );
 
             csvParser.getHeaderMap();
@@ -133,8 +134,8 @@ class DisabledTests {
 
                     assertNotNull(postHistoryIds);
                     for (Integer tmpPostHistoryId : postHistoryIds) {
-                        MetricComparison.MetricResult resultsText = tmpMetricComparison.getResultText(tmpPostHistoryId);
-                        MetricComparison.MetricResult resultsCode = tmpMetricComparison.getResultCode(tmpPostHistoryId);
+                        MetricResult resultsText = tmpMetricComparison.getResultText(tmpPostHistoryId);
+                        MetricResult resultsCode = tmpMetricComparison.getResultCode(tmpPostHistoryId);
 
                         boolean truePositives_textIsNull = (resultsText.getTruePositives() == null);
                         boolean falsePositives_textIsNull = (resultsText.getFalsePositives() == null);
@@ -153,14 +154,14 @@ class DisabledTests {
                     }
 
                 } else {
-                    MetricComparison.MetricResult resultsText = tmpMetricComparison.getResultText(postHistoryId);
+                    MetricResult resultsText = tmpMetricComparison.getResultText(postHistoryId);
                     assertEquals(truePositivesText, resultsText.getTruePositives());
                     assertEquals(trueNegativesText, new Integer(resultsText.getPostBlockCount() - resultsText.getTruePositives() - resultsText.getFalsePositives() - resultsText.getFalseNegatives()));
                     assertEquals(trueNegativesText, new Integer(resultsText.getPostBlockCount() - resultsText.getTruePositives() - resultsText.getFalseNegatives()));
                     assertEquals(falsePositivesText, resultsText.getFalsePositives());
                     assertEquals(falseNegativesText, resultsText.getFalseNegatives());
 
-                    MetricComparison.MetricResult resultsCode = tmpMetricComparison.getResultCode(postHistoryId);
+                    MetricResult resultsCode = tmpMetricComparison.getResultCode(postHistoryId);
                     assertEquals(truePositivesCode, resultsCode.getTruePositives());
                     assertEquals(trueNegativesCode, new Integer(resultsCode.getPostBlockCount() - resultsCode.getTruePositives() - resultsCode.getFalsePositives() - resultsCode.getFalseNegatives()));
                     assertEquals(trueNegativesCode, new Integer(resultsCode.getPostBlockCount() - resultsCode.getTruePositives() - resultsCode.getFalseNegatives()));

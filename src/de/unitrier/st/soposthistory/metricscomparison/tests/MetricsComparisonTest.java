@@ -2,6 +2,7 @@ package de.unitrier.st.soposthistory.metricscomparison.tests;
 
 import de.unitrier.st.soposthistory.metricscomparison.MetricComparison;
 import de.unitrier.st.soposthistory.metricscomparison.MetricComparisonManager;
+import de.unitrier.st.soposthistory.metricscomparison.MetricResult;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
@@ -46,13 +47,13 @@ class MetricsComparisonTest {
         // first version has never predecessors
         int postHistoryId = postHistoryIds_3758880.get(0);
 
-        MetricComparison.MetricResult resultsText = comparison_a_3758880.getResultText(postHistoryId);
+        MetricResult resultsText = comparison_a_3758880.getResultText(postHistoryId);
         assertEquals(new Integer(0), resultsText.getTruePositives());
         assertEquals(new Integer(0), resultsText.getFalsePositives());
         assertEquals(new Integer(0), resultsText.getTrueNegatives());
         assertEquals(new Integer(0), resultsText.getFalseNegatives());
 
-        MetricComparison.MetricResult resultsCode = comparison_a_3758880.getResultCode(postHistoryId);
+        MetricResult resultsCode = comparison_a_3758880.getResultCode(postHistoryId);
         assertEquals(new Integer(0), resultsCode.getTruePositives());
         assertEquals(new Integer(0), resultsCode.getFalsePositives());
         assertEquals(new Integer(0), resultsCode.getTrueNegatives());
