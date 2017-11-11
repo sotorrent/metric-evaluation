@@ -62,4 +62,46 @@ public class MetricResult {
     void setFalseNegatives(Integer falseNegatives) {
         this.falseNegatives = falseNegatives;
     }
+
+    void add(MetricResult result) {
+        if (getPostBlockVersionCount() != null) {
+            if (result.getPostBlockVersionCount() != null) {
+                setPostBlockVersionCount(getPostBlockVersionCount() + result.getPostBlockVersionCount());
+            }
+        } else {
+            setPostBlockVersionCount(result.getPostBlockVersionCount());
+        }
+
+        if (getTruePositives() != null) {
+            if (result.getTruePositives() != null) {
+                setTruePositives(getTruePositives() + result.getTruePositives());
+            }
+        } else {
+            setTruePositives(result.getTruePositives());
+        }
+
+        if (getFalsePositives() != null) {
+            if (result.getFalsePositives() != null) {
+                setFalsePositives(getFalsePositives() + result.getFalsePositives());
+            }
+        } else {
+            setFalsePositives(result.getFalsePositives());
+        }
+
+        if (getTrueNegatives() != null) {
+            if (result.getTrueNegatives() != null) {
+                setTrueNegatives(getTrueNegatives() + result.getTrueNegatives());
+            }
+        } else {
+            setTrueNegatives(result.getTrueNegatives());
+        }
+
+        if (getFalseNegatives() != null) {
+            if (result.getFalseNegatives() != null) {
+                setFalseNegatives(getFalseNegatives() + result.getFalseNegatives());
+            }
+        } else {
+            setFalseNegatives(result.getFalseNegatives());
+        }
+    }
 }

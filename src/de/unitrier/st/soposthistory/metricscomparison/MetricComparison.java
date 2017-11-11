@@ -280,4 +280,21 @@ public class MetricComparison {
     public MetricResult getResultCode(int postHistoryId) {
         return resultsCode.get(postHistoryId);
     }
+
+    public MetricResult getAggregatedResultText() {
+        MetricResult result = new MetricResult();
+        for (MetricResult currentResult : resultsText.values()) {
+            result.add(currentResult);
+        }
+        return result;
+    }
+
+    public MetricResult getAggregatedResultCode() {
+        MetricResult result = new MetricResult();
+        for (MetricResult currentResult : resultsCode.values()) {
+            result.add(currentResult);
+        }
+        return result;
+    }
+
 }
