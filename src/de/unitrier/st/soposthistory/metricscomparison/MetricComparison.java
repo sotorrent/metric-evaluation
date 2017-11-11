@@ -122,7 +122,7 @@ public class MetricComparison {
     private void evaluate(Config config, Set<Integer> postBlockTypeFilter) {
         long startUserTimeNano, endUserTimeNano;
 
-        // process version history of text blocks
+        // process version history and measure runtime
         stopWatch.start();
         startUserTimeNano = threadMXBean.getCurrentThreadUserTime();
         try {
@@ -134,21 +134,21 @@ public class MetricComparison {
             stopWatch.stop();
         }
 
-        // calculate runtimeUser and set results
+        // validate measurement of user time
         if (startUserTimeNano < 0 || endUserTimeNano < 0) {
             throw new IllegalArgumentException("User time has not been calculated correctly.");
         }
 
-        // set results for text blocks
+        // save runtime values
         runtimeUser = endUserTimeNano-startUserTimeNano;
         runtimeTotal = stopWatch.elapsed().getNano();
 
+        // save results
         if (postBlockTypeFilter.contains(TextBlockVersion.postBlockTypeId)) {
-            setResult(resultsText, runtimeText, postBlockTypeFilter);
-        } else if (postBlockTypeFilter.contains(CodeBlockVersion.postBlockTypeId)) {
-            setResult(resultsCode, runtimeCode, postBlockTypeFilter);
-        } else {
-            throw new IllegalArgumentException("Invalid PostBlockTypeFilter: " + postBlockTypeFilter);
+            setResultAndRuntime(resultsText, runtimeText, postBlockTypeFilter);
+        }
+        if (postBlockTypeFilter.contains(CodeBlockVersion.postBlockTypeId)) {
+            setResultAndRuntime(resultsCode, runtimeCode, postBlockTypeFilter);
         }
 
         // reset flag inputTooShort, stopWatch, and runtime variables
@@ -157,19 +157,19 @@ public class MetricComparison {
         postVersionList.resetPostBlockVersionHistory();
     }
 
-    private void setResult(Map<Integer, MetricResult> results, Runtime runtime,
-                           Set<Integer> postBlockTypeFilter) {
+    private void setResultAndRuntime(Map<Integer, MetricResult> results, Runtime runtime,
+                                     Set<Integer> postBlockTypeFilter) {
         if (currentRepetition == 1) {
             // set initial values after first run, return runtimeUser
             for (int postHistoryId : postHistoryIds) {
-                MetricResult result = getResultsAndSetRuntime(postHistoryId, runtime, postBlockTypeFilter);
+                MetricResult result = getResultAndSetRuntime(postHistoryId, runtime, postBlockTypeFilter);
                 results.put(postHistoryId, result);
             }
         } else {
             // compare result values in later runs
             for (int postHistoryId : postHistoryIds) {
                 MetricResult resultInMap = results.get(postHistoryId);
-                MetricResult newResult = getResultsAndSetRuntime(postHistoryId, runtime, postBlockTypeFilter);
+                MetricResult newResult = getResultAndSetRuntime(postHistoryId, runtime, postBlockTypeFilter);
                 boolean truePositivesEqual = (resultInMap.getTruePositives() == null && newResult.getTruePositives() == null)
                         || (resultInMap.getTruePositives() != null && newResult.getTruePositives() != null
                         && resultInMap.getTruePositives().equals(newResult.getTruePositives()));
@@ -195,7 +195,7 @@ public class MetricComparison {
         }
     }
 
-    private MetricResult getResultsAndSetRuntime(int postHistoryId, Runtime runtime, Set<Integer> postBlockTypeFilter) {
+    private MetricResult getResultAndSetRuntime(int postHistoryId, Runtime runtime, Set<Integer> postBlockTypeFilter) {
         MetricResult result = new MetricResult();
 
         if (currentRepetition == 1) {
