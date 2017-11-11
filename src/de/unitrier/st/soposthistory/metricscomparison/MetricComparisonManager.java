@@ -366,12 +366,12 @@ public class MetricComparisonManager implements Runnable {
                 } else {
                     // text
                     Runtime runtimeInMapText = runtimePerVersionText.get(postId);
-                    runtimeInMapText.setRuntimeTotal(runtimeInMapText.getRuntimeTotal() + runtimeText.getRuntimeTotal());
-                    runtimeInMapText.setRuntimeUser(runtimeInMapText.getRuntimeUser() + runtimeText.getRuntimeUser());
+                    runtimeInMapText.setRuntimeTotal(runtimeInMapText.getRuntimeTotal() != null ? runtimeInMapText.getRuntimeTotal() + runtimeText.getRuntimeTotal() : runtimeText.getRuntimeTotal());
+                    runtimeInMapText.setRuntimeUser(runtimeInMapText.getRuntimeUser() != null ? runtimeInMapText.getRuntimeUser() + runtimeText.getRuntimeUser() : runtimeText.getRuntimeUser());
                     // code
                     Runtime runtimeInMapCode = runtimePerVersionCode.get(postId);
-                    runtimeInMapCode.setRuntimeTotal(runtimeInMapCode.getRuntimeTotal() + runtimeCode.getRuntimeTotal());
-                    runtimeInMapCode.setRuntimeUser(runtimeInMapCode.getRuntimeUser() + runtimeCode.getRuntimeUser());
+                    runtimeInMapCode.setRuntimeTotal(runtimeInMapCode.getRuntimeTotal() != null ? runtimeInMapCode.getRuntimeTotal() + runtimeCode.getRuntimeTotal() : runtimeCode.getRuntimeTotal());
+                    runtimeInMapCode.setRuntimeUser(runtimeInMapCode.getRuntimeUser() != null ? runtimeInMapCode.getRuntimeUser() + runtimeCode.getRuntimeUser() : runtimeCode.getRuntimeUser());
                 }
 
                 for (int postHistoryId : postHistoryIdsForPost) {
@@ -433,17 +433,17 @@ public class MetricComparisonManager implements Runnable {
                         // text
                         MetricResult resultInMapText = resultsPerVersionText.get(postId);
                         resultInMapText.setPostBlockCount(resultInMapText.getPostBlockCount() + resultText.getPostBlockCount());
-                        resultInMapText.setTruePositives(resultInMapText.getTruePositives() + resultText.getTruePositives());
-                        resultInMapText.setFalsePositives(resultInMapText.getFalsePositives() + resultText.getFalsePositives());
-                        resultInMapText.setTrueNegatives(resultInMapText.getTrueNegatives() + resultText.getTrueNegatives());
-                        resultInMapText.setFalseNegatives(resultInMapText.getFalseNegatives() + resultText.getFalseNegatives());
+                        resultInMapText.setTruePositives(resultInMapText.getTruePositives() != null ? resultInMapText.getTruePositives() + resultText.getTruePositives() : resultText.getTruePositives());
+                        resultInMapText.setFalsePositives(resultInMapText.getFalsePositives() != null ? resultInMapText.getFalsePositives() + resultText.getFalsePositives() : resultText.getFalsePositives());
+                        resultInMapText.setTrueNegatives(resultInMapText.getTrueNegatives() != null ? resultInMapText.getTrueNegatives() + resultText.getTrueNegatives() : resultText.getTrueNegatives());
+                        resultInMapText.setFalseNegatives(resultInMapText.getFalseNegatives() != null ? resultInMapText.getFalseNegatives() + resultText.getFalseNegatives() : resultText.getFalseNegatives());
                         // code
                         MetricResult resultInMapCode = resultsPerVersionCode.get(postId);
                         resultInMapCode.setPostBlockCount(resultInMapCode.getPostBlockCount() + resultCode.getPostBlockCount());
-                        resultInMapCode.setTruePositives(resultInMapCode.getTruePositives() + resultCode.getTruePositives());
-                        resultInMapCode.setFalsePositives(resultInMapCode.getFalsePositives() + resultCode.getFalsePositives());
-                        resultInMapCode.setTrueNegatives(resultInMapCode.getTrueNegatives() + resultCode.getTrueNegatives());
-                        resultInMapCode.setFalseNegatives(resultInMapCode.getFalseNegatives() + resultCode.getFalseNegatives());
+                        resultInMapCode.setTruePositives(resultInMapCode.getTruePositives() != null ? resultInMapCode.getTruePositives() + resultCode.getTruePositives() : resultCode.getTruePositives());
+                        resultInMapCode.setFalsePositives(resultInMapCode.getFalsePositives() != null ? resultInMapCode.getFalsePositives() + resultCode.getFalsePositives() : resultCode.getFalsePositives());
+                        resultInMapCode.setTrueNegatives(resultInMapCode.getTrueNegatives() != null ? resultInMapCode.getTrueNegatives() + resultCode.getTrueNegatives() : resultCode.getTrueNegatives());
+                        resultInMapCode.setFalseNegatives(resultInMapCode.getFalseNegatives() != null ? resultInMapCode.getFalseNegatives() + resultCode.getFalseNegatives() : resultCode.getFalseNegatives());
                     }
                 }
             }
