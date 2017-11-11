@@ -156,15 +156,15 @@ class DisabledTests {
                 } else {
                     MetricResult resultsText = tmpMetricComparison.getResultText(postHistoryId);
                     assertEquals(truePositivesText, resultsText.getTruePositives());
-                    assertEquals(trueNegativesText, new Integer(resultsText.getPostBlockCount() - resultsText.getTruePositives() - resultsText.getFalsePositives() - resultsText.getFalseNegatives()));
-                    assertEquals(trueNegativesText, new Integer(resultsText.getPostBlockCount() - resultsText.getTruePositives() - resultsText.getFalseNegatives()));
+                    assertEquals(trueNegativesText, new Integer(resultsText.getPostBlockVersionCount() - resultsText.getTruePositives() - resultsText.getFalsePositives() - resultsText.getFalseNegatives()));
+                    assertEquals(trueNegativesText, new Integer(resultsText.getPostBlockVersionCount() - resultsText.getTruePositives() - resultsText.getFalseNegatives()));
                     assertEquals(falsePositivesText, resultsText.getFalsePositives());
                     assertEquals(falseNegativesText, resultsText.getFalseNegatives());
 
                     MetricResult resultsCode = tmpMetricComparison.getResultCode(postHistoryId);
                     assertEquals(truePositivesCode, resultsCode.getTruePositives());
-                    assertEquals(trueNegativesCode, new Integer(resultsCode.getPostBlockCount() - resultsCode.getTruePositives() - resultsCode.getFalsePositives() - resultsCode.getFalseNegatives()));
-                    assertEquals(trueNegativesCode, new Integer(resultsCode.getPostBlockCount() - resultsCode.getTruePositives() - resultsCode.getFalseNegatives()));
+                    assertEquals(trueNegativesCode, new Integer(resultsCode.getPostBlockVersionCount() - resultsCode.getTruePositives() - resultsCode.getFalsePositives() - resultsCode.getFalseNegatives()));
+                    assertEquals(trueNegativesCode, new Integer(resultsCode.getPostBlockVersionCount() - resultsCode.getTruePositives() - resultsCode.getFalseNegatives()));
                     assertEquals(falsePositivesCode, resultsCode.getFalsePositives());
                     assertEquals(falseNegativesCode, resultsCode.getFalseNegatives());
                 }

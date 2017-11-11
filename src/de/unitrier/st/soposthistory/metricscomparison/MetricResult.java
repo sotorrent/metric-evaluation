@@ -1,30 +1,30 @@
 package de.unitrier.st.soposthistory.metricscomparison;
 
 public class MetricResult {
-    Integer postBlockCount;
+    Integer postBlockVersionCount;
     Integer truePositives;
     Integer falsePositives;
     Integer trueNegatives;
     Integer falseNegatives;
 
     MetricResult() {
-        this.postBlockCount = null;
+        this.postBlockVersionCount = null;
         this.truePositives = null;
         this.falsePositives = null;
         this.trueNegatives = null;
         this.falseNegatives = null;
     }
 
-    MetricResult(Integer postBlockCount, Integer truePositives, Integer falsePositives, Integer trueNegatives, Integer falseNegatives) {
-        this.postBlockCount = postBlockCount;
+    MetricResult(Integer postBlockVersionCount, Integer truePositives, Integer falsePositives, Integer trueNegatives, Integer falseNegatives) {
+        this.postBlockVersionCount = postBlockVersionCount;
         this.truePositives = truePositives;
         this.falsePositives = falsePositives;
         this.trueNegatives = trueNegatives;
         this.falseNegatives = falseNegatives;
     }
 
-    public Integer getPostBlockCount() {
-        return postBlockCount;
+    public Integer getPostBlockVersionCount() {
+        return postBlockVersionCount;
     }
 
     public Integer getTruePositives() {
@@ -43,8 +43,8 @@ public class MetricResult {
         return falseNegatives;
     }
 
-    void setPostBlockCount(Integer postBlockCount) {
-        this.postBlockCount = postBlockCount;
+    void setPostBlockVersionCount(Integer postBlockVersionCount) {
+        this.postBlockVersionCount = postBlockVersionCount;
     }
 
     void setTruePositives(Integer truePositives) {

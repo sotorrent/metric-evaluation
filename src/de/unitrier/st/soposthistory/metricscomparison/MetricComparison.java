@@ -182,12 +182,12 @@ public class MetricComparison {
                 boolean falseNegativesEqual = (resultInMap.getFalseNegatives() == null && newResult.getFalseNegatives() == null)
                         || (resultInMap.getFalseNegatives() != null && newResult.getFalseNegatives() != null
                         && resultInMap.getFalseNegatives().equals(newResult.getFalseNegatives()));
-                boolean postBlockCountEqual = (resultInMap.getPostBlockCount() == null && newResult.getPostBlockCount() == null)
-                        || (resultInMap.getPostBlockCount() != null && newResult.getPostBlockCount() != null
-                        && resultInMap.getPostBlockCount().equals(newResult.getPostBlockCount()));
+                boolean postBlockVersionCountEqual = (resultInMap.getPostBlockVersionCount() == null && newResult.getPostBlockVersionCount() == null)
+                        || (resultInMap.getPostBlockVersionCount() != null && newResult.getPostBlockVersionCount() != null
+                        && resultInMap.getPostBlockVersionCount().equals(newResult.getPostBlockVersionCount()));
 
                 if (!truePositivesEqual || !falsePositivesEqual || !trueNegativesEqual || !falseNegativesEqual
-                        || !postBlockCountEqual) {
+                        || !postBlockVersionCountEqual) {
                     throw new IllegalStateException("Metric results changed from repetition "
                             + (currentRepetition - 1) + " to " + currentRepetition);
                 }
@@ -211,12 +211,11 @@ public class MetricComparison {
         }
 
         // post block count
-        result.setPostBlockCount(0);
+        result.setPostBlockVersionCount(0);
         if (postBlockTypeFilter.contains(TextBlockVersion.postBlockTypeId))
-            result.setPostBlockCount(postVersionList.getPostVersion(postHistoryId).getTextBlocks().size());
+            result.setPostBlockVersionCount(postVersionList.getPostVersion(postHistoryId).getTextBlocks().size());
         if (postBlockTypeFilter.contains(CodeBlockVersion.postBlockTypeId))
-            result.setPostBlockCount(postVersionList.getPostVersion(postHistoryId).getCodeBlocks().size());
-
+            result.setPostBlockVersionCount(postVersionList.getPostVersion(postHistoryId).getCodeBlocks().size());
 
         // results
         if (!inputTooShort) {
