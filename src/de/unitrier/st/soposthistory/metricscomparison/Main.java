@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 class Main {
@@ -40,6 +42,9 @@ class Main {
         Path samplesDirPath = Paths.get(commandLine.getOptionValue("samples-dir"));
         Path outputDirPath = Paths.get(commandLine.getOptionValue("output-dir"));
 
+        // execute at most two thread at a time (not more because of runtime measurement)
+        ExecutorService threadPool = Executors.newFixedThreadPool(2);
+
         try (Stream<Path> paths = Files.list(samplesDirPath)) {
 
             Util.ensureEmptyDirectoryExists(outputDirPath);
@@ -57,7 +62,7 @@ class Main {
                                 .withOutputDirPath(outputDirPath)
                                 .initialize();
 
-                        new Thread(manager).start();
+                        threadPool.execute(new Thread(manager));
                     }
             );
         } catch (IOException e) {

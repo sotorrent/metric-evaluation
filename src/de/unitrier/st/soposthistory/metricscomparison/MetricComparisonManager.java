@@ -24,13 +24,16 @@ import static de.unitrier.st.soposthistory.util.Util.getClassLogger;
 
 // TODO: move to metrics comparison project
 public class MetricComparisonManager implements Runnable {
-    public static Logger logger = null;
-    public static final CSVFormat csvFormatPostIds;
-    public static final CSVFormat csvFormatMetricComparisonPost;
+    private static int threadIdCounter = 0;
+
+    static Logger logger = null;
+    static final CSVFormat csvFormatPostIds;
+    static final CSVFormat csvFormatMetricComparisonPost;
     public static final CSVFormat csvFormatMetricComparisonVersion;
 
     private static final Path DEFAULT_OUTPUT_DIR = Paths.get("output");
 
+    private int threadId;
     private String name;
     private boolean addDefaultMetricsAndThresholds;
     private boolean randomizeOrder;
@@ -97,6 +100,7 @@ public class MetricComparisonManager implements Runnable {
                                     Path postHistoryPath, Path groundTruthPath, Path outputDirPath,
                                     boolean validate, boolean addDefaultMetricsAndThresholds, boolean randomizeOrder,
                                     int numberOfRepetitions) {
+        this.threadId = -1;
         this.name = name;
 
         this.postIdPath = postIdPath;
@@ -294,19 +298,19 @@ public class MetricComparisonManager implements Runnable {
 
         for (int currentRepetition = 1; currentRepetition <= numberOfRepetitions; currentRepetition++) {
             if (randomizeOrder) {
-                logger.info("Randomizing order...");
+                logger.info("Thread " + threadId + ": Randomizing order...");
                 randomizeOrder();
             }
 
-            logger.info("Starting comparison run " + currentRepetition + "...");
+            logger.info("Thread " + threadId + ": Starting comparison run " + currentRepetition + "...");
             int size = metricComparisons.size();
             for (int i = 0; i < metricComparisons.size(); i++) {
                 MetricComparison currentMetricComparison = metricComparisons.get(i);
                 // Locale.ROOT -> force '.' as decimal separator
                 String progress = String.format(Locale.ROOT, "%.2f%%", (((double)(i+1))/size*100));
-                logger.info("Current post: " + currentMetricComparison.getPostId() + " ("
+                logger.info("Thread " + threadId + ": Current post: " + currentMetricComparison.getPostId() + " ("
                         + currentMetricComparison.getPostVersionList().size() + " versions)");
-                logger.info("MetricComparison " + (i+1) + " of " + size + " (" + progress + "), " +
+                logger.info("Thread " + threadId + ": MetricComparison " + (i+1) + " of " + size + " (" + progress + "), " +
                         "repetition " + currentRepetition + " of " + numberOfRepetitions);
                 currentMetricComparison.start(currentRepetition);
             }
@@ -337,8 +341,8 @@ public class MetricComparisonManager implements Runnable {
             }
         }
 
-        logger.info("Writing metric comparison results per version to CSV file " + outputFilePerVersion.getName() + " ...");
-        logger.info("Writing metric comparison results per post to CSV file " + outputFilePerPost.getName() + " ...");
+        logger.info("Thread " + threadId + ": Writing metric comparison results per version to CSV file " + outputFilePerVersion.getName() + " ...");
+        logger.info("Thread " + threadId + ": Writing metric comparison results per post to CSV file " + outputFilePerPost.getName() + " ...");
         try (CSVPrinter csvPrinterVersion = new CSVPrinter(new FileWriter(outputFilePerVersion), csvFormatMetricComparisonVersion);
              CSVPrinter csvPrinterPost = new CSVPrinter(new FileWriter(outputFilePerPost), csvFormatMetricComparisonPost)) {
 
@@ -470,6 +474,10 @@ public class MetricComparisonManager implements Runnable {
 
     @Override
     public void run() {
+        synchronized (MetricComparisonManager.class) {
+            threadId = ++threadIdCounter;
+            logger.info("Thread " + threadId + " started...");
+        }
         if (!initialized) {
             initialize();
         }
