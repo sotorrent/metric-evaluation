@@ -74,18 +74,18 @@ public class MetricComparisonManager implements Runnable {
                 .withQuoteMode(QuoteMode.MINIMAL)
                 .withEscape('\\');
 
-        // configure CSV format for metric comparison results (per version, i.e., per PostHistoryId)
-        csvFormatMetricComparisonVersion = CSVFormat.DEFAULT
-                .withHeader("Sample", "Metric", "Threshold", "PostId", "PostHistoryId", "PossibleConnections", "RuntimeTextTotal", "RuntimeTextUser", "TextBlockCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "RuntimeCodeTotal", "RuntimeCodeUser", "CodeBlockCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode")
+        // configure CSV format for metric comparison results (per post, i.e., per PostVersionList)
+        csvFormatMetricComparisonPost = CSVFormat.DEFAULT
+                .withHeader("Sample", "Metric", "Threshold", "PostId", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections", "RuntimeTextTotal", "RuntimeTextUser", "TextBlockVersionCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "RuntimeCodeTotal", "RuntimeCodeUser", "CodeBlockVersionCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode")
                 .withDelimiter(';')
                 .withQuote('"')
                 .withQuoteMode(QuoteMode.MINIMAL)
                 .withEscape('\\')
                 .withNullString("null");
 
-        // configure CSV format for metric comparison results (per post, i.e., per PostVersionList)
-        csvFormatMetricComparisonPost = CSVFormat.DEFAULT
-                .withHeader("Sample", "Metric", "Threshold", "PostId", "VersionCount", "PossibleConnections", "RuntimeTextTotal", "RuntimeTextUser", "TextBlockVersionCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "RuntimeCodeTotal", "RuntimeCodeUser", "CodeBlockVersionCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode")
+        // configure CSV format for metric comparison results (per version, i.e., per PostHistoryId)
+        csvFormatMetricComparisonVersion = CSVFormat.DEFAULT
+                .withHeader("Sample", "Metric", "Threshold", "PostId", "PostHistoryId", "PossibleConnections", "RuntimeTextTotal", "RuntimeTextUser", "TextBlockCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "RuntimeCodeTotal", "RuntimeCodeUser", "CodeBlockCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode")
                 .withDelimiter(';')
                 .withQuote('"')
                 .withQuoteMode(QuoteMode.MINIMAL)
@@ -361,16 +361,19 @@ public class MetricComparisonManager implements Runnable {
 
                 // write result per post
 
-                // "Sample", "Metric", "Threshold", "PostId", "VersionCount", "PossibleConnections", "RuntimeTextTotal",
-                // "RuntimeTextUser", "TextBlockCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText",
-                // "FalsePositivesText", "FalseNegativesText", "RuntimeCodeTotal", "RuntimeCodeUser", "CodeBlockCount",
-                // "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode"
+                // "Sample", "Metric", "Threshold", "PostId", "PostVersionCount", "PostBlockVersionCount",
+                // "PossibleConnections", "RuntimeTextTotal", "RuntimeTextUser", "TextBlockVersionCount",
+                // "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText",
+                // "FalseNegativesText", "RuntimeCodeTotal", "RuntimeCodeUser", "CodeBlockVersionCount",
+                // "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode",
+                // "FalseNegativesCode"
                 csvPrinterPost.printRecord(
                         name,
                         metricComparison.getSimilarityMetricName(),
                         metricComparison.getSimilarityThreshold(),
                         postId,
                         postVersionList.size(),
+                        postVersionList.getPostBlockVersionCount(),
                         postVersionList.getPossibleConnections(),
                         runtimeText.getRuntimeTotal(),
                         runtimeText.getRuntimeUser(),
@@ -396,10 +399,11 @@ public class MetricComparisonManager implements Runnable {
                     MetricResult resultText = metricComparison.getResultText(postHistoryId);
                     MetricResult resultCode = metricComparison.getResultCode(postHistoryId);
 
-                    // "Sample", "Metric", "Threshold", "PostId", "PostHistoryId", "PossibleConnections", "RuntimeTextTotal",
-                    // "RuntimeTextUser", "TextBlockCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText",
-                    // "FalsePositivesText", "FalseNegativesText", "RuntimeCodeTotal", "RuntimeCodeUser", "CodeBlockCount",
-                    // "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode"
+                    // "Sample", "Metric", "Threshold", "PostId", "PostHistoryId", "PossibleConnections",
+                    // "RuntimeTextTotal", "RuntimeTextUser", "TextBlockCount", "PossibleConnectionsText",
+                    // "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText",
+                    // "RuntimeCodeTotal", "RuntimeCodeUser", "CodeBlockCount", "PossibleConnectionsCode",
+                    // "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode"
                     csvPrinterVersion.printRecord(
                             name,
                             metricComparison.getSimilarityMetricName(),
