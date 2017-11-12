@@ -6,9 +6,7 @@ import de.unitrier.st.soposthistory.version.PostVersion;
 import de.unitrier.st.soposthistory.version.PostVersionList;
 import org.apache.commons.csv.*;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,7 +16,11 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
+import static de.unitrier.st.soposthistory.metricscomparison.MetricComparisonManager.csvFormatMetricComparisonPost;
+import static de.unitrier.st.soposthistory.metricscomparison.MetricComparisonManager.csvFormatMetricComparisonVersion;
+import static de.unitrier.st.soposthistory.metricscomparison.MetricComparisonManager.csvFormatPostIds;
 import static de.unitrier.st.soposthistory.util.Util.getClassLogger;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 // TODO: move to metrics comparison project
@@ -58,8 +60,9 @@ public class Statistics {
 
     public static void main(String[] args) {
         Statistics statistics = new Statistics();
-        statistics.getMultiplePossibleConnections();
-        statistics.copyPostsWithPossibleMultipleConnectionsIntoDirectory();
+//        statistics.getMultiplePossibleConnections();
+//        statistics.copyPostsWithPossibleMultipleConnectionsIntoDirectory();
+        statistics.getDifferencesOfRuntimesBetweenMetricComparisons();
     }
 
     private static List<Path> getGTSamples() {
@@ -95,7 +98,7 @@ public class Statistics {
                 csvFormatMultipleConnections);
              CSVPrinter csvPrinterPosts = new CSVPrinter(new FileWriter(
                      pathToMultipleConnectionsPostsFile.toFile()),
-                     MetricComparisonManager.csvFormatPostIds
+                     csvFormatPostIds
              )) {
 
             logger.info("Starting extraction of possible connections...");
@@ -193,7 +196,7 @@ public class Statistics {
         try (CSVParser csvParser = CSVParser.parse(
                 pathToMultipleConnectionsFile.toFile(),
                 StandardCharsets.UTF_8,
-                MetricComparisonManager.csvFormatMetricComparisonVersion.withFirstRecordAsHeader()
+                csvFormatMetricComparisonVersion.withFirstRecordAsHeader()
             )) {
 
             Util.ensureEmptyDirectoryExists(outputDir);
@@ -233,4 +236,129 @@ public class Statistics {
             }
         }
     }
+
+
+    private void getDifferencesOfRuntimesBetweenMetricComparisons(){
+
+        // https://stackoverflow.com/a/13515268
+        File file_sebastian = new File(Paths.get("output", "2017-11-12_sample_comparison_sebastian").toString());
+        File[] files_sebastian = file_sebastian.listFiles((dir1, name) -> name.matches(".*per_post\\.csv"));
+
+        // https://stackoverflow.com/a/13515268
+        File file_lorik = new File(Paths.get("output", "2017-11-12_sample_comparison_lorik").toString());
+        File[] files_lorik = file_lorik.listFiles((dir, name) -> name.matches(".*per_post\\.csv"));
+
+        for (int i=0; i<files_sebastian.length; i++) {
+            if (!files_sebastian[i].getName().toLowerCase().equals(files_lorik[i].getName().toLowerCase())) { // Appearing difference between samples
+                throw new IllegalArgumentException(
+                        "Files need to be over same samples but there was a difference:"
+                                + "\n" + files_sebastian[i].getName()
+                                + "\n" + files_lorik[i].getName());
+            }
+        }
+
+        List<MeasuredRuntimes> measuredRuntimes_sebastian = parseMeasuredTimes(files_sebastian);
+        List<MeasuredRuntimes> measuredRuntimes_lorik = parseMeasuredTimes(files_lorik);
+
+        // TODO
+        // sorting lists reduces runtime from n*n to n log n
+        measuredRuntimes_sebastian.sort((o1, o2) -> measuredRuntimes_sebastian.get(0).compare(o1,o2));
+        measuredRuntimes_lorik.sort((o1, o2) -> measuredRuntimes_lorik.get(0).compare(o1,o2));
+
+        try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(Paths.get("output", "differences.csv").toString()), CSVFormat.DEFAULT
+                .withHeader("postId", "metric", "threshold", "runtimeTextTotalDifference", "runtimeTextUserDifference", "runtimeCodeTotalDifference", "runtimeCodeUserDifference")
+                .withDelimiter(';')
+                .withQuote('"')
+                .withQuoteMode(QuoteMode.MINIMAL) // TODO: Adjust with right quote mode
+                .withEscape('\\')
+                .withNullString("null"))) {
+
+            for (int i=0; i<measuredRuntimes_sebastian.size(); i++) {
+                assertEquals(measuredRuntimes_sebastian.get(i).postId, measuredRuntimes_lorik.get(i).postId);
+                assertEquals(measuredRuntimes_sebastian.get(i).metricName, measuredRuntimes_lorik.get(i).metricName);
+                assertEquals(measuredRuntimes_sebastian.get(i).threshold, measuredRuntimes_lorik.get(i).threshold);
+
+                csvPrinter.printRecord(
+                        measuredRuntimes_sebastian.get(i).postId,
+                        measuredRuntimes_sebastian.get(i).metricName,
+                        measuredRuntimes_sebastian.get(i).threshold,
+                        Math.abs(measuredRuntimes_sebastian.get(i).runtimeTextTotal - measuredRuntimes_lorik.get(i).runtimeTextTotal),
+                        Math.abs(measuredRuntimes_sebastian.get(i).runtimeTextUser - measuredRuntimes_lorik.get(i).runtimeTextUser),
+                        Math.abs(measuredRuntimes_sebastian.get(i).runtimeCodeTotal - measuredRuntimes_lorik.get(i).runtimeCodeTotal),
+                        Math.abs(measuredRuntimes_sebastian.get(i).runtimeCodeUser - measuredRuntimes_lorik.get(i).runtimeCodeUser)
+                );
+            }
+
+            csvPrinter.flush();
+            // csvPrinter.close();
+
+            } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private class MeasuredRuntimes implements Comparator{
+        int postId;
+        String metricName;
+        double threshold;
+        long runtimeTextTotal;
+        long runtimeTextUser;
+        long runtimeCodeTotal;
+        long runtimeCodeUser;
+
+        MeasuredRuntimes(int postId, String metricName, double threshold, long runtimeTextTotal, long runtimeTextUser, long runtimeCodeTotal, long runtimeCodeUser) {
+            this.postId = postId;
+            this.metricName = metricName;
+            this.threshold = threshold;
+            this.runtimeTextTotal = runtimeTextTotal;
+            this.runtimeTextUser = runtimeTextUser;
+            this.runtimeCodeTotal = runtimeCodeTotal;
+            this.runtimeCodeUser = runtimeCodeUser;
+        }
+
+
+        @Override
+        public int compare(Object o1, Object o2) {
+            if (((MeasuredRuntimes)o1).postId < ((MeasuredRuntimes)o2).postId) {
+                return -1;
+            } else if (((MeasuredRuntimes)o1).postId > ((MeasuredRuntimes)o2).postId) {
+                return 1;
+            } else if (((MeasuredRuntimes)o1).metricName.compareTo(((MeasuredRuntimes)o2).metricName) < 0) {
+                return -1;
+            } else if (((MeasuredRuntimes)o1).metricName.compareTo(((MeasuredRuntimes)o2).metricName) > 0) {
+                return 1;
+            } else return Double.compare(((MeasuredRuntimes)o1).threshold, ((MeasuredRuntimes)o2).threshold);
+        }
+    }
+
+    private List<MeasuredRuntimes> parseMeasuredTimes(File[] files){
+        List<MeasuredRuntimes> measuredRuntimes = new ArrayList<>();
+        for (File file : files) {
+            try (CSVParser csvParser = new CSVParser(
+                    new FileReader(file),
+                    //CSVFormat.DEFAULT.withHeader("Sample", "Metric", "Threshold", "PostId", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections", "RuntimeTextTotal", "RuntimeTextUser", "TextBlockVersionCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "RuntimeCodeTotal", "RuntimeCodeUser", "CodeBlockVersionCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode"))) {
+                    csvFormatMetricComparisonPost.withHeader())) {
+
+                for (CSVRecord currentRecord : csvParser) {
+                    int postId = Integer.parseInt(currentRecord.get("PostId"));
+                    String metric = currentRecord.get("Metric");
+                    double threshold = Double.parseDouble(currentRecord.get("Threshold"));
+                    long runtimeTextTotal = Long.parseLong(currentRecord.get("RuntimeTextTotal"));
+                    long runtimeTextUser = Long.parseLong(currentRecord.get("RuntimeTextUser"));
+                    long runtimeCodeTotal = Long.parseLong(currentRecord.get("RuntimeCodeTotal"));
+                    long runtimeCodeUser = Long.parseLong(currentRecord.get("RuntimeCodeUser"));
+
+                    measuredRuntimes.add(
+                            new MeasuredRuntimes(postId, metric, threshold, runtimeTextTotal, runtimeTextUser, runtimeCodeTotal, runtimeCodeUser)
+                    );
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return measuredRuntimes;
+    }
+
 }
