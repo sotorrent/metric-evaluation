@@ -485,6 +485,10 @@ public class MetricComparisonManager implements Runnable {
         writeToCSV();
     }
 
+    public String getName() {
+        return name;
+    }
+
     private void addDefaultSimilarityMetrics() {
         // ****** Edit based *****
         similarityMetrics.add(de.unitrier.st.stringsimilarity.edit.Variants::levenshtein);

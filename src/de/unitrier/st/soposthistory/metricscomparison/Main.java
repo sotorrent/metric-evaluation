@@ -9,9 +9,24 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 
+import static de.unitrier.st.soposthistory.util.Util.getClassLogger;
+
 class Main {
+
+    private static Logger logger;
+
+    static {
+        // configure logger
+        try {
+            logger = getClassLogger(Main.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static void main (String[] args) {
         System.out.println("SOPostHistory (Metrics Comparison)");
@@ -45,6 +60,8 @@ class Main {
         // execute at most two thread at a time (not more because of runtime measurement)
         ExecutorService threadPool = Executors.newFixedThreadPool(2);
 
+        logger.info("Creating MetricComparisonManagers from samples...");
+
         try (Stream<Path> paths = Files.list(samplesDirPath)) {
 
             Util.ensureEmptyDirectoryExists(outputDirPath);
@@ -62,10 +79,21 @@ class Main {
                                 .withOutputDirPath(outputDirPath)
                                 .initialize();
 
+                        logger.info("Adding manager " + manager.getName() + " to thread pool...");
                         threadPool.execute(new Thread(manager));
                     }
             );
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        logger.info("Shutting down thread pool...");
+        threadPool.shutdown();
+        try {
+            threadPool.awaitTermination(1, TimeUnit.DAYS);
+            logger.info("Thread pool terminated.");
+        } catch (InterruptedException e) {
+            threadPool.shutdownNow();
             e.printStackTrace();
         }
     }
