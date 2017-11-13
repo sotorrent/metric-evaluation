@@ -6,7 +6,10 @@ import de.unitrier.st.soposthistory.version.PostVersion;
 import de.unitrier.st.soposthistory.version.PostVersionList;
 import org.apache.commons.csv.*;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,9 +19,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
-import static de.unitrier.st.soposthistory.metricscomparison.MetricComparisonManager.csvFormatMetricComparisonPost;
-import static de.unitrier.st.soposthistory.metricscomparison.MetricComparisonManager.csvFormatMetricComparisonVersion;
-import static de.unitrier.st.soposthistory.metricscomparison.MetricComparisonManager.csvFormatPostIds;
+import static de.unitrier.st.soposthistory.metricscomparison.MetricComparisonManager.*;
 import static de.unitrier.st.soposthistory.util.Util.getClassLogger;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -238,64 +239,159 @@ public class Statistics {
     }
 
 
-    private void getDifferencesOfRuntimesBetweenMetricComparisons(){
+    private void getDifferencesOfRuntimesBetweenMetricComparisons() {
 
-        // https://stackoverflow.com/a/13515268
-        File file_sebastian = new File(Paths.get("output", "2017-11-12_sample_comparison_sebastian").toString());
-        File[] files_sebastian = file_sebastian.listFiles((dir1, name) -> name.matches(".*per_post\\.csv"));
+        // Add all paths of computed comparisons
+        List<Path> pathsToOutputDirectories = new ArrayList<>();
+        pathsToOutputDirectories.add(Paths.get("output", "2017-11-12_sample_comparison-2_sebastian")); // base directory is first element
+        // pathsToOutputDirectories.add(Paths.get("output", "2017-11-12_sample_comparison-1_lorik"));
+        pathsToOutputDirectories.add(Paths.get("output", "2017-11-12_sample_comparison-1_sebastian"));
 
-        // https://stackoverflow.com/a/13515268
-        File file_lorik = new File(Paths.get("output", "2017-11-12_sample_comparison_lorik").toString());
-        File[] files_lorik = file_lorik.listFiles((dir, name) -> name.matches(".*per_post\\.csv"));
+        List<File[]> directoryFiles = new ArrayList<>();
+        for (Path path : pathsToOutputDirectories) {
+            File file = new File(path.toString());
+            directoryFiles.add(file.listFiles((dir, name) -> name.matches(".*per_post\\.csv"))); // https://stackoverflow.com/a/13515268
+        }
 
-        for (int i=0; i<files_sebastian.length; i++) {
-            if (!files_sebastian[i].getName().toLowerCase().equals(files_lorik[i].getName().toLowerCase())) { // Appearing difference between samples
-                throw new IllegalArgumentException(
-                        "Files need to be over same samples but there was a difference:"
-                                + "\n" + files_sebastian[i].getName()
-                                + "\n" + files_lorik[i].getName());
+
+        // check whether all files are available
+        for (int i = 1; i < directoryFiles.size(); i++) {
+            for (int j = 0; j < directoryFiles.get(i).length; j++) {
+                if (!directoryFiles.get(0)[j].getName().toLowerCase().equals(directoryFiles.get(i)[j].getName().toLowerCase())) { // Appearing difference between samples
+                    throw new IllegalArgumentException(
+                            "Files need to be over same samples but there was a difference:"
+                                    + "\n" + directoryFiles.get(0)[j].getName()
+                                    + "\n" + directoryFiles.get(i)[j].getName()
+                    );
+                }
             }
         }
 
-        List<MeasuredRuntimes> measuredRuntimes_sebastian = parseMeasuredTimes(files_sebastian);
-        List<MeasuredRuntimes> measuredRuntimes_lorik = parseMeasuredTimes(files_lorik);
+        // parse measured data for comparison
+        List<List<MeasuredRuntimes>> listOfListsOfMeasuredRuntimesFromDifferentComparisons = new ArrayList<>();
+        for (File[] files : directoryFiles) {
+            List<MeasuredRuntimes> measuredRuntimesList = parseMeasuredTimes(files);
+            measuredRuntimesList.sort((o1, o2) -> measuredRuntimesList.get(0).compare(o1, o2));
+            listOfListsOfMeasuredRuntimesFromDifferentComparisons.add(measuredRuntimesList);   // sorting lists reduces runtime from n*n to n log n for later comparison
+        }
 
-        // TODO
-        // sorting lists reduces runtime from n*n to n log n
-        measuredRuntimes_sebastian.sort((o1, o2) -> measuredRuntimes_sebastian.get(0).compare(o1,o2));
-        measuredRuntimes_lorik.sort((o1, o2) -> measuredRuntimes_lorik.get(0).compare(o1,o2));
-
+        // print csv file
         try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(Paths.get("output", "differences.csv").toString()), CSVFormat.DEFAULT
-                .withHeader("postId", "metric", "threshold", "runtimeTextTotalDifference", "runtimeTextUserDifference", "runtimeCodeTotalDifference", "runtimeCodeUserDifference")
+                .withHeader(
+                        "postId", "metric", "threshold",
+
+                        "runtimeTotalTextMinimum", "runtimeUserTextMinimum",
+                        "runtimeTextTotalMaxDifference", "runtimeTextUserMaxDifference",
+                        "runtimeTextTotalDeviationWithConstantBaseAndAverage", "runtimeTextUserDeviationWithConstantBaseAndAverage",
+                        "runtimeTextTotalDeviationWithMinAndMax", "runtimeTextUserDeviationWithMinAndMax",
+
+                        "runtimeTotalCodeMinimum", "runtimeUserCodeMinimum",
+                        "runtimeCodeTotalMaxDifference", "runtimeCodeUserMaxDifference",
+                        "runtimeCodeTotalDeviationWithConstantBaseAndAverage", "runtimeCodeUserDeviationWithConstantBaseAndAverage",
+                        "runtimeCodeTotalDeviationWithMinAndMax", "runtimeCodeUserDeviationWithMinAndMax")
                 .withDelimiter(';')
                 .withQuote('"')
                 .withQuoteMode(QuoteMode.MINIMAL) // TODO: Adjust with right quote mode
                 .withEscape('\\')
                 .withNullString("null"))) {
 
-            for (int i=0; i<measuredRuntimes_sebastian.size(); i++) {
-                assertEquals(measuredRuntimes_sebastian.get(i).postId, measuredRuntimes_lorik.get(i).postId);
-                assertEquals(measuredRuntimes_sebastian.get(i).metricName, measuredRuntimes_lorik.get(i).metricName);
-                assertEquals(measuredRuntimes_sebastian.get(i).threshold, measuredRuntimes_lorik.get(i).threshold);
+            List<MeasuredRuntimes> baseComparison = listOfListsOfMeasuredRuntimesFromDifferentComparisons.get(0);
 
+
+            for (int j = 0; j < baseComparison.size(); j++) {
+
+                long minRuntimeTextTotal = baseComparison.get(j).runtimeTextTotal;
+                long minRuntimeTextUser = baseComparison.get(j).runtimeTextUser;
+                long minRuntimeCodeTotal = baseComparison.get(j).runtimeCodeTotal;
+                long minRuntimeCodeUser = baseComparison.get(j).runtimeCodeUser;
+
+                long maxRuntimeTextTotal = baseComparison.get(j).runtimeTextTotal;
+                long maxRuntimeTextUser = baseComparison.get(j).runtimeTextUser;
+                long maxRuntimeCodeTotal = baseComparison.get(j).runtimeCodeTotal;
+                long maxRuntimeCodeUser = baseComparison.get(j).runtimeCodeUser;
+
+                double averageRuntimeTextTotal = 0;
+                double averageRuntimeTextUser = 0;
+                double averageRuntimeCodeTotal = 0;
+                double averageRuntimeCodeUser = 0;
+
+                for (int i = 1; i < listOfListsOfMeasuredRuntimesFromDifferentComparisons.size(); i++) {
+
+                    List<MeasuredRuntimes> currentComparison = listOfListsOfMeasuredRuntimesFromDifferentComparisons.get(i);
+
+                    // validate records
+                    assertEquals(baseComparison.get(j).postId, currentComparison.get(j).postId);
+                    assertEquals(baseComparison.get(j).metricName, currentComparison.get(j).metricName);
+                    assertEquals(baseComparison.get(j).threshold, currentComparison.get(j).threshold);
+
+                    minRuntimeTextTotal = Math.min(minRuntimeTextTotal, currentComparison.get(i).runtimeTextTotal);
+                    minRuntimeTextUser = Math.min(minRuntimeTextUser, currentComparison.get(i).runtimeTextUser);
+                    minRuntimeCodeTotal = Math.min(minRuntimeCodeTotal, currentComparison.get(i).runtimeCodeTotal);
+                    minRuntimeCodeUser = Math.min(minRuntimeCodeUser, currentComparison.get(i).runtimeCodeUser);
+
+                    maxRuntimeTextTotal = Math.max(maxRuntimeTextTotal, currentComparison.get(i).runtimeTextTotal);
+                    maxRuntimeTextUser = Math.max(maxRuntimeTextUser, currentComparison.get(i).runtimeTextUser);
+                    maxRuntimeCodeTotal = Math.max(maxRuntimeCodeTotal, currentComparison.get(i).runtimeCodeTotal);
+                    maxRuntimeCodeUser = Math.max(maxRuntimeCodeUser, currentComparison.get(i).runtimeCodeUser);
+
+                    averageRuntimeTextTotal += currentComparison.get(i).runtimeTextTotal;
+                    averageRuntimeTextUser += currentComparison.get(i).runtimeTextUser;
+                    averageRuntimeCodeTotal += currentComparison.get(i).runtimeCodeTotal;
+                    averageRuntimeCodeUser += currentComparison.get(i).runtimeCodeUser;
+                }
+
+                averageRuntimeTextTotal /= (listOfListsOfMeasuredRuntimesFromDifferentComparisons.size()-1);
+                averageRuntimeTextUser /= (listOfListsOfMeasuredRuntimesFromDifferentComparisons.size()-1);
+                averageRuntimeCodeTotal /= (listOfListsOfMeasuredRuntimesFromDifferentComparisons.size()-1);
+                averageRuntimeCodeUser /= (listOfListsOfMeasuredRuntimesFromDifferentComparisons.size()-1);
+
+                /*
+                        "postId", "metric", "threshold",
+
+                        "runtimeTotalTextMinimum", "runtimeUserTextMinimum",
+                        "runtimeTextTotalMaxDifference", "runtimeTextUserMaxDifference",
+
+                        "runtimeTextTotalDeviationWithConstantBaseAndAverage", "runtimeTextUserDeviationWithConstantBaseAndAverage",
+                        "runtimeTextTotalDeviationWithMinAndMax", "runtimeTextUserDeviationWithMinAndMax",
+
+                        "runtimeTotalCodeMinimum", "runtimeUserCodeMinimum",
+                        "runtimeCodeTotalMaxDifference", "runtimeCodeUserMaxDifference",
+                        "runtimeCodeTotalDeviationWithConstantBaseAndAverage", "runtimeCodeUserDeviationWithConstantBaseAndAverage",
+                        "runtimeCodeTotalDeviationWithMinAndMax", "runtimeCodeUserDeviationWithMinAndMax"
+                 */
                 csvPrinter.printRecord(
-                        measuredRuntimes_sebastian.get(i).postId,
-                        measuredRuntimes_sebastian.get(i).metricName,
-                        measuredRuntimes_sebastian.get(i).threshold,
-                        Math.abs(measuredRuntimes_sebastian.get(i).runtimeTextTotal - measuredRuntimes_lorik.get(i).runtimeTextTotal),
-                        Math.abs(measuredRuntimes_sebastian.get(i).runtimeTextUser - measuredRuntimes_lorik.get(i).runtimeTextUser),
-                        Math.abs(measuredRuntimes_sebastian.get(i).runtimeCodeTotal - measuredRuntimes_lorik.get(i).runtimeCodeTotal),
-                        Math.abs(measuredRuntimes_sebastian.get(i).runtimeCodeUser - measuredRuntimes_lorik.get(i).runtimeCodeUser)
+                        baseComparison.get(j).postId,
+                        baseComparison.get(j).metricName,
+                        baseComparison.get(j).threshold,
+
+                        minRuntimeTextTotal,
+                        minRuntimeTextUser,
+
+                        maxRuntimeTextTotal - minRuntimeTextTotal,
+                        maxRuntimeTextUser - minRuntimeTextUser,
+
+                        round((double)baseComparison.get(j).runtimeTextTotal / averageRuntimeTextTotal, 4), // TODO: handle division by 0
+                        round((double)baseComparison.get(j).runtimeTextUser / averageRuntimeTextUser, 4), // TODO: handle division by 0
+
+                        round(maxRuntimeTextTotal != 0 ? ((double)minRuntimeTextTotal / maxRuntimeTextTotal) : 1, 4),
+                        round(maxRuntimeTextUser != 0 ? ((double)minRuntimeTextUser / maxRuntimeTextUser) : 1, 4),
+
+                        minRuntimeCodeTotal,
+                        minRuntimeCodeUser,
+
+                        maxRuntimeCodeTotal - minRuntimeCodeTotal,
+                        maxRuntimeCodeUser - minRuntimeCodeUser,
+
+                        round((double)baseComparison.get(j).runtimeCodeTotal / averageRuntimeCodeTotal, 4), // TODO: handle division by 0
+                        round((double)baseComparison.get(j).runtimeCodeUser / averageRuntimeCodeUser, 4), // TODO: handle division by 0
+
+                        round(maxRuntimeCodeTotal != 0 ? ((double)minRuntimeCodeTotal / maxRuntimeCodeTotal) : 1, 4),
+                        round(maxRuntimeCodeUser != 0 ? ((double)minRuntimeCodeUser / maxRuntimeCodeUser) : 1, 4)
                 );
             }
-
-            csvPrinter.flush();
-            // csvPrinter.close();
-
-            } catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     private class MeasuredRuntimes implements Comparator{
@@ -361,4 +457,14 @@ public class Statistics {
         return measuredRuntimes;
     }
 
+    private static double round(double value, int decimalDigits) {
+
+        int tmp = 1;
+        while (decimalDigits > 0) {
+            tmp *= 10;
+            decimalDigits--;
+        }
+
+        return ((double)((int)(value * tmp))) / tmp;
+    }
 }
