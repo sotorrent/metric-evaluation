@@ -33,13 +33,17 @@ class Main {
 
         Options options = new Options();
 
-        Option gtDir = new Option("s", "samples-dir", true, "path to directory with samples");
-        gtDir.setRequired(true);
-        options.addOption(gtDir);
+        Option gtDirOption = new Option("s", "samples-dir", true, "path to directory with samples");
+        gtDirOption.setRequired(true);
+        options.addOption(gtDirOption);
 
-        Option outputDir = new Option("o", "output-dir", true, "path to output directory");
-        outputDir.setRequired(true);
-        options.addOption(outputDir);
+        Option outputDirOption = new Option("o", "output-dir", true, "path to output directory");
+        outputDirOption.setRequired(true);
+        options.addOption(outputDirOption);
+
+        Option threadCountOption = new Option("t", "thread-count", true, "maximum number of threads used for the comparison");
+        threadCountOption.setRequired(true);
+        options.addOption(threadCountOption);
 
         CommandLineParser commandLineParser = new DefaultParser();
         HelpFormatter commandLineFormatter = new HelpFormatter();
@@ -54,17 +58,19 @@ class Main {
             return;
         }
 
-        Path samplesDirPath = Paths.get(commandLine.getOptionValue("samples-dir"));
-        Path outputDirPath = Paths.get(commandLine.getOptionValue("output-dir"));
-
-        // execute at most two thread at a time (not more because of runtime measurement)
-        ExecutorService threadPool = Executors.newFixedThreadPool(2);
+        Path samplesDir = Paths.get(commandLine.getOptionValue("samples-dir"));
+        Path outputDir = Paths.get(commandLine.getOptionValue("output-dir"));
+        int threadCount = Integer.parseInt(commandLine.getOptionValue("thread-count"));
 
         logger.info("Creating MetricComparisonManagers from samples...");
 
-        try (Stream<Path> paths = Files.list(samplesDirPath)) {
+        logger.info("Creating thread pool with at most " + threadCount + " threads...");
+        // execute at most two thread at a time (not more because of runtime measurement)
+        ExecutorService threadPool = Executors.newFixedThreadPool(threadCount);
 
-            Util.ensureEmptyDirectoryExists(outputDirPath);
+        try (Stream<Path> paths = Files.list(samplesDir)) {
+
+            Util.ensureEmptyDirectoryExists(outputDir);
 
             paths.forEach(
                     path -> {
@@ -76,7 +82,7 @@ class Main {
                         MetricComparisonManager manager = MetricComparisonManager.DEFAULT
                                 .withName(name)
                                 .withInputPaths(pathToPostIdList, pathToPostHistory, pathToGroundTruth)
-                                .withOutputDirPath(outputDirPath)
+                                .withOutputDirPath(outputDir)
                                 .initialize();
 
                         logger.info("Adding manager " + manager.getName() + " to thread pool...");
