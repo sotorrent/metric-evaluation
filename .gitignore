@@ -53,5 +53,4 @@ testdata/samples_test
 testdata/metrics_comparison/TestManager.csv
 testdata/metrics_comparison/TestManager_per_version.csv
 testdata/metrics_comparison/TestManager_per_post.csv
-/output/
 output/
