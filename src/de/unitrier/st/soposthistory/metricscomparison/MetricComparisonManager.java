@@ -79,7 +79,7 @@ public class MetricComparisonManager implements Runnable {
 
         // configure CSV format for metric comparison results (per post, i.e., per PostVersionList)
         csvFormatMetricComparisonPost = CSVFormat.DEFAULT
-                .withHeader("Sample", "Metric", "Threshold", "PostId", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections", "RuntimeTextTotal", "RuntimeTextUser", "TextBlockVersionCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "RuntimeCodeTotal", "RuntimeCodeUser", "CodeBlockVersionCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode")
+                .withHeader("Sample", "Metric", "Threshold", "PostId", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections", "RuntimeTextTotal", "RuntimeTextCPU", "RuntimeTextUser", "TextBlockVersionCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "RuntimeCodeTotal", "RuntimeCodeCPU", "RuntimeCodeUser", "CodeBlockVersionCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode")
                 .withDelimiter(';')
                 .withQuote('"')
                 .withQuoteMode(QuoteMode.MINIMAL)
@@ -88,7 +88,7 @@ public class MetricComparisonManager implements Runnable {
 
         // configure CSV format for metric comparison results (per version, i.e., per PostHistoryId)
         csvFormatMetricComparisonVersion = CSVFormat.DEFAULT
-                .withHeader("Sample", "Metric", "Threshold", "PostId", "PostHistoryId", "PossibleConnections", "RuntimeTextTotal", "RuntimeTextUser", "TextBlockCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "RuntimeCodeTotal", "RuntimeCodeUser", "CodeBlockCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode")
+                .withHeader("Sample", "Metric", "Threshold", "PostId", "PostHistoryId", "PossibleConnections", "RuntimeTextTotal", "RuntimeTextCPU", "RuntimeTextUser", "TextBlockCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "RuntimeCodeTotal", "RuntimeCodeCPU", "RuntimeCodeUser", "CodeBlockCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode")
                 .withDelimiter(';')
                 .withQuote('"')
                 .withQuoteMode(QuoteMode.MINIMAL)
@@ -353,8 +353,8 @@ public class MetricComparisonManager implements Runnable {
                 PostVersionList postVersionList = metricComparison.getPostVersionList();
                 List<Integer> postHistoryIdsForPost = postHistoryIds.get(postId);
 
-                Runtime runtimeText = metricComparison.getRuntimeText();
-                Runtime runtimeCode = metricComparison.getRuntimeCode();
+                MetricRuntime metricRuntimeText = metricComparison.getMetricRuntimeText();
+                MetricRuntime metricRuntimeCode = metricComparison.getMetricRuntimeCode();
                 MetricResult aggregatedResultText = metricComparison.getAggregatedResultText();
                 MetricResult aggregatedResultCode = metricComparison.getAggregatedResultCode();
 
@@ -365,12 +365,11 @@ public class MetricComparisonManager implements Runnable {
 
                 // write result per post
 
-                // "Sample", "Metric", "Threshold", "PostId", "PostVersionCount", "PostBlockVersionCount",
-                // "PossibleConnections", "RuntimeTextTotal", "RuntimeTextUser", "TextBlockVersionCount",
-                // "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText",
-                // "FalseNegativesText", "RuntimeCodeTotal", "RuntimeCodeUser", "CodeBlockVersionCount",
-                // "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode",
-                // "FalseNegativesCode"
+                // "Sample", "Metric", "Threshold", "PostId", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections",
+                // "RuntimeTextTotal", "RuntimeTextCPU", "RuntimeTextUser", "TextBlockVersionCount", "PossibleConnectionsText",
+                // "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText",
+                // "RuntimeCodeTotal", "RuntimeCodeCPU", "RuntimeCodeUser", "CodeBlockVersionCount", "PossibleConnectionsCode",
+                // "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode"
                 csvPrinterPost.printRecord(
                         name,
                         metricComparison.getSimilarityMetricName(),
@@ -379,16 +378,18 @@ public class MetricComparisonManager implements Runnable {
                         postVersionList.size(),
                         postVersionList.getPostBlockVersionCount(),
                         postVersionList.getPossibleConnections(),
-                        runtimeText.getRuntimeTotal(),
-                        runtimeText.getRuntimeUser(),
+                        metricRuntimeText.getRuntimeTotal(),
+                        metricRuntimeText.getRuntimeCPU(),
+                        metricRuntimeText.getRuntimeUser(),
                         aggregatedResultText.getPostBlockVersionCount(),
                         postVersionList.getPossibleConnections(TextBlockVersion.getPostBlockTypeIdFilter()),
                         aggregatedResultText.getTruePositives(),
                         aggregatedResultText.getFalsePositives(),
                         aggregatedResultText.getTrueNegatives(),
                         aggregatedResultText.getFalseNegatives(),
-                        runtimeCode.getRuntimeTotal(),
-                        runtimeCode.getRuntimeUser(),
+                        metricRuntimeCode.getRuntimeTotal(),
+                        metricRuntimeCode.getRuntimeCPU(),
+                        metricRuntimeCode.getRuntimeUser(),
                         aggregatedResultCode.getPostBlockVersionCount(),
                         postVersionList.getPossibleConnections(CodeBlockVersion.getPostBlockTypeIdFilter()),
                         aggregatedResultCode.getTruePositives(),
@@ -404,9 +405,9 @@ public class MetricComparisonManager implements Runnable {
                     MetricResult resultCode = metricComparison.getResultCode(postHistoryId);
 
                     // "Sample", "Metric", "Threshold", "PostId", "PostHistoryId", "PossibleConnections",
-                    // "RuntimeTextTotal", "RuntimeTextUser", "TextBlockCount", "PossibleConnectionsText",
+                    // "RuntimeTextTotal", "RuntimeTextCPU", "RuntimeTextUser", "TextBlockCount", "PossibleConnectionsText",
                     // "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText",
-                    // "RuntimeCodeTotal", "RuntimeCodeUser", "CodeBlockCount", "PossibleConnectionsCode",
+                    // "RuntimeCodeTotal", "RuntimeCodeCPU", "RuntimeCodeUser", "CodeBlockCount", "PossibleConnectionsCode",
                     // "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode"
                     csvPrinterVersion.printRecord(
                             name,
@@ -415,16 +416,18 @@ public class MetricComparisonManager implements Runnable {
                             postId,
                             postHistoryId,
                             metricComparison.getPostVersionList().getPostVersion(postHistoryId).getPossibleConnections(),
-                            runtimeText.getRuntimeTotal(),
-                            runtimeText.getRuntimeUser(),
+                            metricRuntimeText.getRuntimeTotal(),
+                            metricRuntimeText.getRuntimeCPU(),
+                            metricRuntimeText.getRuntimeUser(),
                             resultText.getPostBlockVersionCount(),
                             metricComparison.getPostVersionList().getPostVersion(postHistoryId).getPossibleConnections(TextBlockVersion.getPostBlockTypeIdFilter()),
                             resultText.getTruePositives(),
                             resultText.getFalsePositives(),
                             resultText.getTrueNegatives(),
                             resultText.getFalseNegatives(),
-                            runtimeCode.getRuntimeTotal(),
-                            runtimeCode.getRuntimeUser(),
+                            metricRuntimeCode.getRuntimeTotal(),
+                            metricRuntimeCode.getRuntimeCPU(),
+                            metricRuntimeCode.getRuntimeUser(),
                             resultCode.getPostBlockVersionCount(),
                             metricComparison.getPostVersionList().getPostVersion(postHistoryId).getPossibleConnections(CodeBlockVersion.getPostBlockTypeIdFilter()),
                             resultCode.getTruePositives(),

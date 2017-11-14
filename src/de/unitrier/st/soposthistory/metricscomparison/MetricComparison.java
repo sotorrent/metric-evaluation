@@ -32,16 +32,19 @@ public class MetricComparison {
     private int currentRepetition;
     private ThreadMXBean threadMXBean;
     private Stopwatch stopWatch;
+
+    // the following variables are used to temporarily store runtime values
+    private long runtimeCPU;
     private long runtimeUser;
     private long runtimeTotal;
 
     // text
-    private Runtime runtimeText;
+    private MetricRuntime metricRuntimeText;
     // PostHistoryId -> metric results for text blocks
     private Map<Integer, MetricResult> resultsText;
 
     // code
-    private Runtime runtimeCode;
+    private MetricRuntime metricRuntimeCode;
     // PostHistoryId -> metric results for code blocks
     private Map<Integer, MetricResult> resultsCode;
 
@@ -68,11 +71,13 @@ public class MetricComparison {
         this.similarityMetricName = similarityMetricName;
         this.similarityThreshold = similarityThreshold;
         this.inputTooShort = false;
+
+        this.runtimeCPU = 0;
         this.runtimeUser = 0;
         this.runtimeTotal = 0;
 
-        this.runtimeText = new Runtime();
-        this.runtimeCode = new Runtime();
+        this.metricRuntimeText = new MetricRuntime();
+        this.metricRuntimeCode = new MetricRuntime();
         this.resultsText = new HashMap<>();
         this.resultsCode = new HashMap<>();
 
@@ -120,10 +125,12 @@ public class MetricComparison {
     }
 
     private void evaluate(Config config, Set<Integer> postBlockTypeFilter) {
+        long startCPUTimeNano, endCPUTimeNano;
         long startUserTimeNano, endUserTimeNano;
 
         // process version history and measure runtime
         stopWatch.start();
+        startCPUTimeNano = threadMXBean.getCurrentThreadCpuTime();
         startUserTimeNano = threadMXBean.getCurrentThreadUserTime();
         try {
             postVersionList.processVersionHistory(config, postBlockTypeFilter);
@@ -131,6 +138,7 @@ public class MetricComparison {
             inputTooShort = true;
         } finally {
             endUserTimeNano = threadMXBean.getCurrentThreadUserTime();
+            endCPUTimeNano = threadMXBean.getCurrentThreadCpuTime();
             stopWatch.stop();
         }
 
@@ -140,15 +148,16 @@ public class MetricComparison {
         }
 
         // save runtime values
-        runtimeUser = endUserTimeNano-startUserTimeNano;
+        runtimeCPU = endCPUTimeNano - startCPUTimeNano;
+        runtimeUser = endUserTimeNano - startUserTimeNano;
         runtimeTotal = stopWatch.elapsed().getNano();
 
         // save results
         if (postBlockTypeFilter.contains(TextBlockVersion.postBlockTypeId)) {
-            setResultAndRuntime(resultsText, runtimeText, postBlockTypeFilter);
+            setResultAndRuntime(resultsText, metricRuntimeText, postBlockTypeFilter);
         }
         if (postBlockTypeFilter.contains(CodeBlockVersion.postBlockTypeId)) {
-            setResultAndRuntime(resultsCode, runtimeCode, postBlockTypeFilter);
+            setResultAndRuntime(resultsCode, metricRuntimeCode, postBlockTypeFilter);
         }
 
         // reset flag inputTooShort, stopWatch, and runtime variables
@@ -157,19 +166,19 @@ public class MetricComparison {
         postVersionList.resetPostBlockVersionHistory();
     }
 
-    private void setResultAndRuntime(Map<Integer, MetricResult> results, Runtime runtime,
+    private void setResultAndRuntime(Map<Integer, MetricResult> results, MetricRuntime metricRuntime,
                                      Set<Integer> postBlockTypeFilter) {
         if (currentRepetition == 1) {
             // set initial values after first run, return runtimeUser
             for (int postHistoryId : postHistoryIds) {
-                MetricResult result = getResultAndSetRuntime(postHistoryId, runtime, postBlockTypeFilter);
+                MetricResult result = getResultAndSetRuntime(postHistoryId, metricRuntime, postBlockTypeFilter);
                 results.put(postHistoryId, result);
             }
         } else {
             // compare result values in later runs
             for (int postHistoryId : postHistoryIds) {
                 MetricResult resultInMap = results.get(postHistoryId);
-                MetricResult newResult = getResultAndSetRuntime(postHistoryId, runtime, postBlockTypeFilter);
+                MetricResult newResult = getResultAndSetRuntime(postHistoryId, metricRuntime, postBlockTypeFilter);
                 boolean truePositivesEqual = (resultInMap.getTruePositives() == null && newResult.getTruePositives() == null)
                         || (resultInMap.getTruePositives() != null && newResult.getTruePositives() != null
                         && resultInMap.getTruePositives().equals(newResult.getTruePositives()));
@@ -195,19 +204,22 @@ public class MetricComparison {
         }
     }
 
-    private MetricResult getResultAndSetRuntime(int postHistoryId, Runtime runtime, Set<Integer> postBlockTypeFilter) {
+    private MetricResult getResultAndSetRuntime(int postHistoryId, MetricRuntime metricRuntime, Set<Integer> postBlockTypeFilter) {
         MetricResult result = new MetricResult();
 
-        // runtime
+        // metric runtime
         if (currentRepetition == 1) {
-            runtime.setRuntimeTotal(runtimeTotal);
-            runtime.setRuntimeUser(runtimeUser);
+            metricRuntime.setRuntimeTotal(runtimeTotal);
+            metricRuntime.setRuntimeCPU(runtimeCPU);
+            metricRuntime.setRuntimeUser(runtimeUser);
         } else if (currentRepetition < numberOfRepetitions) {
-                runtime.setRuntimeTotal(runtime.getRuntimeTotal() + runtimeTotal);
-                runtime.setRuntimeUser(runtime.getRuntimeUser() + runtimeUser);
+                metricRuntime.setRuntimeTotal(metricRuntime.getRuntimeTotal() + runtimeTotal);
+                metricRuntime.setRuntimeCPU(metricRuntime.getRuntimeCPU() + runtimeCPU);
+                metricRuntime.setRuntimeUser(metricRuntime.getRuntimeUser() + runtimeUser);
         } else {
-            runtime.setRuntimeTotal(Math.round((double)(runtime.getRuntimeTotal() + runtimeTotal) / numberOfRepetitions));
-            runtime.setRuntimeUser(Math.round((double)(runtime.getRuntimeUser() + runtimeUser) / numberOfRepetitions));
+            metricRuntime.setRuntimeTotal(Math.round((double)(metricRuntime.getRuntimeTotal() + runtimeTotal) / numberOfRepetitions));
+            metricRuntime.setRuntimeCPU(Math.round((double)(metricRuntime.getRuntimeCPU() + runtimeCPU) / numberOfRepetitions));
+            metricRuntime.setRuntimeUser(Math.round((double)(metricRuntime.getRuntimeUser() + runtimeUser) / numberOfRepetitions));
         }
 
         // post block count
@@ -265,12 +277,12 @@ public class MetricComparison {
         return postVersionList;
     }
 
-    public Runtime getRuntimeText() {
-        return runtimeText;
+    public MetricRuntime getMetricRuntimeText() {
+        return metricRuntimeText;
     }
 
-    public Runtime getRuntimeCode() {
-        return runtimeCode;
+    public MetricRuntime getMetricRuntimeCode() {
+        return metricRuntimeCode;
     }
 
     public MetricResult getResultText(int postHistoryId) {

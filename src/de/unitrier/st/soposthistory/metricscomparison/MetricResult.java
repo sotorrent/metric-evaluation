@@ -1,11 +1,11 @@
 package de.unitrier.st.soposthistory.metricscomparison;
 
 public class MetricResult {
-    Integer postBlockVersionCount;
-    Integer truePositives;
-    Integer falsePositives;
-    Integer trueNegatives;
-    Integer falseNegatives;
+    private Integer postBlockVersionCount;
+    private Integer truePositives;
+    private Integer falsePositives;
+    private Integer trueNegatives;
+    private Integer falseNegatives;
 
     MetricResult() {
         this.postBlockVersionCount = null;
