@@ -65,11 +65,11 @@ public class Statistics {
         Statistics statistics = new Statistics();
 //        statistics.getMultiplePossibleConnections();
 //        statistics.copyPostsWithPossibleMultipleConnectionsIntoDirectory();
-//        statistics.getDifferencesOfRuntimesBetweenMetricComparisons();
+        statistics.getDifferencesOfRuntimesBetweenMetricComparisons();
 
-        statistics.createPostIdVersionCount_perMetricThreshold(
-                Paths.get("output", "PostId_VersionCount_SO_17-06_sample_100_aggregated.csv"),
-                Paths.get("output"));
+//        statistics.createPostIdVersionCount_perMetricThreshold(
+//                Paths.get("output", "PostId_VersionCount_SO_17-06_sample_100_aggregated.csv"),
+//                Paths.get("output"));
     }
 
     private static List<Path> getGTSamples() {
@@ -249,10 +249,8 @@ public class Statistics {
 
         // Add all paths of computed comparisons
         List<Path> pathsToOutputDirectories = new ArrayList<>();
-        pathsToOutputDirectories.add(Paths.get("output", "2017-11-12_sample_comparison-3_sebastian")); // base directory is first element
-        // pathsToOutputDirectories.add(Paths.get("output", "2017-11-12_sample_comparison-1_lorik"));
-        // pathsToOutputDirectories.add(Paths.get("output", "2017-11-12_sample_comparison-1_sebastian"));
-        pathsToOutputDirectories.add(Paths.get("output", "2017-11-12_sample_comparison-2_sebastian"));
+        pathsToOutputDirectories.add(Paths.get("output", "2017-11-14_sample_comparison_sebastian-4")); // base directory is first element
+        pathsToOutputDirectories.add(Paths.get("output", "2017-11-14_sample_comparison_lorik-3"));
 
         List<File[]> directoryFiles = new ArrayList<>();
         for (Path path : pathsToOutputDirectories) {
@@ -283,44 +281,38 @@ public class Statistics {
         }
 
         // print csv file
-        try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(Paths.get("output", "differences.csv").toString()), CSVFormat.DEFAULT
+        try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(Paths.get("output", "differences_between_runtimes_metric_comparisons.csv").toString()), CSVFormat.DEFAULT
                 .withHeader(
-                        "postId", "metric", "threshold",
+                        "sample", "metric", "threshold",
 
-                        "runtimeTotalTextMinimum", "runtimeUserTextMinimum",
-                        "runtimeTextTotalMaxDifference", "runtimeTextUserMaxDifference",
-                        "runtimeTextTotalDeviationWithConstantBaseAndAverage", "runtimeTextUserDeviationWithConstantBaseAndAverage",
-                        "runtimeTextTotalDeviationWithMinAndMax", "runtimeTextUserDeviationWithMinAndMax",
+                        "runtimeTotalTextMinimum", // "runtimeUserTextMinimum", "runtimeCPUTextMinimum",
+                        "runtimeTextTotalMaxDifference", // "runtimeTextUserMaxDifference", "runtimeTextCPUMaxDifference",
+                        "runtimeTextTotalDeviationWithConstantBaseAndAverage", // "runtimeTextUserDeviationWithConstantBaseAndAverage",
+                        "runtimeTextTotalDeviationWithMinAndMax", // "runtimeTextUserDeviationWithMinAndMax",
 
-                        "runtimeTotalCodeMinimum", "runtimeUserCodeMinimum",
-                        "runtimeCodeTotalMaxDifference", "runtimeCodeUserMaxDifference",
-                        "runtimeCodeTotalDeviationWithConstantBaseAndAverage", "runtimeCodeUserDeviationWithConstantBaseAndAverage",
-                        "runtimeCodeTotalDeviationWithMinAndMax", "runtimeCodeUserDeviationWithMinAndMax")
+                        "runtimeTotalCodeMinimum", // "runtimeUserCodeMinimum", "runtimeCPUCodeMinimum",
+                        "runtimeCodeTotalMaxDifference", // "runtimeCodeUserMaxDifference", "runtimeCodeUserMaxDifference",
+                        "runtimeCodeTotalDeviationWithConstantBaseAndAverage", // "runtimeCodeUserDeviationWithConstantBaseAndAverage",
+                        "runtimeCodeTotalDeviationWithMinAndMax" // "runtimeCodeUserDeviationWithMinAndMax"
+                        )
                 .withDelimiter(';')
                 .withQuote('"')
                 .withQuoteMode(QuoteMode.MINIMAL) // TODO: Adjust with right quote mode
                 .withEscape('\\')
                 .withNullString("null"))) {
 
+
             List<MeasuredRuntimes> baseComparison = listOfListsOfMeasuredRuntimesFromDifferentComparisons.get(0);
-
-
             for (int j = 0; j < baseComparison.size(); j++) {
 
                 long minRuntimeTextTotal = baseComparison.get(j).runtimeTextTotal;
-                long minRuntimeTextUser = baseComparison.get(j).runtimeTextUser;
                 long minRuntimeCodeTotal = baseComparison.get(j).runtimeCodeTotal;
-                long minRuntimeCodeUser = baseComparison.get(j).runtimeCodeUser;
 
                 long maxRuntimeTextTotal = baseComparison.get(j).runtimeTextTotal;
-                long maxRuntimeTextUser = baseComparison.get(j).runtimeTextUser;
                 long maxRuntimeCodeTotal = baseComparison.get(j).runtimeCodeTotal;
-                long maxRuntimeCodeUser = baseComparison.get(j).runtimeCodeUser;
 
                 double averageRuntimeTextTotal = 0;
-                double averageRuntimeTextUser = 0;
                 double averageRuntimeCodeTotal = 0;
-                double averageRuntimeCodeUser = 0;
 
                 for (int i = 1; i < listOfListsOfMeasuredRuntimesFromDifferentComparisons.size(); i++) {
 
@@ -332,68 +324,45 @@ public class Statistics {
                     assertEquals(baseComparison.get(j).threshold, currentComparison.get(j).threshold);
 
                     minRuntimeTextTotal = Math.min(minRuntimeTextTotal, currentComparison.get(i).runtimeTextTotal);
-                    minRuntimeTextUser = Math.min(minRuntimeTextUser, currentComparison.get(i).runtimeTextUser);
                     minRuntimeCodeTotal = Math.min(minRuntimeCodeTotal, currentComparison.get(i).runtimeCodeTotal);
-                    minRuntimeCodeUser = Math.min(minRuntimeCodeUser, currentComparison.get(i).runtimeCodeUser);
 
                     maxRuntimeTextTotal = Math.max(maxRuntimeTextTotal, currentComparison.get(i).runtimeTextTotal);
-                    maxRuntimeTextUser = Math.max(maxRuntimeTextUser, currentComparison.get(i).runtimeTextUser);
                     maxRuntimeCodeTotal = Math.max(maxRuntimeCodeTotal, currentComparison.get(i).runtimeCodeTotal);
-                    maxRuntimeCodeUser = Math.max(maxRuntimeCodeUser, currentComparison.get(i).runtimeCodeUser);
 
-                    averageRuntimeTextTotal += currentComparison.get(i).runtimeTextTotal;
-                    averageRuntimeTextUser += currentComparison.get(i).runtimeTextUser;
-                    averageRuntimeCodeTotal += currentComparison.get(i).runtimeCodeTotal;
-                    averageRuntimeCodeUser += currentComparison.get(i).runtimeCodeUser;
+                    averageRuntimeTextTotal += currentComparison.get(j).runtimeTextTotal;
+                    averageRuntimeCodeTotal += currentComparison.get(j).runtimeCodeTotal;
                 }
 
                 averageRuntimeTextTotal /= (listOfListsOfMeasuredRuntimesFromDifferentComparisons.size()-1);
-                averageRuntimeTextUser /= (listOfListsOfMeasuredRuntimesFromDifferentComparisons.size()-1);
                 averageRuntimeCodeTotal /= (listOfListsOfMeasuredRuntimesFromDifferentComparisons.size()-1);
-                averageRuntimeCodeUser /= (listOfListsOfMeasuredRuntimesFromDifferentComparisons.size()-1);
 
                 /*
-                        "postId", "metric", "threshold",
+                        "metric", "threshold",
 
-                        "runtimeTotalTextMinimum", "runtimeUserTextMinimum",
-                        "runtimeTextTotalMaxDifference", "runtimeTextUserMaxDifference",
+                        "runtimeTotalTextMinimum",
+                        "runtimeTextTotalMaxDifference",
+                        "runtimeTextTotalDeviationWithConstantBaseAndAverage",
+                        "runtimeTextTotalDeviationWithMinAndMax",
 
-                        "runtimeTextTotalDeviationWithConstantBaseAndAverage", "runtimeTextUserDeviationWithConstantBaseAndAverage",
-                        "runtimeTextTotalDeviationWithMinAndMax", "runtimeTextUserDeviationWithMinAndMax",
-
-                        "runtimeTotalCodeMinimum", "runtimeUserCodeMinimum",
-                        "runtimeCodeTotalMaxDifference", "runtimeCodeUserMaxDifference",
-                        "runtimeCodeTotalDeviationWithConstantBaseAndAverage", "runtimeCodeUserDeviationWithConstantBaseAndAverage",
-                        "runtimeCodeTotalDeviationWithMinAndMax", "runtimeCodeUserDeviationWithMinAndMax"
+                        "runtimeTotalCodeMinimum",
+                        "runtimeCodeTotalMaxDifference",
+                        "runtimeCodeTotalDeviationWithConstantBaseAndAverage",
+                        "runtimeCodeTotalDeviationWithMinAndMax",
                  */
                 csvPrinter.printRecord(
-                        baseComparison.get(j).postId,
+                        baseComparison.get(j).sample,
                         baseComparison.get(j).metricName,
                         baseComparison.get(j).threshold,
 
                         minRuntimeTextTotal,
-                        minRuntimeTextUser,
-
                         maxRuntimeTextTotal - minRuntimeTextTotal,
-                        maxRuntimeTextUser - minRuntimeTextUser,
-
-                        round((double)baseComparison.get(j).runtimeTextTotal / averageRuntimeTextTotal, 4), // TODO: handle division by 0
-                        round((double)baseComparison.get(j).runtimeTextUser / averageRuntimeTextUser, 4), // TODO: handle division by 0
-
-                        round(maxRuntimeTextTotal != 0 ? ((double)minRuntimeTextTotal / maxRuntimeTextTotal) : 1, 4),
-                        round(maxRuntimeTextUser != 0 ? ((double)minRuntimeTextUser / maxRuntimeTextUser) : 1, 4),
+                        averageRuntimeTextTotal / (double)baseComparison.get(j).runtimeTextTotal, // TODO: handle division by 0
+                        maxRuntimeTextTotal != 0 ? ((double)minRuntimeTextTotal / maxRuntimeTextTotal) : 1,
 
                         minRuntimeCodeTotal,
-                        minRuntimeCodeUser,
-
                         maxRuntimeCodeTotal - minRuntimeCodeTotal,
-                        maxRuntimeCodeUser - minRuntimeCodeUser,
-
-                        round((double)baseComparison.get(j).runtimeCodeTotal / averageRuntimeCodeTotal, 4), // TODO: handle division by 0
-                        round((double)baseComparison.get(j).runtimeCodeUser / averageRuntimeCodeUser, 4), // TODO: handle division by 0
-
-                        round(maxRuntimeCodeTotal != 0 ? ((double)minRuntimeCodeTotal / maxRuntimeCodeTotal) : 1, 4),
-                        round(maxRuntimeCodeUser != 0 ? ((double)minRuntimeCodeUser / maxRuntimeCodeUser) : 1, 4)
+                        (double)baseComparison.get(j).runtimeCodeTotal / averageRuntimeCodeTotal, // TODO: handle division by 0
+                        maxRuntimeCodeTotal != 0 ? ((double)minRuntimeCodeTotal / maxRuntimeCodeTotal) : 1
                 );
             }
         } catch (IOException e) {
@@ -402,22 +371,20 @@ public class Statistics {
     }
 
     private class MeasuredRuntimes implements Comparator{
+        String sample;
         int postId;
         String metricName;
         double threshold;
         long runtimeTextTotal;
-        long runtimeTextUser;
         long runtimeCodeTotal;
-        long runtimeCodeUser;
 
-        MeasuredRuntimes(int postId, String metricName, double threshold, long runtimeTextTotal, long runtimeTextUser, long runtimeCodeTotal, long runtimeCodeUser) {
+        MeasuredRuntimes(String sample, int postId, String metricName, double threshold, long runtimeTextTotal, long runtimeCodeTotal) {
+            this.sample = sample;
             this.postId = postId;
             this.metricName = metricName;
             this.threshold = threshold;
             this.runtimeTextTotal = runtimeTextTotal;
-            this.runtimeTextUser = runtimeTextUser;
             this.runtimeCodeTotal = runtimeCodeTotal;
-            this.runtimeCodeUser = runtimeCodeUser;
         }
 
 
@@ -444,6 +411,7 @@ public class Statistics {
                     csvFormatMetricComparisonPost.withHeader())) {
 
                 for (CSVRecord currentRecord : csvParser) {
+                    String sample = currentRecord.get("Sample");
                     int postId = Integer.parseInt(currentRecord.get("PostId"));
                     String metric = currentRecord.get("Metric");
                     double threshold = Double.parseDouble(currentRecord.get("Threshold"));
@@ -453,7 +421,7 @@ public class Statistics {
                     long runtimeCodeUser = Long.parseLong(currentRecord.get("RuntimeCodeUser"));
 
                     measuredRuntimes.add(
-                            new MeasuredRuntimes(postId, metric, threshold, runtimeTextTotal, runtimeTextUser, runtimeCodeTotal, runtimeCodeUser)
+                            new MeasuredRuntimes(sample, postId, metric, threshold, runtimeTextTotal, runtimeCodeTotal)
                     );
                 }
             } catch (IOException e) {
@@ -502,6 +470,7 @@ public class Statistics {
                 postBlockTypeIdFilter.add(TextBlockVersion.postBlockTypeId);
                 postBlockTypeIdFilter.add(CodeBlockVersion.postBlockTypeId);
 
+                String sample = currentRecord.get("Sample");
                 String metric = currentRecord.get("Metric");
                 double threshold = Double.parseDouble(currentRecord.get("Threshold"));
 
@@ -539,6 +508,7 @@ public class Statistics {
 
 
                 MetricThresholdAggregated tmpMetricThresholdAggregated = new MetricThresholdAggregated(
+                        sample,
                         metric,
                         threshold,
 
@@ -566,7 +536,7 @@ public class Statistics {
 
         // print csv file
         try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(pathToOutputDirectory.toString() + "\\PostId_VersionCount_SO_17-06_sample_100_per_metricThreshold.csv"), CSVFormat.DEFAULT
-                .withHeader("metric", "threshold",
+                .withHeader("sample", "metric", "threshold",
                         "numberOfTextPostsWithThisMetric",
                         "runtimeTextTotal", "runtimeTextUser",
                         "truePositivesText", "trueNegativesText", "falsePositivesText","falseNegativesText",
@@ -581,6 +551,7 @@ public class Statistics {
 
             for (MetricThresholdAggregated metricThresholdAggregated : metricThresholdAggregateds) {
                 csvPrinter.printRecord(
+                        metricThresholdAggregated.sample,
                         metricThresholdAggregated.metric,
                         metricThresholdAggregated.threshold,
                         metricThresholdAggregated.numberOfPostsText,
@@ -612,6 +583,7 @@ public class Statistics {
 
 class MetricThresholdAggregated {
 
+    String sample;
     String metric;
     double threshold;
 
@@ -637,6 +609,7 @@ class MetricThresholdAggregated {
     Integer falseNegativesCode;
 
     MetricThresholdAggregated(
+            String sample,
             String metric,
             double threshold,
 
@@ -656,6 +629,7 @@ class MetricThresholdAggregated {
             Integer falsePositivesCode,
             Integer falseNegativesCode){
 
+        this.sample = sample;
         this.metric = metric;
         this.threshold = threshold;
 
