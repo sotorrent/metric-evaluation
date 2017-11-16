@@ -65,37 +65,11 @@ public class Statistics {
         Statistics statistics = new Statistics();
 //        statistics.getMultiplePossibleConnections();
 //        statistics.copyPostsWithPossibleMultipleConnectionsIntoDirectory();
-        statistics.getDifferencesOfRuntimesBetweenMetricComparisons();
+//        statistics.getDifferencesOfRuntimesBetweenMetricComparisons();
 
-//        statistics.createPostIdVersionCount_perMetricThreshold(
-//                Paths.get("output", "PostId_VersionCount_SO_17-06_sample_100_aggregated.csv"),
-//                Paths.get("output"));
-    }
-
-    private static List<Path> getGTSamples() {
-        ArrayList<Path> pathsToGTSamples = new ArrayList<>(6);
-        pathsToGTSamples.add(Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_1"));
-        pathsToGTSamples.add(Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_2"));
-        pathsToGTSamples.add(Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_1+"));
-        pathsToGTSamples.add(Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_2+"));
-        pathsToGTSamples.add(Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_Java_17-06_sample_100_1"));
-        pathsToGTSamples.add(Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_Java_17-06_sample_100_2"));
-        pathsToGTSamples.add(Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17_06_sample_unclear_matching"));
-        pathsToGTSamples.add(Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links"));
-        return pathsToGTSamples;
-    }
-
-    private static List<Path> getTestSamples() {
-        ArrayList<Path> pathsToTestSamples = new ArrayList<>(12);
-        for (int i = 1; i <= 10; i++) {
-            // test data
-            pathsToTestSamples.add(Paths.get(rootPathToTestSamples.toString(), "PostId_VersionCount_SO_17-06_sample_10000_" + i));
-        }
-        // sample with many versions (n=100)
-        pathsToTestSamples.add(Paths.get(rootPathToTestSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_most_versions"));
-        // sample with multiple possible connections (n=498)
-        pathsToTestSamples.add(Paths.get(rootPathToTestSamples.toString(), "PostId_VersionCount_SO_17-06_sample_multiple_possible_links"));
-        return pathsToTestSamples;
+        statistics.createPostIdVersionCount_perMetricThreshold(
+                Paths.get("output", "PostId_VersionCount_SO_17-06_sample_100_aggregated.csv"),
+                Paths.get("output"));
     }
 
     private void getMultiplePossibleConnections() {
@@ -244,7 +218,7 @@ public class Statistics {
         }
     }
 
-
+    // This method compares different directories of results of metric comparisons and creates a csv file with some differences
     private void getDifferencesOfRuntimesBetweenMetricComparisons() {
 
         // Add all paths of computed comparisons
@@ -370,6 +344,168 @@ public class Statistics {
         }
     }
 
+    // This method parses an aggregated file from metric comparison results and converts it so that every metric and threshold have a row entry
+    private void createPostIdVersionCount_perMetricThreshold(Path pathToFile_perPostAggregated, Path pathToOutputDirectory){
+        List<MetricThresholdAggregated> metricThresholdAggregateds = new ArrayList<>();
+
+        try (CSVParser csvParser = new CSVParser(
+                new FileReader(pathToFile_perPostAggregated.toString()),
+                /*
+                CSVFormat.DEFAULT.withHeader(
+                "Sample", "Metric", "Threshold",
+                "PostId", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections",
+
+                "RuntimeTextTotal", "RuntimeTextUser",
+                "TextBlockVersionCount", "PossibleConnectionsText",
+                "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText",
+
+                "RuntimeCodeTotal", "RuntimeCodeUser",
+                "CodeBlockVersionCount", "PossibleConnectionsCode",
+                "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode"))) {
+                */
+                csvFormatMetricComparisonPost.withHeader())) {
+
+            for (CSVRecord currentRecord : csvParser) {
+
+                Set<Integer> postBlockTypeIdFilter = new HashSet<>();
+                postBlockTypeIdFilter.add(TextBlockVersion.postBlockTypeId);
+                postBlockTypeIdFilter.add(CodeBlockVersion.postBlockTypeId);
+
+                String sample = currentRecord.get("Sample");
+                String metric = currentRecord.get("Metric");
+                double threshold = Double.parseDouble(currentRecord.get("Threshold"));
+
+                long runtimeTextTotal = Long.parseLong(currentRecord.get("RuntimeTextTotal"));
+
+                Integer truePositivesText = 0;
+                Integer trueNegativesText = 0;
+                Integer falsePositivesText = 0;
+                Integer falseNegativesText = 0;
+                try {
+                    truePositivesText = Integer.parseInt(currentRecord.get("TruePositivesText"));
+                    trueNegativesText = Integer.parseInt(currentRecord.get("TrueNegativesText"));
+                    falsePositivesText = Integer.parseInt(currentRecord.get("FalsePositivesText"));
+                    falseNegativesText = Integer.parseInt(currentRecord.get("FalseNegativesText"));
+                } catch (NumberFormatException e){
+                    postBlockTypeIdFilter.remove(TextBlockVersion.postBlockTypeId);
+                }
+
+                long runtimeCodeTotal = Long.parseLong(currentRecord.get("RuntimeCodeTotal"));
+
+                Integer truePositivesCode = 0;
+                Integer trueNegativesCode = 0;
+                Integer falsePositivesCode = 0;
+                Integer falseNegativesCode = 0;
+                try {
+                    truePositivesCode = Integer.parseInt(currentRecord.get("TruePositivesCode"));
+                    trueNegativesCode = Integer.parseInt(currentRecord.get("TrueNegativesCode"));
+                    falsePositivesCode = Integer.parseInt(currentRecord.get("FalsePositivesCode"));
+                    falseNegativesCode = Integer.parseInt(currentRecord.get("FalseNegativesCode"));
+                } catch (Exception e){
+                    postBlockTypeIdFilter.remove(CodeBlockVersion.postBlockTypeId);
+                }
+
+
+                MetricThresholdAggregated tmpMetricThresholdAggregated = new MetricThresholdAggregated(
+                        sample,
+                        metric,
+                        threshold,
+
+                        runtimeTextTotal,
+
+                        truePositivesText,
+                        trueNegativesText,
+                        falsePositivesText,
+                        falseNegativesText,
+
+                        runtimeCodeTotal,
+
+                        truePositivesCode,
+                        trueNegativesCode,
+                        falsePositivesCode,
+                        falseNegativesCode);
+
+                integrateInList(metricThresholdAggregateds, tmpMetricThresholdAggregated, postBlockTypeIdFilter);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // print csv file
+        try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(pathToOutputDirectory.toString() + "\\PostId_VersionCount_SO_17-06_sample_100_per_metricThreshold.csv"), CSVFormat.DEFAULT
+                .withHeader("sample", "metric", "threshold",
+                        "numberOfTextPostsWithThisMetric",
+                        "runtimeTextTotal",
+                        "truePositivesText", "trueNegativesText", "falsePositivesText","falseNegativesText",
+                        "numberOfCodePostsWithThisMetric",
+                        "runtimeCodeTotal",
+                        "truePositivesCode", "trueNegativesCode", "falsePositivesCode", "falseNegativesCode")
+                .withDelimiter(';')
+                .withQuote('"')
+                .withQuoteMode(QuoteMode.MINIMAL) // TODO: Adjust with right quote mode
+                .withEscape('\\')
+                .withNullString("null"))) {
+
+            for (MetricThresholdAggregated metricThresholdAggregated : metricThresholdAggregateds) {
+                csvPrinter.printRecord(
+                        metricThresholdAggregated.sample,
+                        metricThresholdAggregated.metric,
+                        metricThresholdAggregated.threshold,
+                        metricThresholdAggregated.numberOfPostsText,
+                        metricThresholdAggregated.runtimeTextTotal,
+                        metricThresholdAggregated.truePositivesText,
+                        metricThresholdAggregated.trueNegativesText,
+                        metricThresholdAggregated.falsePositivesText,
+                        metricThresholdAggregated.falseNegativesText,
+                        metricThresholdAggregated.numberOfPostsCode,
+                        metricThresholdAggregated.runtimeCodeTotal,
+                        metricThresholdAggregated.truePositivesCode,
+                        metricThresholdAggregated.trueNegativesCode,
+                        metricThresholdAggregated.falsePositivesCode,
+                        metricThresholdAggregated.falseNegativesCode
+                );
+            }
+
+            csvPrinter.flush();
+            csvPrinter.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+
+    // --------------------------------------------------------------------------------------
+    // helper methods and helper classes from here
+
+    private static List<Path> getGTSamples() {
+        ArrayList<Path> pathsToGTSamples = new ArrayList<>(6);
+        pathsToGTSamples.add(Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_1"));
+        pathsToGTSamples.add(Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_2"));
+        pathsToGTSamples.add(Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_1+"));
+        pathsToGTSamples.add(Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_2+"));
+        pathsToGTSamples.add(Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_Java_17-06_sample_100_1"));
+        pathsToGTSamples.add(Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_Java_17-06_sample_100_2"));
+        pathsToGTSamples.add(Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17_06_sample_unclear_matching"));
+        pathsToGTSamples.add(Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links"));
+        return pathsToGTSamples;
+    }
+
+    private static List<Path> getTestSamples() {
+        ArrayList<Path> pathsToTestSamples = new ArrayList<>(12);
+        for (int i = 1; i <= 10; i++) {
+            // test data
+            pathsToTestSamples.add(Paths.get(rootPathToTestSamples.toString(), "PostId_VersionCount_SO_17-06_sample_10000_" + i));
+        }
+        // sample with many versions (n=100)
+        pathsToTestSamples.add(Paths.get(rootPathToTestSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_most_versions"));
+        // sample with multiple possible connections (n=498)
+        pathsToTestSamples.add(Paths.get(rootPathToTestSamples.toString(), "PostId_VersionCount_SO_17-06_sample_multiple_possible_links"));
+        return pathsToTestSamples;
+    }
+
     private class MeasuredRuntimes implements Comparator{
         String sample;
         int postId;
@@ -443,230 +579,87 @@ public class Statistics {
         return ((double)((int)(value * tmp))) / tmp;
     }
 
+    private class MetricThresholdAggregated {
 
-    private void createPostIdVersionCount_perMetricThreshold(Path pathToFile_perPostAggregated, Path pathToOutputDirectory){
-        List<MetricThresholdAggregated> metricThresholdAggregateds = new ArrayList<>();
+        String sample;
+        String metric;
+        double threshold;
 
-        try (CSVParser csvParser = new CSVParser(
-                new FileReader(pathToFile_perPostAggregated.toString()),
-                /*
-                CSVFormat.DEFAULT.withHeader(
-                "Sample", "Metric", "Threshold",
-                "PostId", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections",
+        int numberOfPostsText = 0;
 
-                "RuntimeTextTotal", "RuntimeTextUser",
-                "TextBlockVersionCount", "PossibleConnectionsText",
-                "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText",
+        long runtimeTextTotal;
 
-                "RuntimeCodeTotal", "RuntimeCodeUser",
-                "CodeBlockVersionCount", "PossibleConnectionsCode",
-                "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode"))) {
-                */
-                csvFormatMetricComparisonPost.withHeader())) {
-
-            for (CSVRecord currentRecord : csvParser) {
-
-                Set<Integer> postBlockTypeIdFilter = new HashSet<>();
-                postBlockTypeIdFilter.add(TextBlockVersion.postBlockTypeId);
-                postBlockTypeIdFilter.add(CodeBlockVersion.postBlockTypeId);
-
-                String sample = currentRecord.get("Sample");
-                String metric = currentRecord.get("Metric");
-                double threshold = Double.parseDouble(currentRecord.get("Threshold"));
-
-                long runtimeTextTotal = Long.parseLong(currentRecord.get("RuntimeTextTotal"));
-                long runtimeTextUser = Long.parseLong(currentRecord.get("RuntimeTextUser"));
-
-                Integer truePositivesText = 0;
-                Integer trueNegativesText = 0;
-                Integer falsePositivesText = 0;
-                Integer falseNegativesText = 0;
-                try {
-                    truePositivesText = Integer.parseInt(currentRecord.get("TruePositivesText"));
-                    trueNegativesText = Integer.parseInt(currentRecord.get("TrueNegativesText"));
-                    falsePositivesText = Integer.parseInt(currentRecord.get("FalsePositivesText"));
-                    falseNegativesText = Integer.parseInt(currentRecord.get("FalseNegativesText"));
-                } catch (NumberFormatException e){
-                    postBlockTypeIdFilter.remove(TextBlockVersion.postBlockTypeId);
-                }
-
-                long runtimeCodeTotal = Long.parseLong(currentRecord.get("RuntimeCodeTotal"));
-                long runtimeCodeUser = Long.parseLong(currentRecord.get("RuntimeCodeUser"));
-
-                Integer truePositivesCode = 0;
-                Integer trueNegativesCode = 0;
-                Integer falsePositivesCode = 0;
-                Integer falseNegativesCode = 0;
-                try {
-                    truePositivesCode = Integer.parseInt(currentRecord.get("TruePositivesCode"));
-                    trueNegativesCode = Integer.parseInt(currentRecord.get("TrueNegativesCode"));
-                    falsePositivesCode = Integer.parseInt(currentRecord.get("FalsePositivesCode"));
-                    falseNegativesCode = Integer.parseInt(currentRecord.get("FalseNegativesCode"));
-                } catch (Exception e){
-                    postBlockTypeIdFilter.remove(CodeBlockVersion.postBlockTypeId);
-                }
+        Integer truePositivesText;
+        Integer trueNegativesText;
+        Integer falsePositivesText;
+        Integer falseNegativesText;
 
 
-                MetricThresholdAggregated tmpMetricThresholdAggregated = new MetricThresholdAggregated(
-                        sample,
-                        metric,
-                        threshold,
+        int numberOfPostsCode = 0;
 
-                        runtimeTextTotal,
-                        runtimeTextUser,
+        long runtimeCodeTotal;
 
-                        truePositivesText,
-                        trueNegativesText,
-                        falsePositivesText,
-                        falseNegativesText,
+        Integer truePositivesCode;
+        Integer trueNegativesCode;
+        Integer falsePositivesCode;
+        Integer falseNegativesCode;
 
-                        runtimeCodeTotal,
-                        runtimeCodeUser,
+        MetricThresholdAggregated(
+                String sample,
+                String metric,
+                double threshold,
 
-                        truePositivesCode,
-                        trueNegativesCode,
-                        falsePositivesCode,
-                        falseNegativesCode);
+                long runtimeTextTotal,
 
-                    MetricThresholdAggregated.integrateInList(metricThresholdAggregateds, tmpMetricThresholdAggregated, postBlockTypeIdFilter);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+                Integer truePositivesText,
+                Integer trueNegativesText,
+                Integer falsePositivesText,
+                Integer falseNegativesText,
+
+                long runtimeCodeTotal,
+
+                Integer truePositivesCode,
+                Integer trueNegativesCode,
+                Integer falsePositivesCode,
+                Integer falseNegativesCode){
+
+            this.sample = sample;
+            this.metric = metric;
+            this.threshold = threshold;
+
+            this.numberOfPostsText = numberOfPostsText;
+
+            this.runtimeTextTotal = runtimeTextTotal;
+
+            this.truePositivesText = truePositivesText;
+            this.trueNegativesText = trueNegativesText;
+            this.falsePositivesText = falsePositivesText;
+            this.falseNegativesText = falseNegativesText;
+
+            this.numberOfPostsCode = numberOfPostsCode;
+
+            this.runtimeCodeTotal = runtimeCodeTotal;
+
+            this.truePositivesCode = truePositivesCode;
+            this.trueNegativesCode = trueNegativesCode;
+            this.falsePositivesCode = falsePositivesCode;
+            this.falseNegativesCode = falseNegativesCode;
         }
 
-        // print csv file
-        try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(pathToOutputDirectory.toString() + "\\PostId_VersionCount_SO_17-06_sample_100_per_metricThreshold.csv"), CSVFormat.DEFAULT
-                .withHeader("sample", "metric", "threshold",
-                        "numberOfTextPostsWithThisMetric",
-                        "runtimeTextTotal", "runtimeTextUser",
-                        "truePositivesText", "trueNegativesText", "falsePositivesText","falseNegativesText",
-                        "numberOfCodePostsWithThisMetric",
-                        "runtimeCodeTotal", "runtimeCodeUser",
-                        "truePositivesCode", "trueNegativesCode", "falsePositivesCode", "falseNegativesCode")
-                .withDelimiter(';')
-                .withQuote('"')
-                .withQuoteMode(QuoteMode.MINIMAL) // TODO: Adjust with right quote mode
-                .withEscape('\\')
-                .withNullString("null"))) {
-
-            for (MetricThresholdAggregated metricThresholdAggregated : metricThresholdAggregateds) {
-                csvPrinter.printRecord(
-                        metricThresholdAggregated.sample,
-                        metricThresholdAggregated.metric,
-                        metricThresholdAggregated.threshold,
-                        metricThresholdAggregated.numberOfPostsText,
-                        metricThresholdAggregated.runtimeTextTotal,
-                        metricThresholdAggregated.runtimeTextUser,
-                        metricThresholdAggregated.truePositivesText,
-                        metricThresholdAggregated.trueNegativesText,
-                        metricThresholdAggregated.falsePositivesText,
-                        metricThresholdAggregated.falseNegativesText,
-                        metricThresholdAggregated.numberOfPostsCode,
-                        metricThresholdAggregated.runtimeCodeTotal,
-                        metricThresholdAggregated.runtimeCodeUser,
-                        metricThresholdAggregated.truePositivesCode,
-                        metricThresholdAggregated.trueNegativesCode,
-                        metricThresholdAggregated.falsePositivesCode,
-                        metricThresholdAggregated.falseNegativesCode
-                );
-            }
-
-            csvPrinter.flush();
-            csvPrinter.close();
-
-            } catch (IOException e) {
-            e.printStackTrace();
+        private boolean definesSameType(Object other) {
+            return other instanceof MetricThresholdAggregated
+                    && (Objects.equals(this.sample, ((MetricThresholdAggregated) other).sample))
+                    && (Objects.equals(this.metric, ((MetricThresholdAggregated) other).metric))
+                    && this.threshold == ((MetricThresholdAggregated) other).threshold;
         }
-
-    }
-}
-
-class MetricThresholdAggregated {
-
-    String sample;
-    String metric;
-    double threshold;
-
-    int numberOfPostsText = 0;
-
-    long runtimeTextTotal;
-    long runtimeTextUser;
-
-    Integer truePositivesText;
-    Integer trueNegativesText;
-    Integer falsePositivesText;
-    Integer falseNegativesText;
-
-
-    int numberOfPostsCode = 0;
-
-    long runtimeCodeTotal;
-    long runtimeCodeUser;
-
-    Integer truePositivesCode;
-    Integer trueNegativesCode;
-    Integer falsePositivesCode;
-    Integer falseNegativesCode;
-
-    MetricThresholdAggregated(
-            String sample,
-            String metric,
-            double threshold,
-
-            long runtimeTextTotal,
-            long runtimeTextUser,
-
-            Integer truePositivesText,
-            Integer trueNegativesText,
-            Integer falsePositivesText,
-            Integer falseNegativesText,
-
-            long runtimeCodeTotal,
-            long runtimeCodeUser,
-
-            Integer truePositivesCode,
-            Integer trueNegativesCode,
-            Integer falsePositivesCode,
-            Integer falseNegativesCode){
-
-        this.sample = sample;
-        this.metric = metric;
-        this.threshold = threshold;
-
-        this.numberOfPostsText = numberOfPostsText;
-
-        this.runtimeTextTotal = runtimeTextTotal;
-        this.runtimeTextUser = runtimeTextUser;
-
-        this.truePositivesText = truePositivesText;
-        this.trueNegativesText = trueNegativesText;
-        this.falsePositivesText = falsePositivesText;
-        this.falseNegativesText = falseNegativesText;
-
-        this.numberOfPostsCode = numberOfPostsCode;
-
-        this.runtimeCodeTotal = runtimeCodeTotal;
-        this.runtimeCodeUser = runtimeCodeUser;
-
-        this.truePositivesCode = truePositivesCode;
-        this.trueNegativesCode = trueNegativesCode;
-        this.falsePositivesCode = falsePositivesCode;
-        this.falseNegativesCode = falseNegativesCode;
     }
 
-    private boolean definesSameType(Object other) {
-        return other instanceof MetricThresholdAggregated
-                && (Objects.equals(this.metric, ((MetricThresholdAggregated) other).metric))
-                && this.threshold == ((MetricThresholdAggregated) other).threshold;
-    }
-
-    static void integrateInList(List<MetricThresholdAggregated> metricThresholdAggregateds, MetricThresholdAggregated newMetricThresholdAggregated, Set<Integer> postBlockTypeId){
+    private static void integrateInList(List<MetricThresholdAggregated> metricThresholdAggregateds, MetricThresholdAggregated newMetricThresholdAggregated, Set<Integer> postBlockTypeId){
         for (MetricThresholdAggregated tmpMetricThresholdAggregated : metricThresholdAggregateds) {
             if (newMetricThresholdAggregated.definesSameType(tmpMetricThresholdAggregated)) {
 
                 if (postBlockTypeId.contains(TextBlockVersion.postBlockTypeId)) {
                     tmpMetricThresholdAggregated.runtimeTextTotal += newMetricThresholdAggregated.runtimeTextTotal;
-                    tmpMetricThresholdAggregated.runtimeTextUser += newMetricThresholdAggregated.runtimeTextUser;
 
                     tmpMetricThresholdAggregated.truePositivesText += newMetricThresholdAggregated.truePositivesText;
                     tmpMetricThresholdAggregated.trueNegativesText += newMetricThresholdAggregated.trueNegativesText;
@@ -678,7 +671,6 @@ class MetricThresholdAggregated {
 
                 if (postBlockTypeId.contains(CodeBlockVersion.postBlockTypeId)) {
                     tmpMetricThresholdAggregated.runtimeCodeTotal += newMetricThresholdAggregated.runtimeCodeTotal;
-                    tmpMetricThresholdAggregated.runtimeCodeUser += newMetricThresholdAggregated.runtimeCodeUser;
 
                     tmpMetricThresholdAggregated.truePositivesCode += newMetricThresholdAggregated.truePositivesCode;
                     tmpMetricThresholdAggregated.trueNegativesCode += newMetricThresholdAggregated.trueNegativesCode;
