@@ -70,7 +70,8 @@ public class Statistics {
         statistics.createPostIdVersionCount_perMetricThreshold(
                 Paths.get("output", "PostId_VersionCount_SO_17-06_sample_100_aggregated.csv"),
                 Paths.get("output"),
-                true);
+                true,
+                false);
     }
 
     private void getMultiplePossibleConnections() {
@@ -346,7 +347,12 @@ public class Statistics {
     }
 
     // This method parses an aggregated file from metric comparison results and converts it so that every metric and threshold have a row entry
-    private void createPostIdVersionCount_perMetricThreshold(Path pathToFile_perPostAggregated, Path pathToOutputDirectory, boolean divideBySamples){
+    private void createPostIdVersionCount_perMetricThreshold(
+            Path pathToFile_perPostAggregated,
+            Path pathToOutputDirectory,
+            boolean divideBySamples,
+            boolean relativeToNumberOfPosts){
+
         List<MetricThresholdAggregated> metricThresholdAggregateds = new ArrayList<>();
 
         try (CSVParser csvParser = new CSVParser(
@@ -432,28 +438,31 @@ public class Statistics {
             e.printStackTrace();
         }
 
+        String[] header = {
+                "sample", "metric", "threshold",
+                "numberOfTextPostsWithThisMetric",
+                "runtimeTextTotal",
+                "truePositivesText", "trueNegativesText", "falsePositivesText","falseNegativesText",
+                "numberOfCodePostsWithThisMetric",
+                "runtimeCodeTotal",
+                "truePositivesCode", "trueNegativesCode", "falsePositivesCode", "falseNegativesCode"};
+
+        if (relativeToNumberOfPosts) {
+            for (int i=4; i<header.length; i++) {
+                if (i != 9) {
+                    header[i] += "Relative";
+                }
+            }
+        }
+
         CSVFormat csvFormat = divideBySamples ?
-                CSVFormat.DEFAULT.withHeader(
-                        "sample", "metric", "threshold",
-                        "numberOfTextPostsWithThisMetric",
-                        "runtimeTextTotal",
-                        "truePositivesText", "trueNegativesText", "falsePositivesText","falseNegativesText",
-                        "numberOfCodePostsWithThisMetric",
-                        "runtimeCodeTotal",
-                        "truePositivesCode", "trueNegativesCode", "falsePositivesCode", "falseNegativesCode") :
-                CSVFormat.DEFAULT.withHeader(
-                        "metric", "threshold",
-                        "numberOfTextPostsWithThisMetric",
-                        "runtimeTextTotal",
-                        "truePositivesText", "trueNegativesText", "falsePositivesText","falseNegativesText",
-                        "numberOfCodePostsWithThisMetric",
-                        "runtimeCodeTotal",
-                        "truePositivesCode", "trueNegativesCode", "falsePositivesCode", "falseNegativesCode");
+                CSVFormat.DEFAULT.withHeader(header) :
+                CSVFormat.DEFAULT.withHeader(Arrays.copyOfRange(header, 1, header.length)); // https://stackoverflow.com/a/4439612
 
         // print csv file
         try (CSVPrinter csvPrinter = new CSVPrinter(
                 new FileWriter(
-                        pathToOutputDirectory.toString() + "\\PostId_VersionCount_SO_17-06_sample_100_per_metricThreshold" + (divideBySamples ? "Sample" : "") + ".csv"),
+                        pathToOutputDirectory.toString() + "\\PostId_VersionCount_SO_17-06_sample_100_per_metricThreshold" + (divideBySamples ? "Sample" : "") + (relativeToNumberOfPosts ? "_relativeValues" : "") + ".csv"),
                 csvFormat
                 .withDelimiter(';')
                 .withQuote('"')
@@ -462,42 +471,45 @@ public class Statistics {
                 .withNullString("null"))) {
 
             for (MetricThresholdAggregated metricThresholdAggregated : metricThresholdAggregateds) {
+
+                List<Object> columnEntries = new ArrayList<>();
+
                 if (divideBySamples) {
-                    csvPrinter.printRecord(
-                            metricThresholdAggregated.sample,
-                            metricThresholdAggregated.metric,
-                            metricThresholdAggregated.threshold,
-                            metricThresholdAggregated.numberOfPostsText,
-                            metricThresholdAggregated.runtimeTextTotal,
-                            metricThresholdAggregated.truePositivesText,
-                            metricThresholdAggregated.trueNegativesText,
-                            metricThresholdAggregated.falsePositivesText,
-                            metricThresholdAggregated.falseNegativesText,
-                            metricThresholdAggregated.numberOfPostsCode,
-                            metricThresholdAggregated.runtimeCodeTotal,
-                            metricThresholdAggregated.truePositivesCode,
-                            metricThresholdAggregated.trueNegativesCode,
-                            metricThresholdAggregated.falsePositivesCode,
-                            metricThresholdAggregated.falseNegativesCode
-                    );
-                } else {
-                    csvPrinter.printRecord(
-                            metricThresholdAggregated.metric,
-                            metricThresholdAggregated.threshold,
-                            metricThresholdAggregated.numberOfPostsText,
-                            metricThresholdAggregated.runtimeTextTotal,
-                            metricThresholdAggregated.truePositivesText,
-                            metricThresholdAggregated.trueNegativesText,
-                            metricThresholdAggregated.falsePositivesText,
-                            metricThresholdAggregated.falseNegativesText,
-                            metricThresholdAggregated.numberOfPostsCode,
-                            metricThresholdAggregated.runtimeCodeTotal,
-                            metricThresholdAggregated.truePositivesCode,
-                            metricThresholdAggregated.trueNegativesCode,
-                            metricThresholdAggregated.falsePositivesCode,
-                            metricThresholdAggregated.falseNegativesCode
-                    );
+                    columnEntries.add(metricThresholdAggregated.sample);
                 }
+
+                columnEntries.add(metricThresholdAggregated.metric);
+                columnEntries.add(metricThresholdAggregated.threshold);
+                columnEntries.add(metricThresholdAggregated.numberOfPostsText);
+
+                if (relativeToNumberOfPosts) {
+                    columnEntries.add((double)metricThresholdAggregated.runtimeTextTotal / metricThresholdAggregated.numberOfPostsText);
+                    columnEntries.add((double)metricThresholdAggregated.truePositivesText / metricThresholdAggregated.numberOfPostsText);
+                    columnEntries.add((double)metricThresholdAggregated.trueNegativesText / metricThresholdAggregated.numberOfPostsText);
+                    columnEntries.add((double)metricThresholdAggregated.falsePositivesText / metricThresholdAggregated.numberOfPostsText);
+                    columnEntries.add((double)metricThresholdAggregated.falseNegativesText / metricThresholdAggregated.numberOfPostsText);
+                    columnEntries.add(metricThresholdAggregated.numberOfPostsCode);
+                    columnEntries.add((double)metricThresholdAggregated.runtimeCodeTotal / metricThresholdAggregated.numberOfPostsCode);
+                    columnEntries.add((double)metricThresholdAggregated.truePositivesCode / metricThresholdAggregated.numberOfPostsCode);
+                    columnEntries.add((double)metricThresholdAggregated.trueNegativesCode / metricThresholdAggregated.numberOfPostsCode);
+                    columnEntries.add((double)metricThresholdAggregated.falsePositivesCode / metricThresholdAggregated.numberOfPostsCode);
+                    columnEntries.add((double)metricThresholdAggregated.falseNegativesCode / metricThresholdAggregated.numberOfPostsCode);
+                } else {
+                    columnEntries.add(metricThresholdAggregated.runtimeTextTotal);
+                    columnEntries.add(metricThresholdAggregated.truePositivesText);
+                    columnEntries.add(metricThresholdAggregated.trueNegativesText);
+                    columnEntries.add(metricThresholdAggregated.falsePositivesText);
+                    columnEntries.add(metricThresholdAggregated.falseNegativesText);
+                    columnEntries.add(metricThresholdAggregated.numberOfPostsCode);
+                    columnEntries.add(metricThresholdAggregated.runtimeCodeTotal);
+                    columnEntries.add(metricThresholdAggregated.truePositivesCode);
+                    columnEntries.add(metricThresholdAggregated.trueNegativesCode);
+                    columnEntries.add(metricThresholdAggregated.falsePositivesCode);
+                    columnEntries.add(metricThresholdAggregated.falseNegativesCode);
+                }
+
+                csvPrinter.printRecord(columnEntries);
+
             }
 
             csvPrinter.flush();
