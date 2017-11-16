@@ -426,7 +426,7 @@ public class Statistics {
                         falsePositivesCode,
                         falseNegativesCode);
 
-                integrateInList(metricThresholdAggregateds, tmpMetricThresholdAggregated, postBlockTypeIdFilter);
+                integrateInList(metricThresholdAggregateds, tmpMetricThresholdAggregated, postBlockTypeIdFilter, divideBySamples);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -680,17 +680,22 @@ public class Statistics {
             this.falseNegativesCode = falseNegativesCode;
         }
 
-        private boolean definesSameType(Object other) {
+        private boolean definesSameType(Object other, boolean divideBySamples) {
             return other instanceof MetricThresholdAggregated
-                    && (Objects.equals(this.sample, ((MetricThresholdAggregated) other).sample))
+                    && (!divideBySamples
+                        || (Objects.equals(this.sample, ((MetricThresholdAggregated) other).sample)))
                     && (Objects.equals(this.metric, ((MetricThresholdAggregated) other).metric))
                     && this.threshold == ((MetricThresholdAggregated) other).threshold;
         }
     }
 
-    private static void integrateInList(List<MetricThresholdAggregated> metricThresholdAggregateds, MetricThresholdAggregated newMetricThresholdAggregated, Set<Integer> postBlockTypeId){
+    private static void integrateInList(
+            List<MetricThresholdAggregated> metricThresholdAggregateds,
+            MetricThresholdAggregated newMetricThresholdAggregated,
+            Set<Integer> postBlockTypeId,
+            boolean divideBySamples){
         for (MetricThresholdAggregated tmpMetricThresholdAggregated : metricThresholdAggregateds) {
-            if (newMetricThresholdAggregated.definesSameType(tmpMetricThresholdAggregated)) {
+            if (newMetricThresholdAggregated.definesSameType(tmpMetricThresholdAggregated, divideBySamples)) {
 
                 if (postBlockTypeId.contains(TextBlockVersion.postBlockTypeId)) {
                     tmpMetricThresholdAggregated.runtimeTextTotal += newMetricThresholdAggregated.runtimeTextTotal;
