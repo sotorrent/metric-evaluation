@@ -422,8 +422,8 @@ public class MetricComparisonManager implements Runnable {
                             resultText.getPostBlockVersionCount(),
                             metricComparison.getPostVersionList().getPostVersion(postHistoryId).getPossibleConnections(TextBlockVersion.getPostBlockTypeIdFilter()),
                             resultText.getTruePositives(),
-                            resultText.getFalsePositives(),
                             resultText.getTrueNegatives(),
+                            resultText.getFalsePositives(),
                             resultText.getFalseNegatives(),
                             metricRuntimeCode.getRuntimeTotal(),
                             metricRuntimeCode.getRuntimeCPU(),
@@ -431,8 +431,8 @@ public class MetricComparisonManager implements Runnable {
                             resultCode.getPostBlockVersionCount(),
                             metricComparison.getPostVersionList().getPostVersion(postHistoryId).getPossibleConnections(CodeBlockVersion.getPostBlockTypeIdFilter()),
                             resultCode.getTruePositives(),
-                            resultCode.getFalsePositives(),
                             resultCode.getTrueNegatives(),
+                            resultCode.getFalsePositives(),
                             resultCode.getFalseNegatives()
                     );
                 }
