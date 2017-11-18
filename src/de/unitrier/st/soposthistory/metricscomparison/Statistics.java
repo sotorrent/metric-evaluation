@@ -482,25 +482,30 @@ public class Statistics {
                 columnEntries.add(metricThresholdAggregated.threshold);
                 columnEntries.add(metricThresholdAggregated.numberOfPostsText);
 
+
                 if (relativeToNumberOfPosts) {
-                    columnEntries.add((double)metricThresholdAggregated.runtimeTextTotal / metricThresholdAggregated.numberOfPostsText);
-                    columnEntries.add((double)metricThresholdAggregated.truePositivesText / metricThresholdAggregated.numberOfPostsText);
-                    columnEntries.add((double)metricThresholdAggregated.trueNegativesText / metricThresholdAggregated.numberOfPostsText);
-                    columnEntries.add((double)metricThresholdAggregated.falsePositivesText / metricThresholdAggregated.numberOfPostsText);
-                    columnEntries.add((double)metricThresholdAggregated.falseNegativesText / metricThresholdAggregated.numberOfPostsText);
-                    columnEntries.add(metricThresholdAggregated.numberOfPostsCode);
-                    columnEntries.add((double)metricThresholdAggregated.runtimeCodeTotal / metricThresholdAggregated.numberOfPostsCode);
-                    columnEntries.add((double)metricThresholdAggregated.truePositivesCode / metricThresholdAggregated.numberOfPostsCode);
-                    columnEntries.add((double)metricThresholdAggregated.trueNegativesCode / metricThresholdAggregated.numberOfPostsCode);
-                    columnEntries.add((double)metricThresholdAggregated.falsePositivesCode / metricThresholdAggregated.numberOfPostsCode);
-                    columnEntries.add((double)metricThresholdAggregated.falseNegativesCode / metricThresholdAggregated.numberOfPostsCode);
+                    columnEntries.add(((double) metricThresholdAggregated.runtimeTextTotal) / metricThresholdAggregated.numberOfPostsText);
+                    columnEntries.add(((double) metricThresholdAggregated.truePositivesText) / metricThresholdAggregated.numberOfPostsText);
+                    columnEntries.add(((double) metricThresholdAggregated.trueNegativesText) / metricThresholdAggregated.numberOfPostsText);
+                    columnEntries.add(((double) metricThresholdAggregated.falsePositivesText) / metricThresholdAggregated.numberOfPostsText);
+                    columnEntries.add(((double) metricThresholdAggregated.falseNegativesText) / metricThresholdAggregated.numberOfPostsText);
                 } else {
                     columnEntries.add(metricThresholdAggregated.runtimeTextTotal);
                     columnEntries.add(metricThresholdAggregated.truePositivesText);
                     columnEntries.add(metricThresholdAggregated.trueNegativesText);
                     columnEntries.add(metricThresholdAggregated.falsePositivesText);
                     columnEntries.add(metricThresholdAggregated.falseNegativesText);
-                    columnEntries.add(metricThresholdAggregated.numberOfPostsCode);
+                }
+
+                columnEntries.add(metricThresholdAggregated.numberOfPostsCode);
+
+                if (relativeToNumberOfPosts) {
+                    columnEntries.add(((double)metricThresholdAggregated.runtimeCodeTotal) / metricThresholdAggregated.numberOfPostsCode);
+                    columnEntries.add(((double)metricThresholdAggregated.truePositivesCode) / metricThresholdAggregated.numberOfPostsCode);
+                    columnEntries.add(((double)metricThresholdAggregated.trueNegativesCode) / metricThresholdAggregated.numberOfPostsCode);
+                    columnEntries.add(((double)metricThresholdAggregated.falsePositivesCode) / metricThresholdAggregated.numberOfPostsCode);
+                    columnEntries.add(((double)metricThresholdAggregated.falseNegativesCode) / metricThresholdAggregated.numberOfPostsCode);
+                } else {
                     columnEntries.add(metricThresholdAggregated.runtimeCodeTotal);
                     columnEntries.add(metricThresholdAggregated.truePositivesCode);
                     columnEntries.add(metricThresholdAggregated.trueNegativesCode);
@@ -509,7 +514,6 @@ public class Statistics {
                 }
 
                 csvPrinter.printRecord(columnEntries);
-
             }
 
             csvPrinter.flush();
