@@ -58,6 +58,58 @@ public class MetricComparisonManager implements Runnable {
 
     private boolean initialized;
 
+
+    private List editBasedMetrics = Arrays.asList(
+            "levenshtein", "levenshteinNormalized",
+            "damerauLevenshtein", "damerauLevenshteinNormalized",
+            "optimalAlignment", "optimalAlignmentNormalized",
+            "longestCommonSubsequence", "longestCommonSubsequenceNormalized");
+
+    private List fingerprindBasedMetrics = Arrays.asList(
+            "winnowingTwoGramJaccard", "winnowingThreeGramJaccard", "winnowingFourGramJaccard", "winnowingFiveGramJaccard",
+            "winnowingTwoGramJaccardNormalized", "winnowingThreeGramJaccardNormalized", "winnowingFourGramJaccardNormalized", "winnowingFiveGramJaccardNormalized",
+            "winnowingTwoGramDice", "winnowingThreeGramDice", "winnowingFourGramDice", "winnowingFiveGramDice",
+            "winnowingTwoGramDiceNormalized", "winnowingThreeGramDiceNormalized", "winnowingFourGramDiceNormalized", "winnowingFiveGramDiceNormalized",
+            "winnowingTwoGramOverlap", "winnowingThreeGramOverlap", "winnowingFourGramOverlap", "winnowingFiveGramOverlap",
+            "winnowingTwoGramOverlapNormalized", "winnowingThreeGramOverlapNormalized", "winnowingFourGramOverlapNormalized", "winnowingFiveGramOverlapNormalized",
+            "winnowingTwoGramLongestCommonSubsequence", "winnowingThreeGramLongestCommonSubsequence", "winnowingFourGramLongestCommonSubsequence", "winnowingFiveGramLongestCommonSubsequence",
+            "winnowingTwoGramLongestCommonSubsequenceNormalized", "winnowingThreeGramLongestCommonSubsequenceNormalized", "winnowingFourGramLongestCommonSubsequenceNormalized", "winnowingFiveGramLongestCommonSubsequenceNormalized",
+            "winnowingTwoGramOptimalAlignment", "winnowingThreeGramOptimalAlignment", "winnowingFourGramOptimalAlignment", "winnowingFiveGramOptimalAlignment",
+            "winnowingTwoGramOptimalAlignmentNormalized", "winnowingThreeGramOptimalAlignmentNormalized", "winnowingFourGramOptimalAlignmentNormalized", "winnowingFiveGramOptimalAlignmentNormalized");
+
+    private List profileBasedMetrics = Arrays.asList(
+            "cosineTokenNormalizedBool", "cosineTokenNormalizedTermFrequency", "cosineTokenNormalizedNormalizedTermFrequency",
+            "cosineTwoGramNormalizedBool", "cosineThreeGramNormalizedBool", "cosineFourGramNormalizedBool", "cosineFiveGramNormalizedBool",
+            "cosineTwoGramNormalizedTermFrequency", "cosineThreeGramNormalizedTermFrequency", "cosineFourGramNormalizedTermFrequency", "cosineFiveGramNormalizedTermFrequency",
+            "cosineTwoGramNormalizedNormalizedTermFrequency", "cosineThreeGramNormalizedNormalizedTermFrequency", "cosineFourGramNormalizedNormalizedTermFrequency", "cosineFiveGramNormalizedNormalizedTermFrequency",
+            "cosineTwoShingleNormalizedBool", "cosineThreeShingleNormalizedBool",
+            "cosineTwoShingleNormalizedTermFrequency", "cosineThreeShingleNormalizedTermFrequency",
+            "cosineTwoShingleNormalizedNormalizedTermFrequency", "cosineThreeShingleNormalizedNormalizedTermFrequency",
+            "manhattanTokenNormalized",
+            "manhattanTwoGramNormalized", "manhattanThreeGramNormalized", "manhattanFourGramNormalized", "manhattanFiveGramNormalized",
+            "manhattanTwoShingleNormalized", "manhattanThreeShingleNormalized");
+
+    private List setBasedMetrics = Arrays.asList(
+            "tokenJaccard", "tokenJaccardNormalized",
+            "twoGramJaccard", "threeGramJaccard", "fourGramJaccard", "fiveGramJaccard",
+            "twoGramJaccardNormalized", "threeGramJaccardNormalized", "fourGramJaccardNormalized", "fiveGramJaccardNormalized",
+            "twoGramJaccardNormalizedPadding", "threeGramJaccardNormalizedPadding", "fourGramJaccardNormalizedPadding", "fiveGramJaccardNormalizedPadding",
+            "twoShingleJaccard", "threeShingleJaccard",
+            "twoShingleJaccardNormalized", "threeShingleJaccardNormalized",
+            "tokenDice", "tokenDiceNormalized",
+            "twoGramDice", "threeGramDice", "fourGramDice", "fiveGramDice",
+            "twoGramDiceNormalized", "threeGramDiceNormalized", "fourGramDiceNormalized", "fiveGramDiceNormalized",
+            "twoGramDiceNormalizedPadding", "threeGramDiceNormalizedPadding", "fourGramDiceNormalizedPadding", "fiveGramDiceNormalizedPadding",
+            "twoShingleDice", "threeShingleDice",
+            "twoShingleDiceNormalized", "threeShingleDiceNormalized",
+            "tokenOverlap", "tokenOverlapNormalized",
+            "twoGramOverlap", "threeGramOverlap", "fourGramOverlap", "fiveGramOverlap",
+            "twoGramOverlapNormalized", "threeGramOverlapNormalized", "fourGramOverlapNormalized", "fiveGramOverlapNormalized",
+            "twoGramOverlapNormalizedPadding", "threeGramOverlapNormalizedPadding", "fourGramOverlapNormalizedPadding", "fiveGramOverlapNormalizedPadding",
+            "twoShingleOverlap", "threeShingleOverlap",
+            "twoShingleOverlapNormalized", "threeShingleOverlapNormalized");
+
+
     // See: http://nadeausoftware.com/articles/2008/03/java_tip_how_get_cpu_and_user_time_benchmarking
     private ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
 
@@ -79,7 +131,7 @@ public class MetricComparisonManager implements Runnable {
 
         // configure CSV format for metric comparison results (per post, i.e., per PostVersionList)
         csvFormatMetricComparisonPost = CSVFormat.DEFAULT
-                .withHeader("Sample", "Metric", "Threshold", "PostId", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections", "RuntimeTextTotal", "RuntimeTextCPU", "RuntimeTextUser", "TextBlockVersionCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "RuntimeCodeTotal", "RuntimeCodeCPU", "RuntimeCodeUser", "CodeBlockVersionCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode")
+                .withHeader("Sample", "MetricType", "Metric", "Threshold", "PostId", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections", "RuntimeTextTotal", "RuntimeTextCPU", "RuntimeTextUser", "TextBlockVersionCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "RuntimeCodeTotal", "RuntimeCodeCPU", "RuntimeCodeUser", "CodeBlockVersionCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode")
                 .withDelimiter(';')
                 .withQuote('"')
                 .withQuoteMode(QuoteMode.MINIMAL)
@@ -88,7 +140,7 @@ public class MetricComparisonManager implements Runnable {
 
         // configure CSV format for metric comparison results (per version, i.e., per PostHistoryId)
         csvFormatMetricComparisonVersion = CSVFormat.DEFAULT
-                .withHeader("Sample", "Metric", "Threshold", "PostId", "PostHistoryId", "PossibleConnections", "RuntimeTextTotal", "RuntimeTextCPU", "RuntimeTextUser", "TextBlockCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "RuntimeCodeTotal", "RuntimeCodeCPU", "RuntimeCodeUser", "CodeBlockCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode")
+                .withHeader("Sample", "MetricType", "Metric", "Threshold", "PostId", "PostHistoryId", "PossibleConnections", "RuntimeTextTotal", "RuntimeTextCPU", "RuntimeTextUser", "TextBlockCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "RuntimeCodeTotal", "RuntimeCodeCPU", "RuntimeCodeUser", "CodeBlockCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode")
                 .withDelimiter(';')
                 .withQuote('"')
                 .withQuoteMode(QuoteMode.MINIMAL)
@@ -372,6 +424,7 @@ public class MetricComparisonManager implements Runnable {
                 // "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode"
                 csvPrinterPost.printRecord(
                         name,
+                        getMetricType(metricComparison.getSimilarityMetricName()),
                         metricComparison.getSimilarityMetricName(),
                         metricComparison.getSimilarityThreshold(),
                         postId,
@@ -411,6 +464,7 @@ public class MetricComparisonManager implements Runnable {
                     // "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode"
                     csvPrinterVersion.printRecord(
                             name,
+                            getMetricType(metricComparison.getSimilarityMetricName()),
                             metricComparison.getSimilarityMetricName(),
                             metricComparison.getSimilarityThreshold(),
                             postId,
@@ -490,6 +544,20 @@ public class MetricComparisonManager implements Runnable {
 
     public String getName() {
         return name;
+    }
+
+    private String getMetricType (String metricName) {
+        if (editBasedMetrics.contains (metricName)) {
+            return "edit";
+        } else if (fingerprindBasedMetrics.contains (metricName)) {
+            return "fingerprint";
+        } else if (profileBasedMetrics.contains (metricName)) {
+            return "profile";
+        } else if (setBasedMetrics.contains (metricName)) {
+            return "set";
+        } else {
+            throw new IllegalArgumentException("Metric not found.");
+        }
     }
 
     private void addDefaultSimilarityMetrics() {
