@@ -66,7 +66,7 @@ public class Statistics {
 //        statistics.getMultiplePossibleConnections();
 //        statistics.copyPostsWithPossibleMultipleConnectionsIntoDirectory();
 //        statistics.getDifferencesOfRuntimesBetweenMetricComparisons();
-
+        
         statistics.createPostIdVersionCount_perMetricThreshold(
                 Paths.get("output", "PostId_VersionCount_SO_17-06_sample_100_aggregated.csv"),
                 Paths.get("output"),
@@ -440,12 +440,18 @@ public class Statistics {
 
         String[] header = {
                 "sample", "metric", "threshold",
+
                 "numberOfTextPostsWithThisMetric",
                 "runtimeTextTotal",
-                "truePositivesText", "trueNegativesText", "falsePositivesText","falseNegativesText",
+                "truePositivesText", "trueNegativesText", "falsePositivesText", "falseNegativesText",
+                "precisionText", "recallText",
+
                 "numberOfCodePostsWithThisMetric",
                 "runtimeCodeTotal",
-                "truePositivesCode", "trueNegativesCode", "falsePositivesCode", "falseNegativesCode"};
+                "truePositivesCode", "trueNegativesCode", "falsePositivesCode", "falseNegativesCode",
+                "precisionCode", "recallCode"
+        };
+
 
         if (relativeToNumberOfPosts) {
             for (int i=4; i<header.length; i++) {
@@ -481,8 +487,6 @@ public class Statistics {
                 columnEntries.add(metricThresholdAggregated.metric);
                 columnEntries.add(metricThresholdAggregated.threshold);
                 columnEntries.add(metricThresholdAggregated.numberOfPostsText);
-
-
                 if (relativeToNumberOfPosts) {
                     columnEntries.add(((double) metricThresholdAggregated.runtimeTextTotal) / metricThresholdAggregated.numberOfPostsText);
                     columnEntries.add(((double) metricThresholdAggregated.truePositivesText) / metricThresholdAggregated.numberOfPostsText);
@@ -496,9 +500,11 @@ public class Statistics {
                     columnEntries.add(metricThresholdAggregated.falsePositivesText);
                     columnEntries.add(metricThresholdAggregated.falseNegativesText);
                 }
+                columnEntries.add(metricThresholdAggregated.truePositivesText / ((double)metricThresholdAggregated.truePositivesText + metricThresholdAggregated.falsePositivesText)); // https://en.wikipedia.org/wiki/Precision_and_recall
+                columnEntries.add(metricThresholdAggregated.truePositivesText / ((double)metricThresholdAggregated.truePositivesText + metricThresholdAggregated.falseNegativesText)); // https://en.wikipedia.org/wiki/Precision_and_recall
+
 
                 columnEntries.add(metricThresholdAggregated.numberOfPostsCode);
-
                 if (relativeToNumberOfPosts) {
                     columnEntries.add(((double)metricThresholdAggregated.runtimeCodeTotal) / metricThresholdAggregated.numberOfPostsCode);
                     columnEntries.add(((double)metricThresholdAggregated.truePositivesCode) / metricThresholdAggregated.numberOfPostsCode);
@@ -512,6 +518,8 @@ public class Statistics {
                     columnEntries.add(metricThresholdAggregated.falsePositivesCode);
                     columnEntries.add(metricThresholdAggregated.falseNegativesCode);
                 }
+                columnEntries.add(metricThresholdAggregated.truePositivesCode / ((double)metricThresholdAggregated.truePositivesCode + metricThresholdAggregated.falsePositivesCode)); // https://en.wikipedia.org/wiki/Precision_and_recall
+                columnEntries.add(metricThresholdAggregated.truePositivesCode / ((double)metricThresholdAggregated.truePositivesCode + metricThresholdAggregated.falseNegativesCode)); // https://en.wikipedia.org/wiki/Precision_and_recall
 
                 csvPrinter.printRecord(columnEntries);
             }
@@ -714,7 +722,7 @@ public class Statistics {
             if (newMetricThresholdAggregated.definesSameType(tmpMetricThresholdAggregated, divideBySamples)) {
 
                 if (postBlockTypeId.contains(TextBlockVersion.postBlockTypeId)) {
-                    tmpMetricThresholdAggregated.runtimeTextTotal += newMetricThresholdAggregated.runtimeTextTotal;
+                    tmpMetricThresholdAggregated.runtimeTextTotal += newMetricThresholdAggregated.runtimeTextTotal; // TODO: check this
 
                     tmpMetricThresholdAggregated.truePositivesText += newMetricThresholdAggregated.truePositivesText;
                     tmpMetricThresholdAggregated.trueNegativesText += newMetricThresholdAggregated.trueNegativesText;
@@ -725,7 +733,7 @@ public class Statistics {
                 }
 
                 if (postBlockTypeId.contains(CodeBlockVersion.postBlockTypeId)) {
-                    tmpMetricThresholdAggregated.runtimeCodeTotal += newMetricThresholdAggregated.runtimeCodeTotal;
+                    tmpMetricThresholdAggregated.runtimeCodeTotal += newMetricThresholdAggregated.runtimeCodeTotal; // TODO: check this
 
                     tmpMetricThresholdAggregated.truePositivesCode += newMetricThresholdAggregated.truePositivesCode;
                     tmpMetricThresholdAggregated.trueNegativesCode += newMetricThresholdAggregated.trueNegativesCode;
