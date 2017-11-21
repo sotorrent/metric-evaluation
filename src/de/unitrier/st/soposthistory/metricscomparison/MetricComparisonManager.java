@@ -478,7 +478,13 @@ public class MetricComparisonManager implements Runnable {
     }
 
     private void addDefaultSimilarityMetrics() {
+
         // ****** Edit based *****
+        similarityMetrics.add(de.unitrier.st.stringsimilarity.edit.Variants::equals);
+        similarityMetricsNames.add("equals");
+        similarityMetrics.add(de.unitrier.st.stringsimilarity.edit.Variants::equalsNormalized);
+        similarityMetricsNames.add("equalsNormalized");
+
         similarityMetrics.add(de.unitrier.st.stringsimilarity.edit.Variants::levenshtein);
         similarityMetricsNames.add("levenshtein");
         similarityMetrics.add(de.unitrier.st.stringsimilarity.edit.Variants::levenshteinNormalized);
@@ -658,6 +664,11 @@ public class MetricComparisonManager implements Runnable {
         similarityMetricsNames.add("manhattanThreeShingleNormalized");
 
         // ****** Set based *****
+        similarityMetrics.add(de.unitrier.st.stringsimilarity.set.Variants::tokenEquals);
+        similarityMetricsNames.add("tokenEquals");
+        similarityMetrics.add(de.unitrier.st.stringsimilarity.set.Variants::tokenEqualsNormalized);
+        similarityMetricsNames.add("tokenEqualsNormalized");
+
         similarityMetrics.add(de.unitrier.st.stringsimilarity.set.Variants::tokenJaccard);
         similarityMetricsNames.add("tokenJaccard");
         similarityMetrics.add(de.unitrier.st.stringsimilarity.set.Variants::tokenJaccardNormalized);
