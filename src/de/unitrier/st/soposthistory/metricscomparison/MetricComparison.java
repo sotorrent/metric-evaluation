@@ -9,7 +9,6 @@ import de.unitrier.st.soposthistory.util.Config;
 import de.unitrier.st.soposthistory.version.PostVersionList;
 import de.unitrier.st.stringsimilarity.util.InputTooShortException;
 
-import java.lang.management.ThreadMXBean;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,12 +29,9 @@ public class MetricComparison {
     private boolean inputTooShort;
     private int numberOfRepetitions;
     private int currentRepetition;
-    private ThreadMXBean threadMXBean;
     private Stopwatch stopWatch;
 
-    // the following variables are used to temporarily store runtime values
-    private long runtimeCPU;
-    private long runtimeUser;
+    // the following variable is used to temporarily store the runtime
     private long runtimeTotal;
 
     // text
@@ -54,8 +50,7 @@ public class MetricComparison {
                             BiFunction<String, String, Double> similarityMetric,
                             String similarityMetricName,
                             double similarityThreshold,
-                            int numberOfRepetitions,
-                            ThreadMXBean threadMXBean) {
+                            int numberOfRepetitions) {
         this.postId = postId;
         this.postVersionList = postVersionList;
         // normalize links so that post version list and ground truth are comparable
@@ -72,8 +67,6 @@ public class MetricComparison {
         this.similarityThreshold = similarityThreshold;
         this.inputTooShort = false;
 
-        this.runtimeCPU = 0;
-        this.runtimeUser = 0;
         this.runtimeTotal = 0;
 
         this.metricRuntimeText = new MetricRuntime();
@@ -84,14 +77,12 @@ public class MetricComparison {
         this.numberOfRepetitions = numberOfRepetitions;
         this.currentRepetition = 0;
 
-        this.threadMXBean = threadMXBean;
         this.stopWatch = Stopwatch.createUnstarted();
     }
 
     private void reset() {
         this.inputTooShort = false;
         this.runtimeTotal = 0;
-        this.runtimeUser = 0;
         this.stopWatch.reset();
     }
 
@@ -130,26 +121,15 @@ public class MetricComparison {
 
         // process version history and measure runtime
         stopWatch.start();
-        startCPUTimeNano = threadMXBean.getCurrentThreadCpuTime();
-        startUserTimeNano = threadMXBean.getCurrentThreadUserTime();
         try {
             postVersionList.processVersionHistory(config, postBlockTypeFilter);
         } catch (InputTooShortException e) {
             inputTooShort = true;
         } finally {
-            endUserTimeNano = threadMXBean.getCurrentThreadUserTime();
-            endCPUTimeNano = threadMXBean.getCurrentThreadCpuTime();
             stopWatch.stop();
         }
 
-        // validate measurement of user time
-        if (startUserTimeNano < 0 || endUserTimeNano < 0) {
-            throw new IllegalArgumentException("User time has not been calculated correctly.");
-        }
-
-        // save runtime values
-        runtimeCPU = endCPUTimeNano - startCPUTimeNano;
-        runtimeUser = endUserTimeNano - startUserTimeNano;
+        // save runtime value
         runtimeTotal = stopWatch.elapsed().getNano();
 
         // save results
@@ -210,16 +190,10 @@ public class MetricComparison {
         // metric runtime
         if (currentRepetition == 1) {
             metricRuntime.setRuntimeTotal(runtimeTotal);
-            metricRuntime.setRuntimeCPU(runtimeCPU);
-            metricRuntime.setRuntimeUser(runtimeUser);
         } else if (currentRepetition < numberOfRepetitions) {
-                metricRuntime.setRuntimeTotal(metricRuntime.getRuntimeTotal() + runtimeTotal);
-                metricRuntime.setRuntimeCPU(metricRuntime.getRuntimeCPU() + runtimeCPU);
-                metricRuntime.setRuntimeUser(metricRuntime.getRuntimeUser() + runtimeUser);
+                metricRuntime.setRuntimeTotal(metricRuntime.getRuntime() + runtimeTotal);
         } else {
-            metricRuntime.setRuntimeTotal(Math.round((double)(metricRuntime.getRuntimeTotal() + runtimeTotal) / numberOfRepetitions));
-            metricRuntime.setRuntimeCPU(Math.round((double)(metricRuntime.getRuntimeCPU() + runtimeCPU) / numberOfRepetitions));
-            metricRuntime.setRuntimeUser(Math.round((double)(metricRuntime.getRuntimeUser() + runtimeUser) / numberOfRepetitions));
+            metricRuntime.setRuntimeTotal(Math.round((double)(metricRuntime.getRuntime() + runtimeTotal) / numberOfRepetitions));
         }
 
         // post block count
