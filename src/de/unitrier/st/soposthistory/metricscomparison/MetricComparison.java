@@ -19,12 +19,15 @@ import static de.unitrier.st.soposthistory.metricscomparison.MetricComparisonMan
 
 // TODO: move to metrics comparison project
 public class MetricComparison {
+    public enum MetricType {EDIT, FINGERPRINT, PROFILE, SET}
+
     final private int postId;
     final private List<Integer> postHistoryIds;
     final private PostVersionList postVersionList;
     final private PostGroundTruth postGroundTruth;
     final private BiFunction<String, String, Double> similarityMetric;
     final private String similarityMetricName;
+    final private MetricType similarityMetricType;
     final private double similarityThreshold;
     private boolean inputTooShort;
     private int numberOfRepetitions;
@@ -49,6 +52,7 @@ public class MetricComparison {
                             PostGroundTruth postGroundTruth,
                             BiFunction<String, String, Double> similarityMetric,
                             String similarityMetricName,
+                            MetricType similarityMetricType,
                             double similarityThreshold,
                             int numberOfRepetitions) {
         this.postId = postId;
@@ -64,6 +68,7 @@ public class MetricComparison {
 
         this.similarityMetric = similarityMetric;
         this.similarityMetricName = similarityMetricName;
+        this.similarityMetricType = similarityMetricType;
         this.similarityThreshold = similarityThreshold;
         this.inputTooShort = false;
 
@@ -116,8 +121,6 @@ public class MetricComparison {
     }
 
     private void evaluate(Config config, Set<Integer> postBlockTypeFilter) {
-        long startCPUTimeNano, endCPUTimeNano;
-        long startUserTimeNano, endUserTimeNano;
 
         // process version history and measure runtime
         stopWatch.start();
@@ -237,6 +240,10 @@ public class MetricComparison {
 
     public String getSimilarityMetricName() {
         return similarityMetricName;
+    }
+
+    public MetricType getSimilarityMetricType() {
+        return similarityMetricType;
     }
 
     public double getSimilarityThreshold() {

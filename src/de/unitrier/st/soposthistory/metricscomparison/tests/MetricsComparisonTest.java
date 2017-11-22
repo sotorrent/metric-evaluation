@@ -34,6 +34,7 @@ class MetricsComparisonTest {
 
         manager.addSimilarityMetric(
                 "fourGramOverlap",
+                MetricComparison.MetricType.SET,
                 de.unitrier.st.stringsimilarity.set.Variants::fourGramOverlap
         );
         manager.addSimilarityThreshold(0.6);
