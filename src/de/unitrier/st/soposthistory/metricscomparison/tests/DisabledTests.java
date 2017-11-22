@@ -141,10 +141,8 @@ class DisabledTests {
                         boolean resultsTextNull = resultsText.getFailedPredecessorComparisons() > 0;
                         boolean resultsCodeNull = resultsCode.getFailedPredecessorComparisons() > 0;
 
-                        assertTrue(resultsTextNull);
-                        assertTrue(resultsCodeNull);
+                        assertTrue(resultsTextNull || resultsCodeNull);
                     }
-
                 } else {
                     MetricResult resultsText = tmpMetricComparison.getResultText(postHistoryId);
                     assertEquals(truePositivesText, new Integer(resultsText.getTruePositives()));
