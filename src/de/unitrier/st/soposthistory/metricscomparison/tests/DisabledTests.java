@@ -137,36 +137,28 @@ class DisabledTests {
                         MetricResult resultsText = tmpMetricComparison.getResultText(tmpPostHistoryId);
                         MetricResult resultsCode = tmpMetricComparison.getResultCode(tmpPostHistoryId);
 
-                        boolean truePositives_textIsNull = (resultsText.getTruePositives() == null);
-                        boolean falsePositives_textIsNull = (resultsText.getFalsePositives() == null);
-                        boolean trueNegatives_textIsNull = (resultsText.getTrueNegatives() == null);
-                        boolean falseNegatives_textIsNull = (resultsText.getFalseNegatives() == null);
+                        // in previous versions, the results were set to null in case one comparison failed
+                        boolean resultsTextNull = resultsText.getFailedPredecessorComparisons() > 0;
+                        boolean resultsCodeNull = resultsCode.getFailedPredecessorComparisons() > 0;
 
-                        boolean truePositives_codeIsNull = (resultsCode.getTruePositives() == null);
-                        boolean falsePositives_codeIsNull = (resultsCode.getFalsePositives() == null);
-                        boolean trueNegatives_codeIsNull = (resultsCode.getTrueNegatives() == null);
-                        boolean falseNegatives_codeIsNull = (resultsCode.getFalseNegatives() == null);
-
-                        // https://stackoverflow.com/q/19004611
-                        assertTrue(
-                                truePositives_textIsNull && falsePositives_textIsNull && trueNegatives_textIsNull && falseNegatives_textIsNull
-                                        || truePositives_codeIsNull && falsePositives_codeIsNull && trueNegatives_codeIsNull && falseNegatives_codeIsNull);
+                        assertTrue(resultsTextNull);
+                        assertTrue(resultsCodeNull);
                     }
 
                 } else {
                     MetricResult resultsText = tmpMetricComparison.getResultText(postHistoryId);
-                    assertEquals(truePositivesText, resultsText.getTruePositives());
+                    assertEquals(truePositivesText, new Integer(resultsText.getTruePositives()));
                     assertEquals(trueNegativesText, new Integer(resultsText.getPostBlockVersionCount() - resultsText.getTruePositives() - resultsText.getFalsePositives() - resultsText.getFalseNegatives()));
                     assertEquals(trueNegativesText, new Integer(resultsText.getPostBlockVersionCount() - resultsText.getTruePositives() - resultsText.getFalseNegatives()));
-                    assertEquals(falsePositivesText, resultsText.getFalsePositives());
-                    assertEquals(falseNegativesText, resultsText.getFalseNegatives());
+                    assertEquals(falsePositivesText, new Integer(resultsText.getFalsePositives()));
+                    assertEquals(falseNegativesText, new Integer(resultsText.getFalseNegatives()));
 
                     MetricResult resultsCode = tmpMetricComparison.getResultCode(postHistoryId);
-                    assertEquals(truePositivesCode, resultsCode.getTruePositives());
+                    assertEquals(truePositivesCode, new Integer(resultsCode.getTruePositives()));
                     assertEquals(trueNegativesCode, new Integer(resultsCode.getPostBlockVersionCount() - resultsCode.getTruePositives() - resultsCode.getFalsePositives() - resultsCode.getFalseNegatives()));
                     assertEquals(trueNegativesCode, new Integer(resultsCode.getPostBlockVersionCount() - resultsCode.getTruePositives() - resultsCode.getFalseNegatives()));
-                    assertEquals(falsePositivesCode, resultsCode.getFalsePositives());
-                    assertEquals(falseNegativesCode, resultsCode.getFalseNegatives());
+                    assertEquals(falsePositivesCode, new Integer(resultsCode.getFalsePositives()));
+                    assertEquals(falseNegativesCode, new Integer(resultsCode.getFalseNegatives()));
                 }
             }
         } catch (IOException e) {

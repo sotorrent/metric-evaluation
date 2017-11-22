@@ -29,7 +29,6 @@ public class MetricComparison {
     final private String similarityMetricName;
     final private MetricType similarityMetricType;
     final private double similarityThreshold;
-    private boolean inputTooShort;
     private int numberOfRepetitions;
     private int currentRepetition;
     private Stopwatch stopWatch;
@@ -70,7 +69,6 @@ public class MetricComparison {
         this.similarityMetricName = similarityMetricName;
         this.similarityMetricType = similarityMetricType;
         this.similarityThreshold = similarityThreshold;
-        this.inputTooShort = false;
 
         this.runtimeTotal = 0;
 
@@ -86,7 +84,6 @@ public class MetricComparison {
     }
 
     private void reset() {
-        this.inputTooShort = false;
         this.runtimeTotal = 0;
         this.stopWatch.reset();
     }
@@ -126,8 +123,6 @@ public class MetricComparison {
         stopWatch.start();
         try {
             postVersionList.processVersionHistory(config, postBlockTypeFilter);
-        } catch (InputTooShortException e) {
-            inputTooShort = true;
         } finally {
             stopWatch.stop();
         }
@@ -162,24 +157,16 @@ public class MetricComparison {
             for (int postHistoryId : postHistoryIds) {
                 MetricResult resultInMap = results.get(postHistoryId);
                 MetricResult newResult = getResultAndSetRuntime(postHistoryId, metricRuntime, postBlockTypeFilter);
-                boolean truePositivesEqual = (resultInMap.getTruePositives() == null && newResult.getTruePositives() == null)
-                        || (resultInMap.getTruePositives() != null && newResult.getTruePositives() != null
-                        && resultInMap.getTruePositives().equals(newResult.getTruePositives()));
-                boolean falsePositivesEqual = (resultInMap.getFalsePositives() == null && newResult.getFalsePositives() == null)
-                        || (resultInMap.getFalsePositives() != null && newResult.getFalsePositives() != null
-                        && resultInMap.getFalsePositives().equals(newResult.getFalsePositives()));
-                boolean trueNegativesEqual = (resultInMap.getTrueNegatives() == null && newResult.getTrueNegatives() == null)
-                        || (resultInMap.getTrueNegatives() != null && newResult.getTrueNegatives() != null
-                        && resultInMap.getTrueNegatives().equals(newResult.getTrueNegatives()));
-                boolean falseNegativesEqual = (resultInMap.getFalseNegatives() == null && newResult.getFalseNegatives() == null)
-                        || (resultInMap.getFalseNegatives() != null && newResult.getFalseNegatives() != null
-                        && resultInMap.getFalseNegatives().equals(newResult.getFalseNegatives()));
-                boolean postBlockVersionCountEqual = (resultInMap.getPostBlockVersionCount() == null && newResult.getPostBlockVersionCount() == null)
-                        || (resultInMap.getPostBlockVersionCount() != null && newResult.getPostBlockVersionCount() != null
-                        && resultInMap.getPostBlockVersionCount().equals(newResult.getPostBlockVersionCount()));
+
+                boolean truePositivesEqual = resultInMap.getTruePositives() == newResult.getTruePositives();
+                boolean falsePositivesEqual = resultInMap.getFalsePositives() == newResult.getFalsePositives();
+                boolean trueNegativesEqual = resultInMap.getTrueNegatives() == newResult.getTrueNegatives();
+                boolean falseNegativesEqual = resultInMap.getFalseNegatives() == newResult.getFalseNegatives();
+                boolean postBlockVersionCountEqual = resultInMap.getPostBlockVersionCount() == newResult.getPostBlockVersionCount();
+                boolean failedPredecessorComparisonsEqual = resultInMap.getFailedPredecessorComparisons() == newResult.getFailedPredecessorComparisons();
 
                 if (!truePositivesEqual || !falsePositivesEqual || !trueNegativesEqual || !falseNegativesEqual
-                        || !postBlockVersionCountEqual) {
+                        || !postBlockVersionCountEqual || !failedPredecessorComparisonsEqual) {
                     throw new IllegalStateException("Metric results changed from repetition "
                             + (currentRepetition - 1) + " to " + currentRepetition);
                 }
@@ -194,8 +181,10 @@ public class MetricComparison {
         if (currentRepetition == 1) {
             metricRuntime.setRuntimeTotal(runtimeTotal);
         } else if (currentRepetition < numberOfRepetitions) {
-                metricRuntime.setRuntimeTotal(metricRuntime.getRuntime() + runtimeTotal);
+            // add up runtime values
+            metricRuntime.setRuntimeTotal(metricRuntime.getRuntime() + runtimeTotal);
         } else {
+            // calculate mean in last run
             metricRuntime.setRuntimeTotal(Math.round((double)(metricRuntime.getRuntime() + runtimeTotal) / numberOfRepetitions));
         }
 
@@ -207,29 +196,29 @@ public class MetricComparison {
             result.setPostBlockVersionCount(postVersionList.getPostVersion(postHistoryId).getCodeBlocks().size());
 
         // results
-        if (!inputTooShort) {
-            int possibleConnections = postGroundTruth.getPossibleConnections(postHistoryId, postBlockTypeFilter);
-            Set<PostBlockConnection> postBlockConnections = postVersionList.getPostVersion(postHistoryId).getConnections(postBlockTypeFilter);
-            Set<PostBlockConnection> postBlockConnectionsGT = postGroundTruth.getConnections(postHistoryId, postBlockTypeFilter);
+        int possibleConnections = postGroundTruth.getPossibleConnections(postHistoryId, postBlockTypeFilter);
+        Set<PostBlockConnection> postBlockConnections = postVersionList.getPostVersion(postHistoryId).getConnections(postBlockTypeFilter);
+        Set<PostBlockConnection> postBlockConnectionsGT = postGroundTruth.getConnections(postHistoryId, postBlockTypeFilter);
 
-            int truePositivesCount = PostBlockConnection.intersection(postBlockConnectionsGT, postBlockConnections).size();
-            int falsePositivesCount = PostBlockConnection.difference(postBlockConnections, postBlockConnectionsGT).size();
+        int truePositivesCount = PostBlockConnection.intersection(postBlockConnectionsGT, postBlockConnections).size();
+        int falsePositivesCount = PostBlockConnection.difference(postBlockConnections, postBlockConnectionsGT).size();
 
-            int trueNegativesCount = possibleConnections - (PostBlockConnection.union(postBlockConnectionsGT, postBlockConnections).size());
-            int falseNegativesCount = PostBlockConnection.difference(postBlockConnectionsGT, postBlockConnections).size();
+        int trueNegativesCount = possibleConnections - (PostBlockConnection.union(postBlockConnectionsGT, postBlockConnections).size());
+        int falseNegativesCount = PostBlockConnection.difference(postBlockConnectionsGT, postBlockConnections).size();
 
-            int allConnectionsCount = truePositivesCount + falsePositivesCount + trueNegativesCount + falseNegativesCount;
-            if (possibleConnections != allConnectionsCount) {
-                throw new IllegalStateException("Invalid result (expected: " + possibleConnections
-                        + "; actual: " + allConnectionsCount + ")");
-            }
+        int failedPredecessorComparisons = postVersionList.getFailedPredecessorComparisons();
 
-            result.setTruePositives(truePositivesCount);
-            result.setFalsePositives(falsePositivesCount);
-            result.setTrueNegatives(trueNegativesCount);
-            result.setFalseNegatives(falseNegativesCount);
-
+        int allConnectionsCount = truePositivesCount + falsePositivesCount + trueNegativesCount + falseNegativesCount;
+        if (possibleConnections != allConnectionsCount) {
+            throw new IllegalStateException("Invalid result (expected: " + possibleConnections
+                    + "; actual: " + allConnectionsCount + ")");
         }
+
+        result.setTruePositives(truePositivesCount);
+        result.setFalsePositives(falsePositivesCount);
+        result.setTrueNegatives(trueNegativesCount);
+        result.setFalseNegatives(falseNegativesCount);
+        result.setFailedPredecessorComparisons(failedPredecessorComparisons);
 
         return result;
     }

@@ -45,7 +45,7 @@
         <dependency>
             <groupId>de.unitrier.st.soposthistory</groupId>
             <artifactId>so-posthistory-extractor</artifactId>
-            <version>1.7.2</version>
+            <version>1.7.3</version>
         </dependency>
         <!-- https://github.com/sotorrent/string-similarity/tree/master/releases/ -->
         <dependency>

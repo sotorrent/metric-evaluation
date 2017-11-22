@@ -1,107 +1,87 @@
 package de.unitrier.st.soposthistory.metricscomparison;
 
 public class MetricResult {
-    private Integer postBlockVersionCount;
-    private Integer truePositives;
-    private Integer falsePositives;
-    private Integer trueNegatives;
-    private Integer falseNegatives;
+    private int postBlockVersionCount;
+    private int truePositives;
+    private int falsePositives;
+    private int trueNegatives;
+    private int falseNegatives;
+    private int failedPredecessorComparisons;
 
     MetricResult() {
-        this.postBlockVersionCount = null;
-        this.truePositives = null;
-        this.falsePositives = null;
-        this.trueNegatives = null;
-        this.falseNegatives = null;
+        this.postBlockVersionCount = 0;
+        this.truePositives = 0;
+        this.falsePositives = 0;
+        this.trueNegatives = 0;
+        this.falseNegatives = 0;
+        this.failedPredecessorComparisons = 0;
     }
 
-    MetricResult(Integer postBlockVersionCount, Integer truePositives, Integer falsePositives, Integer trueNegatives, Integer falseNegatives) {
+    MetricResult(int postBlockVersionCount,
+                 int truePositives, int falsePositives, int trueNegatives, int falseNegatives,
+                 int failedPredecessorComparisons) {
         this.postBlockVersionCount = postBlockVersionCount;
         this.truePositives = truePositives;
         this.falsePositives = falsePositives;
         this.trueNegatives = trueNegatives;
         this.falseNegatives = falseNegatives;
+        this.failedPredecessorComparisons = failedPredecessorComparisons;
     }
 
-    public Integer getPostBlockVersionCount() {
+    public int getPostBlockVersionCount() {
         return postBlockVersionCount;
     }
 
-    public Integer getTruePositives() {
+    public int getTruePositives() {
         return truePositives;
     }
 
-    public Integer getFalsePositives() {
+    public int getFalsePositives() {
         return falsePositives;
     }
 
-    public Integer getTrueNegatives() {
+    public int getTrueNegatives() {
         return trueNegatives;
     }
 
-    public Integer getFalseNegatives() {
+    public int getFalseNegatives() {
         return falseNegatives;
     }
 
-    void setPostBlockVersionCount(Integer postBlockVersionCount) {
+    public int getFailedPredecessorComparisons() {
+        return failedPredecessorComparisons;
+    }
+
+    void setPostBlockVersionCount(int postBlockVersionCount) {
         this.postBlockVersionCount = postBlockVersionCount;
     }
 
-    void setTruePositives(Integer truePositives) {
+    void setTruePositives(int truePositives) {
         this.truePositives = truePositives;
     }
 
-    void setFalsePositives(Integer falsePositives) {
+    void setFalsePositives(int falsePositives) {
         this.falsePositives = falsePositives;
     }
 
-    void setTrueNegatives(Integer trueNegatives) {
+    void setTrueNegatives(int trueNegatives) {
         this.trueNegatives = trueNegatives;
     }
 
-    void setFalseNegatives(Integer falseNegatives) {
+    void setFalseNegatives(int falseNegatives) {
         this.falseNegatives = falseNegatives;
     }
 
+    public void setFailedPredecessorComparisons(int failedPredecessorComparisons) {
+        this.failedPredecessorComparisons = failedPredecessorComparisons;
+    }
+
     void add(MetricResult result) {
-        if (getPostBlockVersionCount() != null) {
-            if (result.getPostBlockVersionCount() != null) {
-                setPostBlockVersionCount(getPostBlockVersionCount() + result.getPostBlockVersionCount());
-            }
-        } else {
-            setPostBlockVersionCount(result.getPostBlockVersionCount());
-        }
-
-        if (getTruePositives() != null) {
-            if (result.getTruePositives() != null) {
-                setTruePositives(getTruePositives() + result.getTruePositives());
-            }
-        } else {
-            setTruePositives(result.getTruePositives());
-        }
-
-        if (getFalsePositives() != null) {
-            if (result.getFalsePositives() != null) {
-                setFalsePositives(getFalsePositives() + result.getFalsePositives());
-            }
-        } else {
-            setFalsePositives(result.getFalsePositives());
-        }
-
-        if (getTrueNegatives() != null) {
-            if (result.getTrueNegatives() != null) {
-                setTrueNegatives(getTrueNegatives() + result.getTrueNegatives());
-            }
-        } else {
-            setTrueNegatives(result.getTrueNegatives());
-        }
-
-        if (getFalseNegatives() != null) {
-            if (result.getFalseNegatives() != null) {
-                setFalseNegatives(getFalseNegatives() + result.getFalseNegatives());
-            }
-        } else {
-            setFalseNegatives(result.getFalseNegatives());
-        }
+        setPostBlockVersionCount(getPostBlockVersionCount() + result.getPostBlockVersionCount());
+        setTruePositives(getTruePositives() + result.getTruePositives());
+        setFalsePositives(getFalsePositives() + result.getFalsePositives());
+        setTrueNegatives(getTrueNegatives() + result.getTrueNegatives());
+        setFalseNegatives(getFalseNegatives() + result.getFalseNegatives());
+        setFailedPredecessorComparisons(getFailedPredecessorComparisons() + result.getFailedPredecessorComparisons());
     }
 }
