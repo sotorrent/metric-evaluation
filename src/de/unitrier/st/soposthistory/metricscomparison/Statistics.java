@@ -1,8 +1,6 @@
 package de.unitrier.st.soposthistory.metricscomparison;
 
-import de.unitrier.st.soposthistory.blocks.CodeBlockVersion;
 import de.unitrier.st.soposthistory.blocks.PostBlockVersion;
-import de.unitrier.st.soposthistory.blocks.TextBlockVersion;
 import de.unitrier.st.soposthistory.util.Util;
 import de.unitrier.st.soposthistory.version.PostVersion;
 import de.unitrier.st.soposthistory.version.PostVersionList;
@@ -26,7 +24,6 @@ import static de.unitrier.st.soposthistory.util.Util.getClassLogger;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-// TODO: move to metrics comparison project
 public class Statistics {
     private static Logger logger = null;
 
@@ -66,12 +63,6 @@ public class Statistics {
 //        statistics.getMultiplePossibleConnections();
 //        statistics.copyPostsWithPossibleMultipleConnectionsIntoDirectory();
 //        statistics.getDifferencesOfRuntimesBetweenMetricComparisons();
-        
-        statistics.createPostIdVersionCount_perMetricThreshold(
-                Paths.get("output", "PostId_VersionCount_SO_17-06_sample_100_aggregated.csv"),
-                Paths.get("output"),
-                true,
-                false);
     }
 
     private void getMultiplePossibleConnections() {
@@ -141,9 +132,9 @@ public class Statistics {
                                         possiblePredecessors.size(),
                                         possibleSuccessors.size(),
                                         Arrays.toString(possiblePredecessors.stream()
-                                                    .map(PostBlockVersion::getLocalId)
-                                                    .collect(Collectors.toList())
-                                                    .toArray()),
+                                                .map(PostBlockVersion::getLocalId)
+                                                .collect(Collectors.toList())
+                                                .toArray()),
                                         Arrays.toString(possibleSuccessors.stream()
                                                 .map(PostBlockVersion::getLocalId)
                                                 .collect(Collectors.toList())
@@ -180,7 +171,7 @@ public class Statistics {
                 pathToMultipleConnectionsFile.toFile(),
                 StandardCharsets.UTF_8,
                 csvFormatMetricComparisonVersion.withFirstRecordAsHeader()
-            )) {
+        )) {
 
             Util.ensureEmptyDirectoryExists(outputDir);
 
@@ -270,7 +261,7 @@ public class Statistics {
                         "runtimeCodeTotalMaxDifference", // "runtimeCodeUserMaxDifference", "runtimeCodeUserMaxDifference",
                         "runtimeCodeTotalDeviationWithConstantBaseAndAverage", // "runtimeCodeUserDeviationWithConstantBaseAndAverage",
                         "runtimeCodeTotalDeviationWithMinAndMax" // "runtimeCodeUserDeviationWithMinAndMax"
-                        )
+                )
                 .withDelimiter(';')
                 .withQuote('"')
                 .withQuoteMode(QuoteMode.MINIMAL) // TODO: Adjust with right quote mode
@@ -344,193 +335,6 @@ public class Statistics {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    // This method parses an aggregated file from metric comparison results and converts it so that every metric and threshold have a row entry
-    private void createPostIdVersionCount_perMetricThreshold(
-            Path pathToFile_perPostAggregated,
-            Path pathToOutputDirectory,
-            boolean divideBySamples,
-            boolean relativeToNumberOfPosts){
-
-        List<MetricThresholdAggregated> metricThresholdAggregateds = new ArrayList<>();
-
-        try (CSVParser csvParser = new CSVParser(
-                new FileReader(pathToFile_perPostAggregated.toString()),
-                /*
-                CSVFormat.DEFAULT.withHeader(
-                "Sample", "Metric", "Threshold",
-                "PostId", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections",
-
-                "RuntimeTextTotal", "RuntimeTextUser",
-                "TextBlockVersionCount", "PossibleConnectionsText",
-                "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText",
-
-                "RuntimeCodeTotal", "RuntimeCodeUser",
-                "CodeBlockVersionCount", "PossibleConnectionsCode",
-                "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode"))) {
-                */
-                csvFormatMetricComparisonPost.withHeader())) {
-
-            for (CSVRecord currentRecord : csvParser) {
-
-                Set<Integer> postBlockTypeIdFilter = new HashSet<>();
-                postBlockTypeIdFilter.add(TextBlockVersion.postBlockTypeId);
-                postBlockTypeIdFilter.add(CodeBlockVersion.postBlockTypeId);
-
-                String sample = currentRecord.get("Sample");
-                String metric = currentRecord.get("Metric");
-                double threshold = Double.parseDouble(currentRecord.get("Threshold"));
-
-                long runtimeTextTotal = Long.parseLong(currentRecord.get("RuntimeTextTotal"));
-
-                Integer truePositivesText = 0;
-                Integer trueNegativesText = 0;
-                Integer falsePositivesText = 0;
-                Integer falseNegativesText = 0;
-                try {
-                    truePositivesText = Integer.parseInt(currentRecord.get("TruePositivesText"));
-                    trueNegativesText = Integer.parseInt(currentRecord.get("TrueNegativesText"));
-                    falsePositivesText = Integer.parseInt(currentRecord.get("FalsePositivesText"));
-                    falseNegativesText = Integer.parseInt(currentRecord.get("FalseNegativesText"));
-                } catch (NumberFormatException e){
-                    postBlockTypeIdFilter.remove(TextBlockVersion.postBlockTypeId);
-                }
-
-                long runtimeCodeTotal = Long.parseLong(currentRecord.get("RuntimeCodeTotal"));
-
-                Integer truePositivesCode = 0;
-                Integer trueNegativesCode = 0;
-                Integer falsePositivesCode = 0;
-                Integer falseNegativesCode = 0;
-                try {
-                    truePositivesCode = Integer.parseInt(currentRecord.get("TruePositivesCode"));
-                    trueNegativesCode = Integer.parseInt(currentRecord.get("TrueNegativesCode"));
-                    falsePositivesCode = Integer.parseInt(currentRecord.get("FalsePositivesCode"));
-                    falseNegativesCode = Integer.parseInt(currentRecord.get("FalseNegativesCode"));
-                } catch (Exception e){
-                    postBlockTypeIdFilter.remove(CodeBlockVersion.postBlockTypeId);
-                }
-
-
-                MetricThresholdAggregated tmpMetricThresholdAggregated = new MetricThresholdAggregated(
-                        sample,
-                        metric,
-                        threshold,
-
-                        runtimeTextTotal,
-
-                        truePositivesText,
-                        trueNegativesText,
-                        falsePositivesText,
-                        falseNegativesText,
-
-                        runtimeCodeTotal,
-
-                        truePositivesCode,
-                        trueNegativesCode,
-                        falsePositivesCode,
-                        falseNegativesCode);
-
-                integrateInList(metricThresholdAggregateds, tmpMetricThresholdAggregated, postBlockTypeIdFilter, divideBySamples);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        String[] header = {
-                "sample", "metric", "threshold",
-
-                "numberOfTextPostsWithThisMetric",
-                "runtimeTextTotal",
-                "truePositivesText", "trueNegativesText", "falsePositivesText", "falseNegativesText",
-                "precisionText", "recallText",
-
-                "numberOfCodePostsWithThisMetric",
-                "runtimeCodeTotal",
-                "truePositivesCode", "trueNegativesCode", "falsePositivesCode", "falseNegativesCode",
-                "precisionCode", "recallCode"
-        };
-
-
-        if (relativeToNumberOfPosts) {
-            for (int i=4; i<header.length; i++) {
-                if (i != 9) {
-                    header[i] += "Relative";
-                }
-            }
-        }
-
-        CSVFormat csvFormat = divideBySamples ?
-                CSVFormat.DEFAULT.withHeader(header) :
-                CSVFormat.DEFAULT.withHeader(Arrays.copyOfRange(header, 1, header.length)); // https://stackoverflow.com/a/4439612
-
-        // print csv file
-        try (CSVPrinter csvPrinter = new CSVPrinter(
-                new FileWriter(
-                        pathToOutputDirectory.toString() + "\\PostId_VersionCount_SO_17-06_sample_100_per_metricThreshold" + (divideBySamples ? "Sample" : "") + (relativeToNumberOfPosts ? "_relativeValues" : "") + ".csv"),
-                csvFormat
-                .withDelimiter(';')
-                .withQuote('"')
-                .withQuoteMode(QuoteMode.MINIMAL) // TODO: Adjust with right quote mode
-                .withEscape('\\')
-                .withNullString("null"))) {
-
-            for (MetricThresholdAggregated metricThresholdAggregated : metricThresholdAggregateds) {
-
-                List<Object> columnEntries = new ArrayList<>();
-
-                if (divideBySamples) {
-                    columnEntries.add(metricThresholdAggregated.sample);
-                }
-
-                columnEntries.add(metricThresholdAggregated.metric);
-                columnEntries.add(metricThresholdAggregated.threshold);
-                columnEntries.add(metricThresholdAggregated.numberOfPostsText);
-                if (relativeToNumberOfPosts) {
-                    columnEntries.add(((double) metricThresholdAggregated.runtimeTextTotal) / metricThresholdAggregated.numberOfPostsText);
-                    columnEntries.add(((double) metricThresholdAggregated.truePositivesText) / metricThresholdAggregated.numberOfPostsText);
-                    columnEntries.add(((double) metricThresholdAggregated.trueNegativesText) / metricThresholdAggregated.numberOfPostsText);
-                    columnEntries.add(((double) metricThresholdAggregated.falsePositivesText) / metricThresholdAggregated.numberOfPostsText);
-                    columnEntries.add(((double) metricThresholdAggregated.falseNegativesText) / metricThresholdAggregated.numberOfPostsText);
-                } else {
-                    columnEntries.add(metricThresholdAggregated.runtimeTextTotal);
-                    columnEntries.add(metricThresholdAggregated.truePositivesText);
-                    columnEntries.add(metricThresholdAggregated.trueNegativesText);
-                    columnEntries.add(metricThresholdAggregated.falsePositivesText);
-                    columnEntries.add(metricThresholdAggregated.falseNegativesText);
-                }
-                columnEntries.add(metricThresholdAggregated.truePositivesText / ((double)metricThresholdAggregated.truePositivesText + metricThresholdAggregated.falsePositivesText)); // https://en.wikipedia.org/wiki/Precision_and_recall
-                columnEntries.add(metricThresholdAggregated.truePositivesText / ((double)metricThresholdAggregated.truePositivesText + metricThresholdAggregated.falseNegativesText)); // https://en.wikipedia.org/wiki/Precision_and_recall
-
-
-                columnEntries.add(metricThresholdAggregated.numberOfPostsCode);
-                if (relativeToNumberOfPosts) {
-                    columnEntries.add(((double)metricThresholdAggregated.runtimeCodeTotal) / metricThresholdAggregated.numberOfPostsCode);
-                    columnEntries.add(((double)metricThresholdAggregated.truePositivesCode) / metricThresholdAggregated.numberOfPostsCode);
-                    columnEntries.add(((double)metricThresholdAggregated.trueNegativesCode) / metricThresholdAggregated.numberOfPostsCode);
-                    columnEntries.add(((double)metricThresholdAggregated.falsePositivesCode) / metricThresholdAggregated.numberOfPostsCode);
-                    columnEntries.add(((double)metricThresholdAggregated.falseNegativesCode) / metricThresholdAggregated.numberOfPostsCode);
-                } else {
-                    columnEntries.add(metricThresholdAggregated.runtimeCodeTotal);
-                    columnEntries.add(metricThresholdAggregated.truePositivesCode);
-                    columnEntries.add(metricThresholdAggregated.trueNegativesCode);
-                    columnEntries.add(metricThresholdAggregated.falsePositivesCode);
-                    columnEntries.add(metricThresholdAggregated.falseNegativesCode);
-                }
-                columnEntries.add(metricThresholdAggregated.truePositivesCode / ((double)metricThresholdAggregated.truePositivesCode + metricThresholdAggregated.falsePositivesCode)); // https://en.wikipedia.org/wiki/Precision_and_recall
-                columnEntries.add(metricThresholdAggregated.truePositivesCode / ((double)metricThresholdAggregated.truePositivesCode + metricThresholdAggregated.falseNegativesCode)); // https://en.wikipedia.org/wiki/Precision_and_recall
-
-                csvPrinter.printRecord(columnEntries);
-            }
-
-            csvPrinter.flush();
-            csvPrinter.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
     }
 
 
@@ -637,116 +441,5 @@ public class Statistics {
         return ((double)((int)(value * tmp))) / tmp;
     }
 
-    private class MetricThresholdAggregated {
 
-        String sample;
-        String metric;
-        double threshold;
-
-        int numberOfPostsText = 0;
-
-        long runtimeTextTotal;
-
-        Integer truePositivesText;
-        Integer trueNegativesText;
-        Integer falsePositivesText;
-        Integer falseNegativesText;
-
-
-        int numberOfPostsCode = 0;
-
-        long runtimeCodeTotal;
-
-        Integer truePositivesCode;
-        Integer trueNegativesCode;
-        Integer falsePositivesCode;
-        Integer falseNegativesCode;
-
-        MetricThresholdAggregated(
-                String sample,
-                String metric,
-                double threshold,
-
-                long runtimeTextTotal,
-
-                Integer truePositivesText,
-                Integer trueNegativesText,
-                Integer falsePositivesText,
-                Integer falseNegativesText,
-
-                long runtimeCodeTotal,
-
-                Integer truePositivesCode,
-                Integer trueNegativesCode,
-                Integer falsePositivesCode,
-                Integer falseNegativesCode){
-
-            this.sample = sample;
-            this.metric = metric;
-            this.threshold = threshold;
-
-            this.numberOfPostsText = numberOfPostsText;
-
-            this.runtimeTextTotal = runtimeTextTotal;
-
-            this.truePositivesText = truePositivesText;
-            this.trueNegativesText = trueNegativesText;
-            this.falsePositivesText = falsePositivesText;
-            this.falseNegativesText = falseNegativesText;
-
-            this.numberOfPostsCode = numberOfPostsCode;
-
-            this.runtimeCodeTotal = runtimeCodeTotal;
-
-            this.truePositivesCode = truePositivesCode;
-            this.trueNegativesCode = trueNegativesCode;
-            this.falsePositivesCode = falsePositivesCode;
-            this.falseNegativesCode = falseNegativesCode;
-        }
-
-        private boolean definesSameType(Object other, boolean divideBySamples) {
-            return other instanceof MetricThresholdAggregated
-                    && (!divideBySamples
-                        || (Objects.equals(this.sample, ((MetricThresholdAggregated) other).sample)))
-                    && (Objects.equals(this.metric, ((MetricThresholdAggregated) other).metric))
-                    && this.threshold == ((MetricThresholdAggregated) other).threshold;
-        }
-    }
-
-    private static void integrateInList(
-            List<MetricThresholdAggregated> metricThresholdAggregateds,
-            MetricThresholdAggregated newMetricThresholdAggregated,
-            Set<Integer> postBlockTypeId,
-            boolean divideBySamples){
-        for (MetricThresholdAggregated tmpMetricThresholdAggregated : metricThresholdAggregateds) {
-            if (newMetricThresholdAggregated.definesSameType(tmpMetricThresholdAggregated, divideBySamples)) {
-
-                if (postBlockTypeId.contains(TextBlockVersion.postBlockTypeId)) {
-                    tmpMetricThresholdAggregated.runtimeTextTotal += newMetricThresholdAggregated.runtimeTextTotal; // TODO: check this
-
-                    tmpMetricThresholdAggregated.truePositivesText += newMetricThresholdAggregated.truePositivesText;
-                    tmpMetricThresholdAggregated.trueNegativesText += newMetricThresholdAggregated.trueNegativesText;
-                    tmpMetricThresholdAggregated.falsePositivesText += newMetricThresholdAggregated.falsePositivesText;
-                    tmpMetricThresholdAggregated.falseNegativesText += newMetricThresholdAggregated.falseNegativesText;
-
-                    tmpMetricThresholdAggregated.numberOfPostsText++;
-                }
-
-                if (postBlockTypeId.contains(CodeBlockVersion.postBlockTypeId)) {
-                    tmpMetricThresholdAggregated.runtimeCodeTotal += newMetricThresholdAggregated.runtimeCodeTotal; // TODO: check this
-
-                    tmpMetricThresholdAggregated.truePositivesCode += newMetricThresholdAggregated.truePositivesCode;
-                    tmpMetricThresholdAggregated.trueNegativesCode += newMetricThresholdAggregated.trueNegativesCode;
-                    tmpMetricThresholdAggregated.falsePositivesCode += newMetricThresholdAggregated.falsePositivesCode;
-                    tmpMetricThresholdAggregated.falseNegativesCode += newMetricThresholdAggregated.falseNegativesCode;
-
-                    tmpMetricThresholdAggregated.numberOfPostsCode++;
-                }
-
-                return;
-            }
-        }
-
-        metricThresholdAggregateds.add(newMetricThresholdAggregated);
-    }
 }

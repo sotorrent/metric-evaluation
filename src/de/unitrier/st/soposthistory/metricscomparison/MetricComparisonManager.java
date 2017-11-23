@@ -26,7 +26,7 @@ public class MetricComparisonManager implements Runnable {
 
     static Logger logger = null;
     static final CSVFormat csvFormatPostIds;
-    static final CSVFormat csvFormatMetricComparisonPost;
+    public static final CSVFormat csvFormatMetricComparisonPost;
     public static final CSVFormat csvFormatMetricComparisonVersion;
 
     private static final Path DEFAULT_OUTPUT_DIR = Paths.get("output");
