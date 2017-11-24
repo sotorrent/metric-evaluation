@@ -109,8 +109,8 @@ class AggregatedMetricComparison {
     }
 
     void writeToCSV(CSVPrinter csvPrinterAggregated, int maxFailedPredecessorComparisonsText, int maxFailedPredecessorComparisonsCode) throws IOException {
-        double relativeFailedPredecessorComparisonsText = ((double)aggregatedResultsText.getFailedPredecessorComparisons()) / maxFailedPredecessorComparisonsText;
-        double relativeFailedPredecessorComparisonsCode = ((double)aggregatedResultsCode.getFailedPredecessorComparisons()) / maxFailedPredecessorComparisonsCode;
+        double relativeFailedPredecessorComparisonsText = maxFailedPredecessorComparisonsText == 0 ? 0 : ((double)aggregatedResultsText.getFailedPredecessorComparisons()) / maxFailedPredecessorComparisonsText;
+        double relativeFailedPredecessorComparisonsCode = maxFailedPredecessorComparisonsCode == 0 ? 0 : ((double)aggregatedResultsCode.getFailedPredecessorComparisons()) / maxFailedPredecessorComparisonsCode;
 
         // "MetricType", "Metric", "Threshold", "QualityText", "QualityCode", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections",
         // "RuntimeText", "TextBlockVersionCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText",
