@@ -1,17 +1,21 @@
 package de.unitrier.st.soposthistory.metricscomparison;
 
 class MetricRuntime {
-    private long runtimeTotal;
+    private long totalRuntime;
 
     MetricRuntime() {
-        this.runtimeTotal = 0;
+        this.totalRuntime = 0;
     }
 
-    long getRuntime() {
-        return runtimeTotal;
+    long getTotalRuntime() {
+        return totalRuntime;
     }
 
-    void setRuntimeTotal(long runtimeTotal) {
-        this.runtimeTotal = runtimeTotal;
+    void setTotalRuntime(long totalRuntime) {
+        this.totalRuntime = totalRuntime;
+    }
+
+    void add(MetricRuntime metricRuntime) {
+        this.totalRuntime += metricRuntime.getTotalRuntime();
     }
 }

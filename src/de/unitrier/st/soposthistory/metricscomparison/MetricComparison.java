@@ -7,7 +7,6 @@ import de.unitrier.st.soposthistory.gt.PostBlockConnection;
 import de.unitrier.st.soposthistory.gt.PostGroundTruth;
 import de.unitrier.st.soposthistory.util.Config;
 import de.unitrier.st.soposthistory.version.PostVersionList;
-import de.unitrier.st.stringsimilarity.util.InputTooShortException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -40,11 +39,13 @@ public class MetricComparison {
     private MetricRuntime metricRuntimeText;
     // PostHistoryId -> metric results for text blocks
     private Map<Integer, MetricResult> resultsText;
+    private MetricResult aggregatedResultsText;
 
     // code
     private MetricRuntime metricRuntimeCode;
     // PostHistoryId -> metric results for code blocks
     private Map<Integer, MetricResult> resultsCode;
+    private MetricResult aggregatedResultsCode;
 
     public MetricComparison(int postId,
                             PostVersionList postVersionList,
@@ -158,15 +159,17 @@ public class MetricComparison {
                 MetricResult resultInMap = results.get(postHistoryId);
                 MetricResult newResult = getResultAndSetRuntime(postHistoryId, metricRuntime, postBlockTypeFilter);
 
+                boolean postBlockVersionCountEqual = resultInMap.getPostBlockVersionCount() == newResult.getPostBlockVersionCount();
+                boolean possibleConnectionsEqual = resultInMap.getPossibleConnections() == newResult.getPossibleConnections();
                 boolean truePositivesEqual = resultInMap.getTruePositives() == newResult.getTruePositives();
                 boolean falsePositivesEqual = resultInMap.getFalsePositives() == newResult.getFalsePositives();
                 boolean trueNegativesEqual = resultInMap.getTrueNegatives() == newResult.getTrueNegatives();
                 boolean falseNegativesEqual = resultInMap.getFalseNegatives() == newResult.getFalseNegatives();
-                boolean postBlockVersionCountEqual = resultInMap.getPostBlockVersionCount() == newResult.getPostBlockVersionCount();
                 boolean failedPredecessorComparisonsEqual = resultInMap.getFailedPredecessorComparisons() == newResult.getFailedPredecessorComparisons();
 
-                if (!truePositivesEqual || !falsePositivesEqual || !trueNegativesEqual || !falseNegativesEqual
-                        || !postBlockVersionCountEqual || !failedPredecessorComparisonsEqual) {
+                if (!postBlockVersionCountEqual || ! possibleConnectionsEqual
+                        || !truePositivesEqual || !falsePositivesEqual || !trueNegativesEqual || !falseNegativesEqual
+                        || !failedPredecessorComparisonsEqual) {
                     throw new IllegalStateException("Metric results changed from repetition "
                             + (currentRepetition - 1) + " to " + currentRepetition);
                 }
@@ -179,21 +182,26 @@ public class MetricComparison {
 
         // metric runtime
         if (currentRepetition == 1) {
-            metricRuntime.setRuntimeTotal(runtimeTotal);
+            metricRuntime.setTotalRuntime(runtimeTotal);
         } else if (currentRepetition < numberOfRepetitions) {
             // add up runtime values
-            metricRuntime.setRuntimeTotal(metricRuntime.getRuntime() + runtimeTotal);
+            metricRuntime.setTotalRuntime(metricRuntime.getTotalRuntime() + runtimeTotal);
         } else {
             // calculate mean in last run
-            metricRuntime.setRuntimeTotal(Math.round((double)(metricRuntime.getRuntime() + runtimeTotal) / numberOfRepetitions));
+            metricRuntime.setTotalRuntime(Math.round((double)(metricRuntime.getTotalRuntime() + runtimeTotal) / numberOfRepetitions));
         }
 
-        // post block count
+        // post block count and possible connections
         result.setPostBlockVersionCount(0);
-        if (postBlockTypeFilter.contains(TextBlockVersion.postBlockTypeId))
+        result.setPossibleConnections(0);
+        if (postBlockTypeFilter.contains(TextBlockVersion.postBlockTypeId)) {
             result.setPostBlockVersionCount(postVersionList.getPostVersion(postHistoryId).getTextBlocks().size());
-        if (postBlockTypeFilter.contains(CodeBlockVersion.postBlockTypeId))
+            result.setPossibleConnections(postVersionList.getPostVersion(postHistoryId).getPossibleConnections(TextBlockVersion.getPostBlockTypeIdFilter()));
+        }
+        if (postBlockTypeFilter.contains(CodeBlockVersion.postBlockTypeId)) {
             result.setPostBlockVersionCount(postVersionList.getPostVersion(postHistoryId).getCodeBlocks().size());
+            result.setPossibleConnections(postVersionList.getPostVersion(postHistoryId).getPossibleConnections(CodeBlockVersion.getPostBlockTypeIdFilter()));
+        }
 
         // results
         int possibleConnections = postGroundTruth.getPossibleConnections(postHistoryId, postBlockTypeFilter);
@@ -247,11 +255,11 @@ public class MetricComparison {
         return postVersionList;
     }
 
-    public MetricRuntime getMetricRuntimeText() {
+    public MetricRuntime getRuntimeText() {
         return metricRuntimeText;
     }
 
-    public MetricRuntime getMetricRuntimeCode() {
+    public MetricRuntime getRuntimeCode() {
         return metricRuntimeCode;
     }
 
@@ -263,20 +271,25 @@ public class MetricComparison {
         return resultsCode.get(postHistoryId);
     }
 
-    public MetricResult getAggregatedResultText() {
-        MetricResult result = new MetricResult();
-        for (MetricResult currentResult : resultsText.values()) {
-            result.add(currentResult);
+    public MetricResult getAggregatedResultsText() {
+        if (aggregatedResultsText == null) {
+            aggregatedResultsText = new MetricResult();
+            for (MetricResult currentResult : resultsText.values()) {
+                aggregatedResultsText.add(currentResult);
+            }
         }
-        return result;
+
+        return aggregatedResultsText;
     }
 
-    public MetricResult getAggregatedResultCode() {
-        MetricResult result = new MetricResult();
-        for (MetricResult currentResult : resultsCode.values()) {
-            result.add(currentResult);
+    public MetricResult getAggregatedResultsCode() {
+        if (aggregatedResultsCode == null) {
+            aggregatedResultsCode = new MetricResult();
+            for (MetricResult currentResult : resultsCode.values()) {
+                aggregatedResultsCode.add(currentResult);
+            }
         }
-        return result;
-    }
 
+        return aggregatedResultsCode;
+    }
 }

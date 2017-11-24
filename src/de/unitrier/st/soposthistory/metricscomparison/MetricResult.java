@@ -2,6 +2,7 @@ package de.unitrier.st.soposthistory.metricscomparison;
 
 public class MetricResult {
     private int postBlockVersionCount;
+    private int possibleConnections;
     private int truePositives;
     private int falsePositives;
     private int trueNegatives;
@@ -10,6 +11,7 @@ public class MetricResult {
 
     MetricResult() {
         this.postBlockVersionCount = 0;
+        this.possibleConnections = 0;
         this.truePositives = 0;
         this.falsePositives = 0;
         this.trueNegatives = 0;
@@ -17,19 +19,12 @@ public class MetricResult {
         this.failedPredecessorComparisons = 0;
     }
 
-    MetricResult(int postBlockVersionCount,
-                 int truePositives, int falsePositives, int trueNegatives, int falseNegatives,
-                 int failedPredecessorComparisons) {
-        this.postBlockVersionCount = postBlockVersionCount;
-        this.truePositives = truePositives;
-        this.falsePositives = falsePositives;
-        this.trueNegatives = trueNegatives;
-        this.falseNegatives = falseNegatives;
-        this.failedPredecessorComparisons = failedPredecessorComparisons;
-    }
-
     public int getPostBlockVersionCount() {
         return postBlockVersionCount;
+    }
+
+    public int getPossibleConnections() {
+        return possibleConnections;
     }
 
     public int getTruePositives() {
@@ -56,6 +51,10 @@ public class MetricResult {
         this.postBlockVersionCount = postBlockVersionCount;
     }
 
+    public void setPossibleConnections(int possibleConnections) {
+        this.possibleConnections = possibleConnections;
+    }
+
     void setTruePositives(int truePositives) {
         this.truePositives = truePositives;
     }
@@ -78,6 +77,7 @@ public class MetricResult {
 
     void add(MetricResult result) {
         setPostBlockVersionCount(getPostBlockVersionCount() + result.getPostBlockVersionCount());
+        setPossibleConnections(getPossibleConnections() + result.getPossibleConnections());
         setTruePositives(getTruePositives() + result.getTruePositives());
         setFalsePositives(getFalsePositives() + result.getFalsePositives());
         setTrueNegatives(getTrueNegatives() + result.getTrueNegatives());

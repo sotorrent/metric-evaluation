@@ -1,18 +1,25 @@
 package de.unitrier.st.soposthistory.metricscomparison;
 
 import de.unitrier.st.soposthistory.util.Util;
+import de.unitrier.st.soposthistory.version.PostVersionList;
 import org.apache.commons.cli.*;
+import org.apache.commons.csv.CSVPrinter;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
+import static de.unitrier.st.soposthistory.metricscomparison.MetricComparisonManager.csvFormatMetricComparisonAggregated;
 import static de.unitrier.st.soposthistory.util.Util.getClassLogger;
 
 class Main {
@@ -63,6 +70,7 @@ class Main {
         int threadCount = Integer.parseInt(commandLine.getOptionValue("thread-count"));
 
         logger.info("Creating MetricComparisonManagers from samples...");
+        List<MetricComparisonManager> managers = new LinkedList<>();
 
         logger.info("Creating thread pool with at most " + threadCount + " threads...");
         // execute at most two thread at a time (not more because of runtime measurement)
@@ -85,6 +93,8 @@ class Main {
                                 .withOutputDirPath(outputDir)
                                 .initialize();
 
+                        managers.add(manager);
+
                         logger.info("Adding manager " + manager.getName() + " to thread pool...");
                         threadPool.execute(new Thread(manager));
                     }
@@ -98,6 +108,74 @@ class Main {
         try {
             threadPool.awaitTermination(1, TimeUnit.DAYS);
             logger.info("Thread pool terminated.");
+
+            logger.info("Saving aggregated results...");
+
+            // output file per post
+            File outputFileAggregated= Paths.get(outputDir.toString(), "MetricComparison_aggregated.csv").toFile();
+            if (outputFileAggregated.exists()) {
+                if (!outputFileAggregated.delete()) {
+                    throw new IllegalStateException("Error while deleting output file: " + outputFileAggregated);
+                }
+            }
+
+            AggregatedMetricComparisonList aggregatedMetricComparisons = new AggregatedMetricComparisonList();
+            for (MetricComparisonManager manager : managers) {
+                aggregatedMetricComparisons.addMetricComparisons(manager.getMetricComparisons());
+            }
+
+            try (CSVPrinter csvPrinterAggregated = new CSVPrinter(new FileWriter(outputFileAggregated), csvFormatMetricComparisonAggregated)) {
+
+                for (AggregatedMetricComparison aggregatedMetricComparison : aggregatedMetricComparisons) {
+                    PostVersionList postVersionList = aggregatedMetricComparison.getPostVersionList();
+                    MetricRuntime metricRuntimeText = aggregatedMetricComparison.getAggregatedRuntimeText();
+                    MetricRuntime metricRuntimeCode = aggregatedMetricComparison.getAggregatedRuntimeCode();
+                    MetricResult aggregatedResultText = aggregatedMetricComparison.getAggregatedResultsText();
+                    MetricResult aggregatedResultCode = aggregatedMetricComparison.getAggregatedResultsCode();
+
+                    // "MetricType", "Metric", "Threshold", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections",
+                    // "RuntimeText", "TextBlockVersionCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText",
+                    // "FailedPredecessorComparisonsText", "PrecisionText", "RecallText", "RelativeFailedPredecessorComparisonsText",
+                    // "RuntimeCode", "CodeBlockVersionCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode",
+                    // "FailedPredecessorComparisonsCode", "PrecisionCode", "RecallCode", "RelativeFailedPredecessorComparisonsCode"
+                    csvPrinterAggregated.printRecord(
+                            aggregatedMetricComparison.getSimilarityMetricType(),
+                            aggregatedMetricComparison.getSimilarityMetricName(),
+                            aggregatedMetricComparison.getSimilarityThreshold(),
+                            postVersionList.size(),
+                            postVersionList.getPostBlockVersionCount(),
+                            aggregatedResultText.getPossibleConnections() + aggregatedResultCode.getPossibleConnections(),
+                            metricRuntimeText.getTotalRuntime(),
+                            aggregatedResultText.getPostBlockVersionCount(),
+                            aggregatedResultText.getPossibleConnections(),
+                            aggregatedResultText.getTruePositives(),
+                            aggregatedResultText.getTrueNegatives(),
+                            aggregatedResultText.getFalsePositives(),
+                            aggregatedResultText.getFalseNegatives(),
+                            aggregatedResultText.getFailedPredecessorComparisons(),
+                            aggregatedMetricComparison.getPrecisionText(),
+                            aggregatedMetricComparison.getRecallText(),
+                            ((double)aggregatedResultText.getFailedPredecessorComparisons()) / aggregatedMetricComparisons.getMaxFailedPredecessorComparisonsText(),
+                            metricRuntimeCode.getTotalRuntime(),
+                            aggregatedResultCode.getPostBlockVersionCount(),
+                            aggregatedResultCode.getPossibleConnections(),
+                            aggregatedResultCode.getTruePositives(),
+                            aggregatedResultCode.getTrueNegatives(),
+                            aggregatedResultCode.getFalsePositives(),
+                            aggregatedResultCode.getFalseNegatives(),
+                            aggregatedResultCode.getFailedPredecessorComparisons(),
+                            aggregatedMetricComparison.getPrecisionCode(),
+                            aggregatedMetricComparison.getRecallCode(),
+                            ((double)aggregatedResultCode.getFailedPredecessorComparisons()) / aggregatedMetricComparisons.getMaxFailedPredecessorComparisonsCode()
+                            );
+                }
+
+                logger.info("Aggregated results saved.");
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         } catch (InterruptedException e) {
             threadPool.shutdownNow();
             e.printStackTrace();
