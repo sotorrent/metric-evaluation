@@ -94,7 +94,7 @@ public class MetricComparisonManager implements Runnable {
 
         // configure CSV format for aggregated metric comparison results (per (metric, threshold) combination)
         csvFormatMetricComparisonAggregated = CSVFormat.DEFAULT
-                .withHeader("MetricType", "Metric", "Threshold", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections", "RuntimeText", "TextBlockVersionCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailedPredecessorComparisonsText", "PrecisionText", "RecallText", "RelativeFailedPredecessorComparisonsText", "RuntimeCode", "CodeBlockVersionCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailedPredecessorComparisonsCode", "PrecisionCode", "RecallCode", "RelativeFailedPredecessorComparisonsCode")
+                .withHeader("MetricType", "Metric", "Threshold", "QualityText", "QualityCode", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections", "RuntimeText", "TextBlockVersionCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailedPredecessorComparisonsText", "PrecisionText", "RecallText", "RelativeFailedPredecessorComparisonsText", "RuntimeCode", "CodeBlockVersionCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailedPredecessorComparisonsCode", "PrecisionCode", "RecallCode", "RelativeFailedPredecessorComparisonsCode")
                 .withDelimiter(';')
                 .withQuote('"')
                 .withQuoteMode(QuoteMode.MINIMAL)
@@ -508,6 +508,10 @@ public class MetricComparisonManager implements Runnable {
 
     public String getName() {
         return name;
+    }
+
+    public static double calculateQualityMeasure(double precision, double recall, double relativeFailedPredecessorComparisons) {
+        return (precision + recall + (1 - relativeFailedPredecessorComparisons)) / 3.0;
     }
 
     private void addDefaultSimilarityMetrics() {

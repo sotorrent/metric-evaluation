@@ -133,7 +133,10 @@ class Main {
                     MetricResult aggregatedResultText = aggregatedMetricComparison.getAggregatedResultsText();
                     MetricResult aggregatedResultCode = aggregatedMetricComparison.getAggregatedResultsCode();
 
-                    // "MetricType", "Metric", "Threshold", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections",
+                    double relativeFailedPredecessorComparisonsText = ((double)aggregatedResultText.getFailedPredecessorComparisons()) / aggregatedMetricComparisons.getMaxFailedPredecessorComparisonsText();
+                    double relativeFailedPredecessorComparisonsCode = ((double)aggregatedResultCode.getFailedPredecessorComparisons()) / aggregatedMetricComparisons.getMaxFailedPredecessorComparisonsCode();
+
+                    // "MetricType", "Metric", "Threshold", "QualityText", "QualityCode", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections",
                     // "RuntimeText", "TextBlockVersionCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText",
                     // "FailedPredecessorComparisonsText", "PrecisionText", "RecallText", "RelativeFailedPredecessorComparisonsText",
                     // "RuntimeCode", "CodeBlockVersionCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode",
@@ -142,6 +145,16 @@ class Main {
                             aggregatedMetricComparison.getSimilarityMetricType(),
                             aggregatedMetricComparison.getSimilarityMetricName(),
                             aggregatedMetricComparison.getSimilarityThreshold(),
+                            MetricComparisonManager.calculateQualityMeasure(
+                                    aggregatedMetricComparison.getPrecisionText(),
+                                    aggregatedMetricComparison.getRecallText(),
+                                    relativeFailedPredecessorComparisonsText
+                            ),
+                            MetricComparisonManager.calculateQualityMeasure(
+                                    aggregatedMetricComparison.getPrecisionCode(),
+                                    aggregatedMetricComparison.getRecallCode(),
+                                    relativeFailedPredecessorComparisonsCode
+                            ),
                             postVersionList.size(),
                             postVersionList.getPostBlockVersionCount(),
                             aggregatedResultText.getPossibleConnections() + aggregatedResultCode.getPossibleConnections(),
@@ -155,7 +168,7 @@ class Main {
                             aggregatedResultText.getFailedPredecessorComparisons(),
                             aggregatedMetricComparison.getPrecisionText(),
                             aggregatedMetricComparison.getRecallText(),
-                            ((double)aggregatedResultText.getFailedPredecessorComparisons()) / aggregatedMetricComparisons.getMaxFailedPredecessorComparisonsText(),
+                            relativeFailedPredecessorComparisonsText,
                             metricRuntimeCode.getTotalRuntime(),
                             aggregatedResultCode.getPostBlockVersionCount(),
                             aggregatedResultCode.getPossibleConnections(),
@@ -166,8 +179,8 @@ class Main {
                             aggregatedResultCode.getFailedPredecessorComparisons(),
                             aggregatedMetricComparison.getPrecisionCode(),
                             aggregatedMetricComparison.getRecallCode(),
-                            ((double)aggregatedResultCode.getFailedPredecessorComparisons()) / aggregatedMetricComparisons.getMaxFailedPredecessorComparisonsCode()
-                            );
+                            relativeFailedPredecessorComparisonsCode
+                    );
                 }
 
                 logger.info("Aggregated results saved.");
