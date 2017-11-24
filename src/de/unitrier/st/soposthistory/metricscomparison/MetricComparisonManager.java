@@ -351,10 +351,19 @@ public class MetricComparisonManager implements Runnable {
             }
         }
 
+        // output file aggregated
+        File outputFileAggregated = Paths.get(this.outputDirPath.toString(), name + "_aggregated.csv").toFile();
+        if (outputFileAggregated.exists()) {
+            if (!outputFileAggregated.delete()) {
+                throw new IllegalStateException("Error while deleting output file: " + outputFileAggregated);
+            }
+        }
+
         logger.info("Thread " + threadId + ": Writing metric comparison results per version to CSV file " + outputFilePerVersion.getName() + " ...");
         logger.info("Thread " + threadId + ": Writing metric comparison results per post to CSV file " + outputFilePerPost.getName() + " ...");
         try (CSVPrinter csvPrinterVersion = new CSVPrinter(new FileWriter(outputFilePerVersion), csvFormatMetricComparisonVersion);
-             CSVPrinter csvPrinterPost = new CSVPrinter(new FileWriter(outputFilePerPost), csvFormatMetricComparisonPost)) {
+             CSVPrinter csvPrinterPost = new CSVPrinter(new FileWriter(outputFilePerPost), csvFormatMetricComparisonPost);
+             CSVPrinter csvPrinterAggregated = new CSVPrinter(new FileWriter(outputFileAggregated), csvFormatMetricComparisonAggregated)) {
 
             // header is automatically written
             for (MetricComparison metricComparison : metricComparisons) {
@@ -450,6 +459,11 @@ public class MetricComparisonManager implements Runnable {
                     );
                 }
             }
+
+            // write aggregated results
+            AggregatedMetricComparisonList aggregatedMetricComparisons = AggregatedMetricComparisonList.fromMetricComparisons(metricComparisons);
+            aggregatedMetricComparisons.writeToCSV(csvPrinterAggregated);
+
         } catch (IOException e) {
             e.printStackTrace();
         }

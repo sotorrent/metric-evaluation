@@ -1,12 +1,21 @@
 package de.unitrier.st.soposthistory.metricscomparison;
 
+import org.apache.commons.csv.CSVPrinter;
+
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class AggregatedMetricComparisonList extends LinkedList<AggregatedMetricComparison> {
+class AggregatedMetricComparisonList extends LinkedList<AggregatedMetricComparison> {
     private int maxFailedPredecessorComparisonsText = 0;
     private int maxFailedPredecessorComparisonsCode = 0;
     private boolean maxValuesRetrieved = false;
+
+    static AggregatedMetricComparisonList fromMetricComparisons(List<MetricComparison> metricComparisons) {
+        AggregatedMetricComparisonList list = new AggregatedMetricComparisonList();
+        list.addMetricComparisons(metricComparisons);
+        return list;
+    }
 
     void addMetricComparisons(List<MetricComparison> metricComparisons) {
         if (this.size() == 0){
@@ -40,17 +49,23 @@ public class AggregatedMetricComparisonList extends LinkedList<AggregatedMetricC
         maxValuesRetrieved = true;
     }
 
-    public int getMaxFailedPredecessorComparisonsText() {
+    int getMaxFailedPredecessorComparisonsText() {
         if (!maxValuesRetrieved) {
             retrieveMaxValues();
         }
         return maxFailedPredecessorComparisonsText;
     }
 
-    public int getMaxFailedPredecessorComparisonsCode() {
+    int getMaxFailedPredecessorComparisonsCode() {
         if (!maxValuesRetrieved) {
             retrieveMaxValues();
         }
         return maxFailedPredecessorComparisonsCode;
+    }
+
+    void writeToCSV(CSVPrinter csvPrinterAggregated) throws IOException {
+        for (AggregatedMetricComparison aggregatedMetricComparison : this) {
+            aggregatedMetricComparison.writeToCSV(csvPrinterAggregated, maxFailedPredecessorComparisonsText, maxFailedPredecessorComparisonsCode);
+        }
     }
 }

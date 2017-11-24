@@ -125,66 +125,8 @@ class Main {
             }
 
             try (CSVPrinter csvPrinterAggregated = new CSVPrinter(new FileWriter(outputFileAggregated), csvFormatMetricComparisonAggregated)) {
-
-                for (AggregatedMetricComparison aggregatedMetricComparison : aggregatedMetricComparisons) {
-                    PostVersionList postVersionList = aggregatedMetricComparison.getPostVersionList();
-                    MetricRuntime metricRuntimeText = aggregatedMetricComparison.getAggregatedRuntimeText();
-                    MetricRuntime metricRuntimeCode = aggregatedMetricComparison.getAggregatedRuntimeCode();
-                    MetricResult aggregatedResultText = aggregatedMetricComparison.getAggregatedResultsText();
-                    MetricResult aggregatedResultCode = aggregatedMetricComparison.getAggregatedResultsCode();
-
-                    double relativeFailedPredecessorComparisonsText = ((double)aggregatedResultText.getFailedPredecessorComparisons()) / aggregatedMetricComparisons.getMaxFailedPredecessorComparisonsText();
-                    double relativeFailedPredecessorComparisonsCode = ((double)aggregatedResultCode.getFailedPredecessorComparisons()) / aggregatedMetricComparisons.getMaxFailedPredecessorComparisonsCode();
-
-                    // "MetricType", "Metric", "Threshold", "QualityText", "QualityCode", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections",
-                    // "RuntimeText", "TextBlockVersionCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText",
-                    // "FailedPredecessorComparisonsText", "PrecisionText", "RecallText", "RelativeFailedPredecessorComparisonsText",
-                    // "RuntimeCode", "CodeBlockVersionCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode",
-                    // "FailedPredecessorComparisonsCode", "PrecisionCode", "RecallCode", "RelativeFailedPredecessorComparisonsCode"
-                    csvPrinterAggregated.printRecord(
-                            aggregatedMetricComparison.getSimilarityMetricType(),
-                            aggregatedMetricComparison.getSimilarityMetricName(),
-                            aggregatedMetricComparison.getSimilarityThreshold(),
-                            MetricComparisonManager.calculateQualityMeasure(
-                                    aggregatedMetricComparison.getPrecisionText(),
-                                    aggregatedMetricComparison.getRecallText(),
-                                    relativeFailedPredecessorComparisonsText
-                            ),
-                            MetricComparisonManager.calculateQualityMeasure(
-                                    aggregatedMetricComparison.getPrecisionCode(),
-                                    aggregatedMetricComparison.getRecallCode(),
-                                    relativeFailedPredecessorComparisonsCode
-                            ),
-                            postVersionList.size(),
-                            postVersionList.getPostBlockVersionCount(),
-                            aggregatedResultText.getPossibleConnections() + aggregatedResultCode.getPossibleConnections(),
-                            metricRuntimeText.getTotalRuntime(),
-                            aggregatedResultText.getPostBlockVersionCount(),
-                            aggregatedResultText.getPossibleConnections(),
-                            aggregatedResultText.getTruePositives(),
-                            aggregatedResultText.getTrueNegatives(),
-                            aggregatedResultText.getFalsePositives(),
-                            aggregatedResultText.getFalseNegatives(),
-                            aggregatedResultText.getFailedPredecessorComparisons(),
-                            aggregatedMetricComparison.getPrecisionText(),
-                            aggregatedMetricComparison.getRecallText(),
-                            relativeFailedPredecessorComparisonsText,
-                            metricRuntimeCode.getTotalRuntime(),
-                            aggregatedResultCode.getPostBlockVersionCount(),
-                            aggregatedResultCode.getPossibleConnections(),
-                            aggregatedResultCode.getTruePositives(),
-                            aggregatedResultCode.getTrueNegatives(),
-                            aggregatedResultCode.getFalsePositives(),
-                            aggregatedResultCode.getFalseNegatives(),
-                            aggregatedResultCode.getFailedPredecessorComparisons(),
-                            aggregatedMetricComparison.getPrecisionCode(),
-                            aggregatedMetricComparison.getRecallCode(),
-                            relativeFailedPredecessorComparisonsCode
-                    );
-                }
-
+                aggregatedMetricComparisons.writeToCSV(csvPrinterAggregated);
                 logger.info("Aggregated results saved.");
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
