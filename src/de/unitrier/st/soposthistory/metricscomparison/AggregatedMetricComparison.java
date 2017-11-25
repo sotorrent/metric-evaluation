@@ -16,6 +16,7 @@ class AggregatedMetricComparison {
     private MetricRuntime aggregatedRuntimeCode;
     private MetricResult aggregatedResultsCode;
 
+    private int postCount;
     private int postVersionCount;
 
     private AggregatedMetricComparison(String similarityMetricName, MetricComparison.MetricType similarityMetricType,
@@ -30,6 +31,7 @@ class AggregatedMetricComparison {
         this.aggregatedResultsText = aggregatedResultsText;
         this.aggregatedRuntimeCode = aggregatedRuntimeCode;
         this.aggregatedResultsCode = aggregatedResultsCode;
+        this.postCount = 1;
         this.postVersionCount = postVersionList.size();
     }
 
@@ -53,6 +55,7 @@ class AggregatedMetricComparison {
         aggregatedRuntimeCode.add(metricComparison.getRuntimeCode());
         aggregatedResultsCode.add(metricComparison.getAggregatedResultsCode());
 
+        postCount += 1;
         postVersionCount += metricComparison.getPostVersionList().size();
     }
 
@@ -82,6 +85,10 @@ class AggregatedMetricComparison {
 
     MetricResult getAggregatedResultsCode() {
         return aggregatedResultsCode;
+    }
+
+    public int getPostCount() {
+        return postCount;
     }
 
     int getPostVersionCount() {
@@ -115,12 +122,12 @@ class AggregatedMetricComparison {
 
     void writeToCSV(CSVPrinter csvPrinterAggregated, int maxFailuresText, int maxFailuresCode) throws IOException {
         // "MetricType", "Metric", "Threshold",
-        // "YoudensJText", "YoudensJCode",
-        // "PostVersionCount", "PostBlockVersionCount", "PossibleConnections",
-        // "RuntimeText", "TextBlockVersionCount", "PossibleConnectionsText",
+        // "YoudensJText", "RuntimeText", "YoudensJCode", "RuntimeCode",
+        // "PostCount", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections",
+        // "TextBlockVersionCount", "PossibleConnectionsText",
         // "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailuresText",
         // "PrecisionText", "RecallText", "SensitivityText", "SpecificityText", "FailureRateText",
-        // "RuntimeCode", "CodeBlockVersionCount", "PossibleConnectionsCode",
+        // "CodeBlockVersionCount", "PossibleConnectionsCode",
         // "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailuresCode",
         // "PrecisionCode", "RecallCode", "SensitivityCode", "SpecificityCode", "FailureRateCode"
         csvPrinterAggregated.printRecord(
@@ -130,14 +137,16 @@ class AggregatedMetricComparison {
 
                 youdensJ(sensitivity(aggregatedResultsText.getTruePositives(), aggregatedResultsText.getFalseNegatives()),
                         specificity(aggregatedResultsText.getTrueNegatives(), aggregatedResultsText.getFalsePositives())),
+                aggregatedRuntimeText.getTotalRuntime(),
                 youdensJ(sensitivity(aggregatedResultsCode.getTruePositives(), aggregatedResultsCode.getFalseNegatives()),
                         specificity(aggregatedResultsCode.getTrueNegatives(), aggregatedResultsCode.getFalsePositives())),
+                aggregatedRuntimeCode.getTotalRuntime(),
 
+                getPostCount(),
                 getPostVersionCount(),
                 aggregatedResultsText.getPostBlockVersionCount() + aggregatedResultsCode.getPostBlockVersionCount(),
                 aggregatedResultsText.getPossibleConnections() + aggregatedResultsCode.getPossibleConnections(),
 
-                aggregatedRuntimeText.getTotalRuntime(),
                 aggregatedResultsText.getPostBlockVersionCount(),
                 aggregatedResultsText.getPossibleConnections(),
 
@@ -153,7 +162,6 @@ class AggregatedMetricComparison {
                 specificity(aggregatedResultsText.getTrueNegatives(), aggregatedResultsText.getFalsePositives()),
                 failureRate(aggregatedResultsText.getFailedPredecessorComparisons(), maxFailuresText),
 
-                aggregatedRuntimeCode.getTotalRuntime(),
                 aggregatedResultsCode.getPostBlockVersionCount(),
                 aggregatedResultsCode.getPossibleConnections(),
 
