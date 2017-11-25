@@ -16,7 +16,7 @@ class AggregatedMetricComparison {
     private MetricRuntime aggregatedRuntimeCode;
     private MetricResult aggregatedResultsCode;
 
-    private PostVersionList postVersionList;
+    private int postVersionCount;
 
     private AggregatedMetricComparison(String similarityMetricName, MetricComparison.MetricType similarityMetricType,
                                double similarityThreshold,
@@ -30,7 +30,7 @@ class AggregatedMetricComparison {
         this.aggregatedResultsText = aggregatedResultsText;
         this.aggregatedRuntimeCode = aggregatedRuntimeCode;
         this.aggregatedResultsCode = aggregatedResultsCode;
-        this.postVersionList = postVersionList;
+        this.postVersionCount = postVersionList.size();
     }
 
     static AggregatedMetricComparison fromMetricComparison(MetricComparison metricComparison) {
@@ -53,7 +53,7 @@ class AggregatedMetricComparison {
         aggregatedRuntimeCode.add(metricComparison.getRuntimeCode());
         aggregatedResultsCode.add(metricComparison.getAggregatedResultsCode());
 
-        postVersionList.addAll(metricComparison.getPostVersionList());
+        postVersionCount += metricComparison.getPostVersionList().size();
     }
 
     String getSimilarityMetricName() {
@@ -84,78 +84,90 @@ class AggregatedMetricComparison {
         return aggregatedResultsCode;
     }
 
-    PostVersionList getPostVersionList() {
-        return postVersionList;
+    int getPostVersionCount() {
+        return postVersionCount;
     }
 
-    double getPrecisionText() {
-        return ((double) aggregatedResultsText.getTruePositives())
-                / (aggregatedResultsText.getTruePositives() + aggregatedResultsText.getFalsePositives());
+    private double precision(int truePositives, int falsePositives) {
+        return ((double) truePositives) / (truePositives + falsePositives);
     }
 
-    double getRecallText() {
-        return ((double) aggregatedResultsText.getTruePositives())
-                / (aggregatedResultsText.getTruePositives() + aggregatedResultsText.getFalseNegatives());
+    private double recall(int truePositives, int falseNegatives) {
+        return ((double) truePositives) / (truePositives + falseNegatives);
     }
 
-    double getPrecisionCode() {
-        return ((double) aggregatedResultsCode.getTruePositives())
-                / (aggregatedResultsCode.getTruePositives() + aggregatedResultsCode.getFalsePositives());
+    private double sensitivity(int truePositives, int falseNegatives) {
+        return ((double) truePositives) / (truePositives + falseNegatives);
     }
 
-    double getRecallCode() {
-        return ((double) aggregatedResultsCode.getTruePositives())
-                / (aggregatedResultsCode.getTruePositives() + aggregatedResultsCode.getFalseNegatives());
+    private double youdensJ(double sensitivity, double specificity) {
+        // https://en.wikipedia.org/wiki/Youden%27s_J_statistic
+        return sensitivity + specificity - 1;
     }
 
-    void writeToCSV(CSVPrinter csvPrinterAggregated, int maxFailedPredecessorComparisonsText, int maxFailedPredecessorComparisonsCode) throws IOException {
-        double relativeFailedPredecessorComparisonsText = maxFailedPredecessorComparisonsText == 0 ? 0 : ((double)aggregatedResultsText.getFailedPredecessorComparisons()) / maxFailedPredecessorComparisonsText;
-        double relativeFailedPredecessorComparisonsCode = maxFailedPredecessorComparisonsCode == 0 ? 0 : ((double)aggregatedResultsCode.getFailedPredecessorComparisons()) / maxFailedPredecessorComparisonsCode;
+    private double specificity(int trueNegatives, int falsePositives) {
+        return ((double) trueNegatives) / (trueNegatives + falsePositives);
+    }
 
-        // "MetricType", "Metric", "Threshold", "QualityText", "QualityCode", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections",
-        // "RuntimeText", "TextBlockVersionCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText",
-        // "FailedPredecessorComparisonsText", "PrecisionText", "RecallText", "RelativeFailedPredecessorComparisonsText",
-        // "RuntimeCode", "CodeBlockVersionCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode",
-        // "FailedPredecessorComparisonsCode", "PrecisionCode", "RecallCode", "RelativeFailedPredecessorComparisonsCode"
+    private double failureRate(int failures, int maxFailures) {
+        return maxFailures == 0 ? 0.0 : ((double) failures) / maxFailures;
+    }
+
+    void writeToCSV(CSVPrinter csvPrinterAggregated, int maxFailuresText, int maxFailuresCode) throws IOException {
+        // "MetricType", "Metric", "Threshold",
+        // "YoudensJText", "YoudensJCode",
+        // "PostVersionCount", "PostBlockVersionCount", "PossibleConnections",
+        // "RuntimeText", "TextBlockVersionCount", "PossibleConnectionsText",
+        // "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailuresText",
+        // "PrecisionText", "RecallText", "SensitivityText", "SpecificityText", "FailureRateText",
+        // "RuntimeCode", "CodeBlockVersionCount", "PossibleConnectionsCode",
+        // "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailuresCode",
+        // "PrecisionCode", "RecallCode", "SensitivityCode", "SpecificityCode", "FailureRateCode"
         csvPrinterAggregated.printRecord(
                 getSimilarityMetricType(),
                 getSimilarityMetricName(),
                 getSimilarityThreshold(),
-                MetricComparisonManager.calculateQualityMeasure(
-                        getPrecisionText(),
-                        getRecallText(),
-                        relativeFailedPredecessorComparisonsText
-                ),
-                MetricComparisonManager.calculateQualityMeasure(
-                        getPrecisionCode(),
-                        getRecallCode(),
-                        relativeFailedPredecessorComparisonsCode
-                ),
-                postVersionList.size(),
-                postVersionList.getPostBlockVersionCount(),
+
+                youdensJ(sensitivity(aggregatedResultsText.getTruePositives(), aggregatedResultsText.getFalseNegatives()),
+                        specificity(aggregatedResultsText.getTrueNegatives(), aggregatedResultsText.getFalsePositives())),
+                youdensJ(sensitivity(aggregatedResultsCode.getTruePositives(), aggregatedResultsCode.getFalseNegatives()),
+                        specificity(aggregatedResultsCode.getTrueNegatives(), aggregatedResultsCode.getFalsePositives())),
+
+                getPostVersionCount(),
+                aggregatedResultsText.getPostBlockVersionCount() + aggregatedResultsCode.getPostBlockVersionCount(),
                 aggregatedResultsText.getPossibleConnections() + aggregatedResultsCode.getPossibleConnections(),
+
                 aggregatedRuntimeText.getTotalRuntime(),
                 aggregatedResultsText.getPostBlockVersionCount(),
                 aggregatedResultsText.getPossibleConnections(),
+
                 aggregatedResultsText.getTruePositives(),
                 aggregatedResultsText.getTrueNegatives(),
                 aggregatedResultsText.getFalsePositives(),
                 aggregatedResultsText.getFalseNegatives(),
                 aggregatedResultsText.getFailedPredecessorComparisons(),
-                getPrecisionText(),
-                getRecallText(),
-                relativeFailedPredecessorComparisonsText,
+
+                precision(aggregatedResultsText.getTruePositives(), aggregatedResultsText.getFalsePositives()),
+                recall(aggregatedResultsText.getTruePositives(), aggregatedResultsText.getFalseNegatives()),
+                sensitivity(aggregatedResultsText.getTruePositives(), aggregatedResultsText.getFalseNegatives()),
+                specificity(aggregatedResultsText.getTrueNegatives(), aggregatedResultsText.getFalsePositives()),
+                failureRate(aggregatedResultsText.getFailedPredecessorComparisons(), maxFailuresText),
+
                 aggregatedRuntimeCode.getTotalRuntime(),
                 aggregatedResultsCode.getPostBlockVersionCount(),
                 aggregatedResultsCode.getPossibleConnections(),
+
                 aggregatedResultsCode.getTruePositives(),
                 aggregatedResultsCode.getTrueNegatives(),
                 aggregatedResultsCode.getFalsePositives(),
                 aggregatedResultsCode.getFalseNegatives(),
                 aggregatedResultsCode.getFailedPredecessorComparisons(),
-                getPrecisionCode(),
-                getRecallCode(),
-                relativeFailedPredecessorComparisonsCode
+
+                precision(aggregatedResultsCode.getTruePositives(), aggregatedResultsCode.getFalsePositives()),
+                recall(aggregatedResultsCode.getTruePositives(), aggregatedResultsCode.getFalseNegatives()),
+                sensitivity(aggregatedResultsCode.getTruePositives(), aggregatedResultsCode.getFalseNegatives()),
+                specificity(aggregatedResultsCode.getTrueNegatives(), aggregatedResultsCode.getFalsePositives()),
+                failureRate(aggregatedResultsCode.getFailedPredecessorComparisons(), maxFailuresCode)
         );
     }
 }

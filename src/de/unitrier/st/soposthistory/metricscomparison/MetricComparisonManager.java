@@ -26,9 +26,9 @@ public class MetricComparisonManager implements Runnable {
 
     static Logger logger = null;
     static final CSVFormat csvFormatPostIds;
-    public static final CSVFormat csvFormatMetricComparisonPost;
+    static final CSVFormat csvFormatMetricComparisonPost;
     public static final CSVFormat csvFormatMetricComparisonVersion;
-    public static final CSVFormat csvFormatMetricComparisonAggregated;
+    static final CSVFormat csvFormatMetricComparisonAggregated;
 
     private static final Path DEFAULT_OUTPUT_DIR = Paths.get("output");
 
@@ -94,7 +94,7 @@ public class MetricComparisonManager implements Runnable {
 
         // configure CSV format for aggregated metric comparison results (per (metric, threshold) combination)
         csvFormatMetricComparisonAggregated = CSVFormat.DEFAULT
-                .withHeader("MetricType", "Metric", "Threshold", "QualityText", "QualityCode", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections", "RuntimeText", "TextBlockVersionCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailedPredecessorComparisonsText", "PrecisionText", "RecallText", "RelativeFailedPredecessorComparisonsText", "RuntimeCode", "CodeBlockVersionCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailedPredecessorComparisonsCode", "PrecisionCode", "RecallCode", "RelativeFailedPredecessorComparisonsCode")
+                .withHeader("MetricType", "Metric", "Threshold", "YoudensJText", "YoudensJCode", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections", "RuntimeText", "TextBlockVersionCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailuresText", "PrecisionText", "RecallText", "SensitivityText", "SpecificityText", "FailureRateText", "RuntimeCode", "CodeBlockVersionCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailuresCode", "PrecisionCode", "RecallCode", "SensitivityCode", "SpecificityCode", "FailureRateCode")
                 .withDelimiter(';')
                 .withQuote('"')
                 .withQuoteMode(QuoteMode.MINIMAL)
@@ -461,7 +461,8 @@ public class MetricComparisonManager implements Runnable {
             }
 
             // write aggregated results
-            AggregatedMetricComparisonList aggregatedMetricComparisons = AggregatedMetricComparisonList.fromMetricComparisons(metricComparisons);
+            AggregatedMetricComparisonList aggregatedMetricComparisons = new AggregatedMetricComparisonList();
+            aggregatedMetricComparisons.addMetricComparisons(metricComparisons);
             aggregatedMetricComparisons.writeToCSV(csvPrinterAggregated);
 
         } catch (IOException e) {
@@ -522,10 +523,6 @@ public class MetricComparisonManager implements Runnable {
 
     public String getName() {
         return name;
-    }
-
-    public static double calculateQualityMeasure(double precision, double recall, double relativeFailedPredecessorComparisons) {
-        return (precision + recall + (1 - relativeFailedPredecessorComparisons)) / 3.0;
     }
 
     private void addDefaultSimilarityMetrics() {

@@ -51,7 +51,7 @@ public class MetricResult {
         this.postBlockVersionCount = postBlockVersionCount;
     }
 
-    public void setPossibleConnections(int possibleConnections) {
+    void setPossibleConnections(int possibleConnections) {
         this.possibleConnections = possibleConnections;
     }
 
@@ -71,17 +71,17 @@ public class MetricResult {
         this.falseNegatives = falseNegatives;
     }
 
-    public void setFailedPredecessorComparisons(int failedPredecessorComparisons) {
+    void setFailedPredecessorComparisons(int failedPredecessorComparisons) {
         this.failedPredecessorComparisons = failedPredecessorComparisons;
     }
 
     void add(MetricResult result) {
-        setPostBlockVersionCount(getPostBlockVersionCount() + result.getPostBlockVersionCount());
-        setPossibleConnections(getPossibleConnections() + result.getPossibleConnections());
-        setTruePositives(getTruePositives() + result.getTruePositives());
-        setFalsePositives(getFalsePositives() + result.getFalsePositives());
-        setTrueNegatives(getTrueNegatives() + result.getTrueNegatives());
-        setFalseNegatives(getFalseNegatives() + result.getFalseNegatives());
-        setFailedPredecessorComparisons(getFailedPredecessorComparisons() + result.getFailedPredecessorComparisons());
+        postBlockVersionCount += result.getPostBlockVersionCount();
+        possibleConnections += result.getPossibleConnections();
+        truePositives += result.getTruePositives();
+        falsePositives += result.getFalsePositives();
+        trueNegatives += result.getTrueNegatives();
+        falseNegatives += result.getFalseNegatives();
+        failedPredecessorComparisons += result.getFailedPredecessorComparisons();
     }
 }

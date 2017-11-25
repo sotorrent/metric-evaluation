@@ -16,6 +16,6 @@ class MetricRuntime {
     }
 
     void add(MetricRuntime metricRuntime) {
-        this.totalRuntime += metricRuntime.getTotalRuntime();
+        totalRuntime += metricRuntime.getTotalRuntime();
     }
 }
