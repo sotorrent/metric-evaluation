@@ -57,7 +57,33 @@ class AggregatedMetricComparisonList extends LinkedList<AggregatedMetricComparis
     }
 
     void writeToCSV(CSVPrinter csvPrinterAggregated) throws IOException {
+        if (this.size() < 1) {
+            return;
+        }
+
+        AggregatedMetricComparison first = this.getFirst();
+
+        int postCountFirst = first.getPostCount();
+        int postVersionCountFirst = first.getPostVersionCount();
+        int textBlockVersionCountFirst = first.getAggregatedResultsText().getPostBlockVersionCount();
+        int codeBlockVersionCountFirst = first.getAggregatedResultsCode().getPostBlockVersionCount();
+        int textPossibleConnectionsFirst = first.getAggregatedResultsText().getPossibleConnections();
+        int codePossibleConnectionsFirst = first.getAggregatedResultsCode().getPossibleConnections();
+
         for (AggregatedMetricComparison aggregatedMetricComparison : this) {
+            int postCount = aggregatedMetricComparison.getPostCount();
+            int postVersionCount = aggregatedMetricComparison.getPostVersionCount();
+            int textBlockVersionCount = aggregatedMetricComparison.getAggregatedResultsText().getPostBlockVersionCount();
+            int codeBlockVersionCount = aggregatedMetricComparison.getAggregatedResultsCode().getPostBlockVersionCount();
+            int textPossibleConnections = aggregatedMetricComparison.getAggregatedResultsText().getPossibleConnections();
+            int codePossibleConnections = aggregatedMetricComparison.getAggregatedResultsCode().getPossibleConnections();
+
+            if (postCount != postCountFirst || postVersionCount != postVersionCountFirst
+                    || textBlockVersionCount != textBlockVersionCountFirst || codeBlockVersionCount != codeBlockVersionCountFirst
+                    || textPossibleConnections != textPossibleConnectionsFirst || codePossibleConnections != codePossibleConnectionsFirst) {
+                throw new IllegalStateException("Values differ between aggregated metric comparisons.");
+            }
+
             aggregatedMetricComparison.writeToCSV(csvPrinterAggregated, getMaxFailuresText(), getMaxFailuresCode());
         }
     }

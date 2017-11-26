@@ -131,18 +131,56 @@ public class MetricComparison {
         // save runtime value
         runtimeTotal = stopWatch.elapsed().getNano();
 
-        // save results
+        // save and validate results
         if (postBlockTypeFilter.contains(TextBlockVersion.postBlockTypeId)) {
             setResultAndRuntime(resultsText, metricRuntimeText, postBlockTypeFilter);
+            validateResultsText();
         }
         if (postBlockTypeFilter.contains(CodeBlockVersion.postBlockTypeId)) {
             setResultAndRuntime(resultsCode, metricRuntimeCode, postBlockTypeFilter);
+            validateResultsCode();
         }
 
         // reset flag inputTooShort, stopWatch, and runtime variables
         this.reset();
         // reset post block version history
         postVersionList.resetPostBlockVersionHistory();
+    }
+
+    private void validateResultsText() {
+        int textBlockVersionCount = 0;
+        int textPossibleConnections = 0;
+
+        for (int postHistoryId : postHistoryIds) {
+            textBlockVersionCount += resultsText.get(postHistoryId).getPostBlockVersionCount();
+            textPossibleConnections += resultsText.get(postHistoryId).getPossibleConnections();
+        }
+
+        if (textBlockVersionCount != postVersionList.getTextBlockVersionCount()) {
+            throw new IllegalStateException("TextBlockVersionCount does not match.");
+        }
+
+        if (textPossibleConnections != postVersionList.getPossibleConnections(TextBlockVersion.getPostBlockTypeIdFilter())) {
+            throw new IllegalStateException("PossibleConnections for text blocks do not match.");
+        }
+    }
+
+    private void validateResultsCode() {
+        int codeBlockVersionCount = 0;
+        int codePossibleConnections = 0;
+
+        for (int postHistoryId : postHistoryIds) {
+            codeBlockVersionCount += resultsCode.get(postHistoryId).getPostBlockVersionCount();
+            codePossibleConnections += resultsCode.get(postHistoryId).getPossibleConnections();
+        }
+
+        if (codeBlockVersionCount != postVersionList.getCodeBlockVersionCount()) {
+            throw new IllegalStateException("CodeBlockVersionCount does not match.");
+        }
+
+        if (codePossibleConnections != postVersionList.getPossibleConnections(CodeBlockVersion.getPostBlockTypeIdFilter())) {
+            throw new IllegalStateException("PossibleConnections for code blocks do not match.");
+        }
     }
 
     private void setResultAndRuntime(Map<Integer, MetricResult> results, MetricRuntime metricRuntime,
@@ -192,36 +230,34 @@ public class MetricComparison {
         }
 
         // post block count and possible connections
-        result.setPostBlockVersionCount(0);
-        result.setPossibleConnections(0);
-        if (postBlockTypeFilter.contains(TextBlockVersion.postBlockTypeId)) {
-            result.setPostBlockVersionCount(postVersionList.getPostVersion(postHistoryId).getTextBlocks().size());
-            result.setPossibleConnections(postVersionList.getPostVersion(postHistoryId).getPossibleConnections(TextBlockVersion.getPostBlockTypeIdFilter()));
-        }
-        if (postBlockTypeFilter.contains(CodeBlockVersion.postBlockTypeId)) {
-            result.setPostBlockVersionCount(postVersionList.getPostVersion(postHistoryId).getCodeBlocks().size());
-            result.setPossibleConnections(postVersionList.getPostVersion(postHistoryId).getPossibleConnections(CodeBlockVersion.getPostBlockTypeIdFilter()));
-        }
+        int postBlockVersionCount = postVersionList.getPostVersion(postHistoryId).getPostBlocks(postBlockTypeFilter).size();
+        int possibleConnections = postVersionList.getPostVersion(postHistoryId).getPossibleConnections(postBlockTypeFilter);
 
         // results
-        int possibleConnections = postGroundTruth.getPossibleConnections(postHistoryId, postBlockTypeFilter);
+        int possibleConnectionsGT = postGroundTruth.getPossibleConnections(postHistoryId, postBlockTypeFilter);
+        if (possibleConnectionsGT != possibleConnections) {
+            throw new IllegalStateException("Invalid result (expected: " + possibleConnectionsGT
+                    + "; actual: " + possibleConnections + ")");
+        }
         Set<PostBlockConnection> postBlockConnections = postVersionList.getPostVersion(postHistoryId).getConnections(postBlockTypeFilter);
         Set<PostBlockConnection> postBlockConnectionsGT = postGroundTruth.getConnections(postHistoryId, postBlockTypeFilter);
 
         int truePositivesCount = PostBlockConnection.intersection(postBlockConnectionsGT, postBlockConnections).size();
         int falsePositivesCount = PostBlockConnection.difference(postBlockConnections, postBlockConnectionsGT).size();
 
-        int trueNegativesCount = possibleConnections - (PostBlockConnection.union(postBlockConnectionsGT, postBlockConnections).size());
+        int trueNegativesCount = possibleConnectionsGT - (PostBlockConnection.union(postBlockConnectionsGT, postBlockConnections).size());
         int falseNegativesCount = PostBlockConnection.difference(postBlockConnectionsGT, postBlockConnections).size();
 
-        int failedPredecessorComparisons = postVersionList.getFailedPredecessorComparisons();
+        int failedPredecessorComparisons = postVersionList.getFailedPredecessorComparisons(postBlockTypeFilter);
 
         int allConnectionsCount = truePositivesCount + falsePositivesCount + trueNegativesCount + falseNegativesCount;
-        if (possibleConnections != allConnectionsCount) {
-            throw new IllegalStateException("Invalid result (expected: " + possibleConnections
+        if (possibleConnectionsGT != allConnectionsCount) {
+            throw new IllegalStateException("Invalid result (expected: " + possibleConnectionsGT
                     + "; actual: " + allConnectionsCount + ")");
         }
 
+        result.setPostBlockVersionCount(postBlockVersionCount);
+        result.setPossibleConnections(possibleConnections);
         result.setTruePositives(truePositivesCount);
         result.setFalsePositives(falsePositivesCount);
         result.setTrueNegatives(trueNegativesCount);
