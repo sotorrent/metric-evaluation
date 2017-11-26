@@ -66,8 +66,9 @@ public class Statistics {
 //        statistics.getMultiplePossibleConnections();
 //        statistics.copyPostsWithPossibleMultipleConnectionsIntoDirectory();
 //        statistics.getDifferencesOfRuntimesBetweenMetricComparisons();
+//        statistics.getStatisticsOfBlockLengthsAndTokenSizes();
 
-        statistics.getStatisticsOfBlockLengthsAndTokenSizes();
+        statistics.createPostVersionCount(Paths.get("testdata", "samples_comparison_test2", "PostId_VersionCount_17_06_sample_editedGT"));
     }
 
     private void getMultiplePossibleConnections() {
@@ -583,4 +584,35 @@ public class Statistics {
         System.out.println("number of blocks with two code token (normalized for shingles): " + postsWithTwoCodeTokenNormalized.size());
 
     }
+
+    private void createPostVersionCount(Path path) {
+
+        Path pathToFiles = Paths.get(path.toString(), "files");
+        File file = Paths.get(pathToFiles.toString()).toFile();
+        File[] postVersionListFilesInFolder = file.listFiles(
+                (dir, name) -> name.matches(PostVersionList.fileNamePattern.pattern())
+        );
+
+        try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(
+                Paths.get(path.toString(), "PostId_VersionCount_17_06_sample_editedGT.csv").toFile()),
+                CSVFormat.DEFAULT
+                        .withHeader("PostId","PostTypeId","VersionCount")
+                        .withDelimiter(';'))) {
+
+            assert postVersionListFilesInFolder != null;
+            for(File post : postVersionListFilesInFolder) {
+                int postId = Integer.parseInt(post.getName().replace(".csv", ""));
+                PostVersionList postVersionList = PostVersionList.readFromCSV(pathToFiles, postId, 2);
+
+                csvPrinter.printRecord(postId, postVersionList.getPostTypeId(), postVersionList.size());
+            }
+
+            csvPrinter.flush();
+            csvPrinter.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
