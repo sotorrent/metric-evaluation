@@ -4,6 +4,7 @@ import de.unitrier.st.soposthistory.metricscomparison.MetricComparison;
 import de.unitrier.st.soposthistory.metricscomparison.MetricComparisonManager;
 import de.unitrier.st.soposthistory.metricscomparison.MetricResult;
 import de.unitrier.st.soposthistory.metricscomparison.Statistics;
+import de.unitrier.st.soposthistory.util.Config;
 import de.unitrier.st.soposthistory.version.PostVersionList;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -15,14 +16,13 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
 import static de.unitrier.st.soposthistory.util.Util.getClassLogger;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.junit.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Disabled
@@ -363,5 +363,70 @@ class DisabledTests {
 
             assertTrue(manager.validate());
         }
+    }
+
+
+    @Test
+    void testMetricComparisonManagerForEqualMetrics() {
+        MetricComparisonManager manager = MetricComparisonManager.DEFAULT
+                .withName("TestManagerEquals")
+                .withInputPaths(
+                        Paths.get("testdata", "samples_comparison_test2", "PostId_VersionCount_17_06_sample_editedGT", "PostId_VersionCount_17_06_sample_editedGT.csv"),
+                        Paths.get("testdata", "samples_comparison_test2", "PostId_VersionCount_17_06_sample_editedGT", "files"),
+                        Paths.get("testdata", "samples_comparison_test2", "PostId_VersionCount_17_06_sample_editedGT", "completed"))
+                .withOutputDirPath(Paths.get("testdata", "samples_comparison_test2", "PostId_VersionCount_17_06_sample_editedGT", "output"))
+                .withAddDefaultMetricsAndThresholds(false)
+                .initialize();
+        assertEquals(manager.getPostVersionLists().size(), manager.getPostGroundTruth().size());
+        assertThat(manager.getPostVersionLists().keySet(), is(manager.getPostGroundTruth().keySet()));
+
+        manager.addSimilarityMetric(
+                "equals",
+                MetricComparison.MetricType.EDIT,
+                de.unitrier.st.stringsimilarity.edit.Variants::equals
+        );
+
+        manager.addSimilarityMetric(
+                "equalsNormalized",
+                MetricComparison.MetricType.EDIT,
+                de.unitrier.st.stringsimilarity.edit.Variants::equalsNormalized
+        );
+
+        manager.addSimilarityMetric(
+                "tokenEquals",
+                MetricComparison.MetricType.SET,
+                de.unitrier.st.stringsimilarity.set.Variants::tokenEquals
+        );
+
+        manager.addSimilarityMetric(
+                "tokenEqualsNormalized",
+                MetricComparison.MetricType.SET,
+                de.unitrier.st.stringsimilarity.set.Variants::tokenEqualsNormalized
+        );
+
+
+        manager.addSimilarityThreshold(0.3);
+        manager.addSimilarityThreshold(0.4);
+        manager.addSimilarityThreshold(0.5);
+        manager.addSimilarityThreshold(0.6);
+        manager.addSimilarityThreshold(0.7);
+        manager.addSimilarityThreshold(0.8);
+        manager.addSimilarityThreshold(0.9);
+
+        manager.compareMetrics();
+
+
+        PostVersionList a_19612096 = manager.getPostVersionLists().get(19612096);
+        a_19612096.processVersionHistory(
+                Config.DEFAULT
+                        .withTextSimilarityMetric(de.unitrier.st.stringsimilarity.edit.Variants::equals)
+                        .withTextBackupSimilarityMetric(null)
+                        .withCodeSimilarityMetric(de.unitrier.st.stringsimilarity.edit.Variants::equals)
+                        .withCodeBackupSimilarityMetric(null));
+
+        assertEquals(13, a_19612096.getPostVersion(50536699).getPostBlocks().get(12).getPred().getLocalId().intValue());
+        assertEquals(9, a_19612096.getPostVersion(50536699).getPostBlocks().get(8).getPred().getLocalId().intValue());
+
+        manager.writeToCSV();
     }
 }
