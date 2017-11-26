@@ -1,9 +1,12 @@
 package de.unitrier.st.soposthistory.metricscomparison;
 
+import de.unitrier.st.soposthistory.blocks.CodeBlockVersion;
 import de.unitrier.st.soposthistory.blocks.PostBlockVersion;
 import de.unitrier.st.soposthistory.util.Util;
 import de.unitrier.st.soposthistory.version.PostVersion;
 import de.unitrier.st.soposthistory.version.PostVersionList;
+import de.unitrier.st.stringsimilarity.Normalization;
+import de.unitrier.st.stringsimilarity.Tokenization;
 import org.apache.commons.csv.*;
 
 import java.io.File;
@@ -63,6 +66,8 @@ public class Statistics {
 //        statistics.getMultiplePossibleConnections();
 //        statistics.copyPostsWithPossibleMultipleConnectionsIntoDirectory();
 //        statistics.getDifferencesOfRuntimesBetweenMetricComparisons();
+
+        statistics.getStatisticsOfBlockLengthsAndTokenSizes();
     }
 
     private void getMultiplePossibleConnections() {
@@ -441,5 +446,141 @@ public class Statistics {
         return ((double)((int)(value * tmp))) / tmp;
     }
 
+    private void getStatisticsOfBlockLengthsAndTokenSizes() {
+        List<Path> gtSamples = getGTSamples();
 
+        HashMap<Integer, Integer> postsWithCodeBlockLengthEqualZero = new HashMap<>(); // postId -> number of code blocks with length 0
+        HashMap<Integer, Integer> postsWithCodeBlockLengthEqualOne = new HashMap<>(); // postId -> number of code blocks with length 1
+        HashMap<Integer, Integer> postsWithCodeBlockLengthEqualTwo = new HashMap<>(); // postId -> number of code blocks with length 2
+        HashMap<Integer, Integer> postsWithCodeBlockLengthEqualThree = new HashMap<>(); // postId -> number of code blocks with length 3
+        HashMap<Integer, Integer> postsWithCodeBlockLengthEqualFour = new HashMap<>(); // postId -> number of code blocks with length 4
+
+        HashMap<Integer, Integer> postsWithCodeBlockLengthEqualZeroNormalized = new HashMap<>(); // postId -> number of normalized code blocks with length 0
+        HashMap<Integer, Integer> postsWithCodeBlockLengthEqualOneNormalized = new HashMap<>(); // postId -> number of normalized code blocks with length 1
+        HashMap<Integer, Integer> postsWithCodeBlockLengthEqualTwoNormalized = new HashMap<>(); // postId -> number of normalized code blocks with length 2
+        HashMap<Integer, Integer> postsWithCodeBlockLengthEqualThreeNormalized = new HashMap<>(); // postId -> number of normalized code blocks with length 3
+        HashMap<Integer, Integer> postsWithCodeBlockLengthEqualFourNormalized = new HashMap<>(); // postId -> number of normalized code blocks with length 4
+
+
+        HashMap<Integer, Integer> postsWithOneCodeToken = new HashMap<>(); // postId -> number of one code tokens
+        HashMap<Integer, Integer> postsWithTwoCodeToken = new HashMap<>(); // postId -> number of two code tokens
+
+        HashMap<Integer, Integer> postsWithOneCodeTokenNormalized = new HashMap<>(); // postId -> number of one code tokens normalized
+        HashMap<Integer, Integer> postsWithTwoCodeTokenNormalized = new HashMap<>(); // postId -> number of two code tokens normalized
+
+
+        for(Path path : gtSamples) {
+            path = Paths.get(path.toString(), "files");
+            File file = Paths.get(path.toString()).toFile();
+            File[] postVersionListFilesInFolder = file.listFiles(
+                    (dir, name) -> name.matches(PostVersionList.fileNamePattern.pattern())
+            );
+
+            for (File post : postVersionListFilesInFolder) {
+                int postId = Integer.valueOf(post.getName().replace(".csv", ""));
+                PostVersionList postVersionList = PostVersionList.readFromCSV(path, postId, 2, false);
+
+                for (PostVersion postVersion : postVersionList) {
+                    for (CodeBlockVersion codeBlockVersion : postVersion.getCodeBlocks()) {
+
+                        // length for n grams
+                        int codeBlockLength = codeBlockVersion.getContent().length();
+                        switch (codeBlockLength) {
+                            case 0 : postsWithCodeBlockLengthEqualZero.merge(postId, 1, (a, b) -> a + b);
+                                break;
+
+                            case 1 :
+                                postsWithCodeBlockLengthEqualOne.merge(postId, 1, (a, b) -> a + b);
+                                break;
+
+                            case 2 :
+                                postsWithCodeBlockLengthEqualTwo.merge(postId, 1, (a, b) -> a + b);
+                                break;
+
+                            case 3 :
+                                postsWithCodeBlockLengthEqualThree.merge(postId, 1, (a, b) -> a + b);
+                                break;
+
+                            case 4 :
+                                postsWithCodeBlockLengthEqualFour.merge(postId, 1, (a, b) -> a + b);
+                                break;
+                        }
+
+                        // Length for normalized ngrams
+                        int codeBlockLengthNormalized = Normalization.normalizeForNGram(codeBlockVersion.getContent()).length();
+                        switch (codeBlockLengthNormalized) {
+                            case 0 :
+                                postsWithCodeBlockLengthEqualZeroNormalized.merge(postId, 1, (a, b) -> a + b);
+                                break;
+
+                            case 1 :
+                                postsWithCodeBlockLengthEqualOneNormalized.merge(postId, 1, (a, b) -> a + b);
+                                break;
+
+                            case 2 :
+                                postsWithCodeBlockLengthEqualTwoNormalized.merge(postId, 1, (a, b) -> a + b);
+                                break;
+
+                            case 3 :
+                                postsWithCodeBlockLengthEqualThreeNormalized.merge(postId, 1, (a, b) -> a + b);
+                                break;
+
+                            case 4 :
+                                postsWithCodeBlockLengthEqualFourNormalized.merge(postId, 1, (a, b) -> a + b);
+                                break;
+                        }
+
+                        // number of shingles
+                        List<String> tokens = Tokenization.tokens(codeBlockVersion.getContent());
+                        switch (tokens.size()) {
+                            case 1 :
+                                postsWithOneCodeToken.merge(postId, 1, (a, b) -> a + b);
+                                break;
+
+                            case 2 :
+                                postsWithTwoCodeToken.merge(postId, 1, (a, b) -> a + b);
+                                break;
+                        }
+
+
+                        // number of normalized shingles
+                        List<String> tokensNormalized = Tokenization.tokens(Normalization.normalizeForShingle(codeBlockVersion.getContent()));
+
+                        switch (tokensNormalized.size()) {
+                            case 1 :
+                                postsWithOneCodeTokenNormalized.merge(postId, 1, (a, b) -> a + b);
+                                break;
+
+                            case 2 :
+                                postsWithTwoCodeTokenNormalized.merge(postId, 1, (a, b) -> a + b);
+                                break;
+                        }
+
+                    }
+                }
+            }
+        }
+
+        System.out.println("number of blocks with code length 0: " + postsWithCodeBlockLengthEqualZero.size());
+        System.out.println("number of blocks with code length 0 (normalized for n grams): " + postsWithCodeBlockLengthEqualZeroNormalized.size());
+
+        System.out.println("number of blocks with code length 1: " + postsWithCodeBlockLengthEqualOne.size());
+        System.out.println("number of blocks with code length 1 (normalized for n grams): " + postsWithCodeBlockLengthEqualOneNormalized.size());
+
+        System.out.println("number of blocks with code length 2: " + postsWithCodeBlockLengthEqualTwo.size());
+        System.out.println("number of blocks with code length 2 (normalized for n grams): " + postsWithCodeBlockLengthEqualTwoNormalized.size());
+
+        System.out.println("number of blocks with code length 3: " + postsWithCodeBlockLengthEqualThree.size());
+        System.out.println("number of blocks with code length 3 (normalized for n grams): " + postsWithCodeBlockLengthEqualThreeNormalized.size());
+
+        System.out.println("number of blocks with code length 4: " + postsWithCodeBlockLengthEqualFour.size());
+        System.out.println("number of blocks with code length 4 (normalized for n grams): " + postsWithCodeBlockLengthEqualFourNormalized.size());
+
+        System.out.println("number of blocks with one code token: " + postsWithOneCodeToken.size());
+        System.out.println("number of blocks with one code token (normalized for shingles): " + postsWithOneCodeTokenNormalized.size());
+
+        System.out.println("number of blocks with two code token: " + postsWithTwoCodeToken.size());
+        System.out.println("number of blocks with two code token (normalized for shingles): " + postsWithTwoCodeTokenNormalized.size());
+
+    }
 }
