@@ -1036,7 +1036,7 @@ public class MetricEvaluationManager implements Runnable {
             );
 
             similarityMetrics.add(new SimilarityMetric(
-                    "tokenEquals",
+                    "tokenEqualsNormalized",
                     de.unitrier.st.stringsimilarity.set.Variants::tokenEqualsNormalized,
                     SimilarityMetric.MetricType.SET,
                     similarityThreshold)
