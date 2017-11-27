@@ -121,11 +121,15 @@ public class MetricEvaluationPerSample extends LinkedList<MetricEvaluationPerPos
         MetricResult aggregatedResultCode = getResultAggregatedBySampleCode();
 
         if (aggregatedResultText.getPostCount() != aggregatedResultCode.getPostCount()) {
-            throw new IllegalStateException("Post count of aggregated results does not match.");
+            String msg = "Post count of aggregated results does not match.";
+            logger.warning(msg);
+            throw new IllegalStateException(msg);
         }
 
         if (aggregatedResultText.getPostVersionCount() != aggregatedResultCode.getPostVersionCount()) {
-            throw new IllegalStateException("Post version count of aggregated results does not match.");
+            String msg = "Post version count of aggregated results does not match.";
+            logger.warning(msg);
+            throw new IllegalStateException(msg);
         }
 
         // "MetricType", "Metric", "Threshold",

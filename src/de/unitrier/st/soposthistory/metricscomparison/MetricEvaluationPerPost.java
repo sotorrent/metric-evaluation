@@ -70,7 +70,9 @@ public class MetricEvaluationPerPost {
         this.postHistoryIds = postVersionList.getPostHistoryIds();
 
         if (!this.postGroundTruth.getPostHistoryIds().equals(this.postHistoryIds)) {
-            throw new IllegalArgumentException("PostHistoryIds in postVersionList and postGroundTruth differ.");
+            String msg = "PostHistoryIds in postVersionList and postGroundTruth differ.";
+            logger.warning(msg);
+            throw new IllegalArgumentException(msg);
         }
 
         this.runtime = 0;
@@ -101,8 +103,9 @@ public class MetricEvaluationPerPost {
             this.currentRepetition++;
 
             if (this.currentRepetition != currentRepetition) {
-                throw new IllegalStateException("Repetition count does not match (expected: " + currentRepetition
-                        + "; actual: " + this.currentRepetition);
+                String msg = "Repetition count does not match (expected: " + currentRepetition + "; actual: " + this.currentRepetition;
+                logger.warning(msg);
+                throw new IllegalStateException(msg);
             }
 
             //logger.info("Evaluating metric " + similarityMetric + " on post " + postId);
@@ -156,11 +159,15 @@ public class MetricEvaluationPerPost {
         }
 
         if (textBlockVersionCount != postVersionList.getTextBlockVersionCount()) {
-            throw new IllegalStateException("TextBlockVersionCount does not match.");
+            String msg = "TextBlockVersionCount does not match.";
+            logger.warning(msg);
+            throw new IllegalStateException(msg);
         }
 
         if (textPossibleConnections != postVersionList.getPossibleConnections(TextBlockVersion.getPostBlockTypeIdFilter())) {
-            throw new IllegalStateException("PossibleConnections for text blocks do not match.");
+            String msg = "PossibleConnections for text blocks do not match.";
+            logger.warning(msg);
+            throw new IllegalStateException(msg);
         }
     }
 
@@ -174,11 +181,15 @@ public class MetricEvaluationPerPost {
         }
 
         if (codeBlockVersionCount != postVersionList.getCodeBlockVersionCount()) {
-            throw new IllegalStateException("CodeBlockVersionCount does not match.");
+            String msg = "CodeBlockVersionCount does not match.";
+            logger.warning(msg);
+            throw new IllegalStateException(msg);
         }
 
         if (codePossibleConnections != postVersionList.getPossibleConnections(CodeBlockVersion.getPostBlockTypeIdFilter())) {
-            throw new IllegalStateException("PossibleConnections for code blocks do not match.");
+            String msg = "PossibleConnections for code blocks do not match.";
+            logger.warning(msg);
+            throw new IllegalStateException(msg);
         }
     }
 
@@ -206,8 +217,9 @@ public class MetricEvaluationPerPost {
                 if (!postBlockVersionCountEqual || ! possibleConnectionsEqual
                         || !truePositivesEqual || !falsePositivesEqual || !trueNegativesEqual || !falseNegativesEqual
                         || !failedPredecessorComparisonsEqual) {
-                    throw new IllegalStateException("Metric results changed from repetition "
-                            + (currentRepetition - 1) + " to " + currentRepetition);
+                    String msg = "Metric results changed from repetition " + (currentRepetition - 1) + " to " + currentRepetition;
+                    logger.warning(msg);
+                    throw new IllegalStateException(msg);
                 }
             }
         }
@@ -242,8 +254,9 @@ public class MetricEvaluationPerPost {
         // results
         int possibleConnectionsGT = postGroundTruth.getPossibleConnections(postHistoryId, postBlockTypeFilter);
         if (possibleConnectionsGT != newResult.getPossibleConnections()) {
-            throw new IllegalStateException("Invalid result (expected: " + possibleConnectionsGT
-                    + "; actual: " + newResult.getPossibleConnections() + ")");
+            String msg = "Invalid result (expected: " + possibleConnectionsGT + "; actual: " + newResult.getPossibleConnections() + ")";
+            logger.warning(msg);
+            throw new IllegalStateException(msg);
         }
         Set<PostBlockConnection> postBlockConnections = postVersionList.getPostVersion(postHistoryId).getConnections(postBlockTypeFilter);
         Set<PostBlockConnection> postBlockConnectionsGT = postGroundTruth.getConnections(postHistoryId, postBlockTypeFilter);
@@ -258,8 +271,9 @@ public class MetricEvaluationPerPost {
 
         int allConnectionsCount = truePositivesCount + falsePositivesCount + trueNegativesCount + falseNegativesCount;
         if (possibleConnectionsGT != allConnectionsCount) {
-            throw new IllegalStateException("Invalid result (expected: " + possibleConnectionsGT
-                    + "; actual: " + allConnectionsCount + ")");
+            String msg = "Invalid result (expected: " + possibleConnectionsGT + "; actual: " + allConnectionsCount + ")";
+            logger.warning(msg);
+            throw new IllegalStateException(msg);
         }
 
         newResult.setTruePositives(truePositivesCount);
@@ -278,7 +292,9 @@ public class MetricEvaluationPerPost {
         MetricResult aggregatedResultCode = getResultAggregatedByPostCode();
 
         if (aggregatedResultText.getPostVersionCount() != aggregatedResultCode.getPostVersionCount()) {
-            throw new IllegalStateException("Post version count of aggregated results does not match.");
+            String msg = "Post version count of aggregated results does not match.";
+            logger.warning(msg);
+            throw new IllegalStateException(msg);
         }
 
         // "MetricType", "Metric", "Threshold", "PostId",

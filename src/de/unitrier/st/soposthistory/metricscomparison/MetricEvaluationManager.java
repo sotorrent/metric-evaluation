@@ -212,9 +212,9 @@ public class MetricEvaluationManager implements Runnable {
                 newPostVersionList.normalizeLinks();
 
                 if (newPostVersionList.size() != versionCount) {
-                    throw new IllegalArgumentException("Version count expected to be " + versionCount
-                            + ", but was " + newPostVersionList.size()
-                    );
+                    String msg = "Version count expected to be " + versionCount + ", but was " + newPostVersionList.size();
+                    logger.warning(msg);
+                    throw new IllegalArgumentException(msg);
                 }
 
                 postVersionLists.put(postId, newPostVersionList);
@@ -223,8 +223,9 @@ public class MetricEvaluationManager implements Runnable {
                 PostGroundTruth newPostGroundTruth = PostGroundTruth.readFromCSV(groundTruthPath, postId);
 
                 if (newPostGroundTruth.getPossibleConnections() != newPostVersionList.getPossibleConnections()) {
-                    throw new IllegalArgumentException("Number of possible connections in ground truth is different " +
-                            "from number of possible connections in post history.");
+                    String msg = "Number of possible connections in ground truth is different " + "from number of possible connections in post history.";
+                    logger.warning(msg);
+                    throw new IllegalArgumentException(msg);
                 }
 
                 postGroundTruths.put(postId, newPostGroundTruth);
@@ -234,7 +235,9 @@ public class MetricEvaluationManager implements Runnable {
         }
 
         if (validate && ! validate()) {
-            throw new IllegalArgumentException("Post ground truth files and post version history files do not match.");
+            String msg = "Post ground truth files and post version history files do not match.";
+            logger.warning(msg);
+            throw new IllegalArgumentException(msg);
         }
 
         initialized = true;
