@@ -48,11 +48,9 @@ target/
 *.lck
 testdata/samples_comparison
 testdata/samples_comparison_test
-testdata/samples_comparison_test_2
 testdata/samples_gt
 testdata/samples_test
 testdata/metrics_comparison/TestSample_per_version.csv
 testdata/metrics_comparison/TestSample_per_post.csv
 testdata/metrics_comparison/TestSample_per_sample.csv
 output/
-testdata/samples_comparison_test2/PostId_VersionCount_17_06_sample_editedGT/

@@ -39,7 +39,7 @@ class DisabledTests {
     }
 
     @Test
-    void testCompareMetricComparisonManagerWithComparisonFromOldProject() {
+    void testCompareMetricEvaluationManagerWithOldProject() {
         MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
                 .withName("TestSample")
                 .withInputPaths(MetricsEvaluationTest.pathToPostIdList, MetricsEvaluationTest.pathToPostHistory,
@@ -196,7 +196,7 @@ class DisabledTests {
     }
 
     @Test
-    void testComparePossibleMultipleConnectionsWithOldComparisonProject() {
+    void testComparePossibleMultipleConnectionsWithOldProject() {
         // This test case "fails" because the extraction of post blocks has been changed since the creation of the old file.
 
         File oldFile = Paths.get(Statistics.pathToMultipleConnectionsDir.toString(),
@@ -365,14 +365,14 @@ class DisabledTests {
 
 
     @Test
-    void testMetricComparisonManagerForEqualMetrics() {
+    void testMetricEvaluationManagerForEqualMetrics() {
         MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
                 .withName("TestSampleEquals")
                 .withInputPaths(
-                        Paths.get("testdata", "samples_comparison_test_2", "PostId_VersionCount_17_06_sample_editedGT", "PostId_VersionCount_17_06_sample_editedGT.csv"),
-                        Paths.get("testdata", "samples_comparison_test_2", "PostId_VersionCount_17_06_sample_editedGT", "files"),
-                        Paths.get("testdata", "samples_comparison_test_2", "PostId_VersionCount_17_06_sample_editedGT", "completed"))
-                .withOutputDirPath(Paths.get("testdata", "samples_comparison_test_2", "PostId_VersionCount_17_06_sample_editedGT", "output"))
+                        Paths.get("testdata", "samples_gt", "PostId_VersionCount_17_06_sample_edited_gt", "PostId_VersionCount_17_06_sample_edited_gt.csv"),
+                        Paths.get("testdata", "samples_gt", "PostId_VersionCount_17_06_sample_edited_gt", "files"),
+                        Paths.get("testdata", "samples_gt", "PostId_VersionCount_17_06_sample_edited_gt", "completed"))
+                .withOutputDirPath(Paths.get("testdata", "samples_gt", "PostId_VersionCount_17_06_sample_edited_gt", "output"))
                 .withAddDefaultMetricsAndThresholds(false)
                 .initialize();
         assertEquals(manager.getPostVersionLists().size(), manager.getPostGroundTruths().size());
