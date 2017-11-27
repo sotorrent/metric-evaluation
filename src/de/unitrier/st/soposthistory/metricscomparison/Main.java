@@ -1,12 +1,9 @@
 package de.unitrier.st.soposthistory.metricscomparison;
 
 import de.unitrier.st.soposthistory.util.Util;
-import de.unitrier.st.soposthistory.version.PostVersionList;
 import org.apache.commons.cli.*;
-import org.apache.commons.csv.CSVPrinter;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,7 +16,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
-import static de.unitrier.st.soposthistory.metricscomparison.MetricComparisonManager.csvFormatMetricComparisonAggregated;
 import static de.unitrier.st.soposthistory.util.Util.getClassLogger;
 
 class Main {
@@ -69,12 +65,12 @@ class Main {
         Path outputDir = Paths.get(commandLine.getOptionValue("output-dir"));
         int threadCount = Integer.parseInt(commandLine.getOptionValue("thread-count"));
 
-        logger.info("Creating MetricComparisonManagers from samples...");
-        List<MetricComparisonManager> managers = new LinkedList<>();
-
         logger.info("Creating thread pool with at most " + threadCount + " threads...");
-        // execute at most two thread at a time (not more because of runtime measurement)
+        // it is recommended to process only one sample at a time to prevent a bias in the runtime measurements
         ExecutorService threadPool = Executors.newFixedThreadPool(threadCount);
+
+        logger.info("Creating MetricEvaluationManagers for samples...");
+        List<MetricEvaluationManager> managers = new LinkedList<>();
 
         try (Stream<Path> paths = Files.list(samplesDir)) {
 
@@ -87,7 +83,7 @@ class Main {
                         Path pathToPostHistory = Paths.get(path.toString(), "files");
                         Path pathToGroundTruth = Paths.get(path.toString(), "completed");
 
-                        MetricComparisonManager manager = MetricComparisonManager.DEFAULT
+                        MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
                                 .withName(name)
                                 .withInputPaths(pathToPostIdList, pathToPostHistory, pathToGroundTruth)
                                 .withOutputDirPath(outputDir)
@@ -95,7 +91,7 @@ class Main {
 
                         managers.add(manager);
 
-                        logger.info("Adding manager " + manager.getName() + " to thread pool...");
+                        logger.info("Adding manager for sample " + manager.getSampleName() + " to thread pool...");
                         threadPool.execute(new Thread(manager));
                     }
             );
@@ -103,15 +99,14 @@ class Main {
             e.printStackTrace();
         }
 
-        logger.info("Shutting down thread pool...");
+        logger.info("Waiting for termination of thread pool...");
         threadPool.shutdown();
         try {
             threadPool.awaitTermination(1, TimeUnit.DAYS);
-            logger.info("Thread pool terminated.");
+            logger.info("Thread pool terminated, all samples evaluated.");
+            logger.info("Saving aggregated results over all samples...");
 
-            logger.info("Saving aggregated results...");
-
-            // output file per post
+            // output file aggregated over all samples
             File outputFileAggregated= Paths.get(outputDir.toString(), "MetricComparison_aggregated.csv").toFile();
             if (outputFileAggregated.exists()) {
                 if (!outputFileAggregated.delete()) {
@@ -119,17 +114,7 @@ class Main {
                 }
             }
 
-            AggregatedMetricComparisonList aggregatedMetricComparisons = new AggregatedMetricComparisonList();
-            for (MetricComparisonManager manager : managers) {
-                aggregatedMetricComparisons.addMetricComparisons(manager.getMetricComparisons());
-            }
-
-            try (CSVPrinter csvPrinterAggregated = new CSVPrinter(new FileWriter(outputFileAggregated), csvFormatMetricComparisonAggregated)) {
-                aggregatedMetricComparisons.writeToCSV(csvPrinterAggregated);
-                logger.info("Aggregated results saved.");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            MetricEvaluationManager.aggregateAndWriteSampleResults(managers, outputFileAggregated);
 
         } catch (InterruptedException e) {
             threadPool.shutdownNow();

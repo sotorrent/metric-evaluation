@@ -1,9 +1,6 @@
 package de.unitrier.st.soposthistory.metricscomparison.tests;
 
-import de.unitrier.st.soposthistory.metricscomparison.MetricComparison;
-import de.unitrier.st.soposthistory.metricscomparison.MetricComparisonManager;
-import de.unitrier.st.soposthistory.metricscomparison.MetricResult;
-import de.unitrier.st.soposthistory.metricscomparison.Statistics;
+import de.unitrier.st.soposthistory.metricscomparison.*;
 import de.unitrier.st.soposthistory.util.Config;
 import de.unitrier.st.soposthistory.version.PostVersionList;
 import org.apache.commons.csv.CSVParser;
@@ -43,29 +40,30 @@ class DisabledTests {
 
     @Test
     void testCompareMetricComparisonManagerWithComparisonFromOldProject() {
-        MetricComparisonManager manager = MetricComparisonManager.DEFAULT
-                .withName("TestManager")
-                .withInputPaths(MetricsComparisonTest.pathToPostIdList, MetricsComparisonTest.pathToPostHistory,
-                        MetricsComparisonTest.pathToGroundTruth)
-                .withOutputDirPath(MetricsComparisonTest.outputDir)
+        MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
+                .withName("TestSample")
+                .withInputPaths(MetricsEvaluationTest.pathToPostIdList, MetricsEvaluationTest.pathToPostHistory,
+                        MetricsEvaluationTest.pathToGroundTruth)
+                .withOutputDirPath(MetricsEvaluationTest.outputDir)
                 .initialize();
 
         List<Integer> postHistoryIds_3758880 = manager.getPostVersionLists().get(3758880).getPostHistoryIds();
         List<Integer> postHistoryIds_22037280 = manager.getPostVersionLists().get(22037280).getPostHistoryIds();
-
-        manager.compareMetrics();
-        manager.writeToCSV();
 
         Set<String> excludedVariants = new HashSet<>();
         excludedVariants.add("Kondrak05");
 
         CSVParser csvParser;
 
+        Thread managerThread = new Thread(manager);
+        managerThread.start();
         try {
+            managerThread.join();
+
             csvParser = CSVParser.parse(
                     pathToOldMetricComparisonResults.toFile(),
                     StandardCharsets.UTF_8,
-                    MetricComparisonManager.csvFormatMetricComparisonVersion.withFirstRecordAsHeader()
+                    MetricEvaluationManager.csvFormatMetricEvaluationPerVersion.withFirstRecordAsHeader()
             );
 
             csvParser.getHeaderMap();
@@ -120,10 +118,10 @@ class DisabledTests {
                 } catch (NumberFormatException ignored) {
                 }
 
-                MetricComparison tmpMetricComparison = manager.getMetricComparison(postId, metric, threshold);
+                MetricEvaluationPerPost tmpMetricEvaluationPerPost = manager.getMetricEvaluation(postId, metric, threshold);
 
                 if (postHistoryId == null) {
-                    List<Integer> postHistoryIds = null;
+                    List<Integer> postHistoryIds;
                     if (postId == 3758880) {
                         postHistoryIds = postHistoryIds_3758880;
                     } else if (postId == 22037280) {
@@ -134,8 +132,8 @@ class DisabledTests {
 
                     assertNotNull(postHistoryIds);
                     for (Integer tmpPostHistoryId : postHistoryIds) {
-                        MetricResult resultsText = tmpMetricComparison.getResultText(tmpPostHistoryId);
-                        MetricResult resultsCode = tmpMetricComparison.getResultCode(tmpPostHistoryId);
+                        MetricResult resultsText = tmpMetricEvaluationPerPost.getResultsText(tmpPostHistoryId);
+                        MetricResult resultsCode = tmpMetricEvaluationPerPost.getResultsCode(tmpPostHistoryId);
 
                         // in previous versions, the results were set to null in case one comparison failed
                         boolean resultsTextNull = resultsText.getFailedPredecessorComparisons() > 0;
@@ -144,14 +142,14 @@ class DisabledTests {
                         assertTrue(resultsTextNull || resultsCodeNull);
                     }
                 } else {
-                    MetricResult resultsText = tmpMetricComparison.getResultText(postHistoryId);
+                    MetricResult resultsText = tmpMetricEvaluationPerPost.getResultsText(postHistoryId);
                     assertEquals(truePositivesText, new Integer(resultsText.getTruePositives()));
                     assertEquals(trueNegativesText, new Integer(resultsText.getPostBlockVersionCount() - resultsText.getTruePositives() - resultsText.getFalsePositives() - resultsText.getFalseNegatives()));
                     assertEquals(trueNegativesText, new Integer(resultsText.getPostBlockVersionCount() - resultsText.getTruePositives() - resultsText.getFalseNegatives()));
                     assertEquals(falsePositivesText, new Integer(resultsText.getFalsePositives()));
                     assertEquals(falseNegativesText, new Integer(resultsText.getFalseNegatives()));
 
-                    MetricResult resultsCode = tmpMetricComparison.getResultCode(postHistoryId);
+                    MetricResult resultsCode = tmpMetricEvaluationPerPost.getResultsCode(postHistoryId);
                     assertEquals(truePositivesCode, new Integer(resultsCode.getTruePositives()));
                     assertEquals(trueNegativesCode, new Integer(resultsCode.getPostBlockVersionCount() - resultsCode.getTruePositives() - resultsCode.getFalsePositives() - resultsCode.getFalseNegatives()));
                     assertEquals(trueNegativesCode, new Integer(resultsCode.getPostBlockVersionCount() - resultsCode.getTruePositives() - resultsCode.getFalseNegatives()));
@@ -159,7 +157,7 @@ class DisabledTests {
                     assertEquals(falseNegativesCode, new Integer(resultsCode.getFalseNegatives()));
                 }
             }
-        } catch (IOException e) {
+        } catch (InterruptedException | IOException e) {
             e.printStackTrace();
         }
     }
@@ -355,7 +353,7 @@ class DisabledTests {
             Path pathToFiles = Paths.get(samplePath.toString(), "files");
             Path pathToGTs = Paths.get(samplePath.toString(), "completed");
 
-            MetricComparisonManager manager = MetricComparisonManager.DEFAULT
+            MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
                     .withName("TestManager")
                     .withInputPaths(pathToPostIdList, pathToFiles, pathToGTs)
                     .withValidate(false)
@@ -368,7 +366,7 @@ class DisabledTests {
 
     @Test
     void testMetricComparisonManagerForEqualMetrics() {
-        MetricComparisonManager manager = MetricComparisonManager.DEFAULT
+        MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
                 .withName("TestManagerEquals")
                 .withInputPaths(
                         Paths.get("testdata", "samples_comparison_test2", "PostId_VersionCount_17_06_sample_editedGT", "PostId_VersionCount_17_06_sample_editedGT.csv"),
@@ -377,44 +375,53 @@ class DisabledTests {
                 .withOutputDirPath(Paths.get("testdata", "samples_comparison_test2", "PostId_VersionCount_17_06_sample_editedGT", "output"))
                 .withAddDefaultMetricsAndThresholds(false)
                 .initialize();
-        assertEquals(manager.getPostVersionLists().size(), manager.getPostGroundTruth().size());
-        assertThat(manager.getPostVersionLists().keySet(), is(manager.getPostGroundTruth().keySet()));
+        assertEquals(manager.getPostVersionLists().size(), manager.getPostGroundTruths().size());
+        assertThat(manager.getPostVersionLists().keySet(), is(manager.getPostGroundTruths().keySet()));
 
-        manager.addSimilarityMetric(
-                "equals",
-                MetricComparison.MetricType.EDIT,
-                de.unitrier.st.stringsimilarity.edit.Variants::equals
-        );
+        List<Double> similarityThresholds = Arrays.asList(0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9);
 
-        manager.addSimilarityMetric(
-                "equalsNormalized",
-                MetricComparison.MetricType.EDIT,
-                de.unitrier.st.stringsimilarity.edit.Variants::equalsNormalized
-        );
+        for (double similarityThreshold : similarityThresholds) {
+            manager.addSimilarityMetric(
+                    new SimilarityMetric(
+                            "equals",
+                            de.unitrier.st.stringsimilarity.edit.Variants::equals,
+                            SimilarityMetric.MetricType.EDIT,
+                            similarityThreshold
+                    )
+            );
+            manager.addSimilarityMetric(
+                    new SimilarityMetric(
+                            "equalsNormalized",
+                            de.unitrier.st.stringsimilarity.edit.Variants::equalsNormalized,
+                            SimilarityMetric.MetricType.EDIT,
+                            similarityThreshold
+                    )
+            );
+            manager.addSimilarityMetric(
+                    new SimilarityMetric(
+                            "tokenEquals",
+                            de.unitrier.st.stringsimilarity.set.Variants::tokenEquals,
+                            SimilarityMetric.MetricType.SET,
+                            similarityThreshold
+                    )
+            );
+            manager.addSimilarityMetric(
+                    new SimilarityMetric(
+                            "tokenEqualsNormalized",
+                            de.unitrier.st.stringsimilarity.set.Variants::tokenEqualsNormalized,
+                            SimilarityMetric.MetricType.SET,
+                            similarityThreshold
+                    )
+            );
+        }
 
-        manager.addSimilarityMetric(
-                "tokenEquals",
-                MetricComparison.MetricType.SET,
-                de.unitrier.st.stringsimilarity.set.Variants::tokenEquals
-        );
-
-        manager.addSimilarityMetric(
-                "tokenEqualsNormalized",
-                MetricComparison.MetricType.SET,
-                de.unitrier.st.stringsimilarity.set.Variants::tokenEqualsNormalized
-        );
-
-
-        manager.addSimilarityThreshold(0.3);
-        manager.addSimilarityThreshold(0.4);
-        manager.addSimilarityThreshold(0.5);
-        manager.addSimilarityThreshold(0.6);
-        manager.addSimilarityThreshold(0.7);
-        manager.addSimilarityThreshold(0.8);
-        manager.addSimilarityThreshold(0.9);
-
-        manager.compareMetrics();
-
+        Thread managerThread = new Thread(manager);
+        managerThread.start();
+        try {
+            managerThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         PostVersionList a_19612096 = manager.getPostVersionLists().get(19612096);
         a_19612096.processVersionHistory(
@@ -426,7 +433,5 @@ class DisabledTests {
 
         assertEquals(13, a_19612096.getPostVersion(50536699).getPostBlocks().get(12).getPred().getLocalId().intValue());
         assertEquals(9, a_19612096.getPostVersion(50536699).getPostBlocks().get(8).getPred().getLocalId().intValue());
-
-        manager.writeToCSV();
     }
 }

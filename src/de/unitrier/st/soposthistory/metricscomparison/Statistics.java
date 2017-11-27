@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
-import static de.unitrier.st.soposthistory.metricscomparison.MetricComparisonManager.*;
+import static de.unitrier.st.soposthistory.metricscomparison.MetricEvaluationManager.*;
 import static de.unitrier.st.soposthistory.util.Util.getClassLogger;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -176,7 +176,7 @@ public class Statistics {
         try (CSVParser csvParser = CSVParser.parse(
                 pathToMultipleConnectionsFile.toFile(),
                 StandardCharsets.UTF_8,
-                csvFormatMetricComparisonVersion.withFirstRecordAsHeader()
+                csvFormatMetricEvaluationPerVersion.withFirstRecordAsHeader()
         )) {
 
             Util.ensureEmptyDirectoryExists(outputDir);
@@ -412,7 +412,7 @@ public class Statistics {
             try (CSVParser csvParser = new CSVParser(
                     new FileReader(file),
                     //CSVFormat.DEFAULT.withHeader("Sample", "Metric", "Threshold", "PostId", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections", "RuntimeTextTotal", "RuntimeTextUser", "TextBlockVersionCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "RuntimeCodeTotal", "RuntimeCodeUser", "CodeBlockVersionCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode"))) {
-                    csvFormatMetricComparisonPost.withHeader())) {
+                    csvFormatMetricEvaluationPerPost.withHeader())) {
 
                 for (CSVRecord currentRecord : csvParser) {
                     String sample = currentRecord.get("Sample");
