@@ -354,7 +354,7 @@ class DisabledTests {
             Path pathToGTs = Paths.get(samplePath.toString(), "completed");
 
             MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
-                    .withName("TestManager")
+                    .withName("TestSample")
                     .withInputPaths(pathToPostIdList, pathToFiles, pathToGTs)
                     .withValidate(false)
                     .initialize();
@@ -367,7 +367,7 @@ class DisabledTests {
     @Test
     void testMetricComparisonManagerForEqualMetrics() {
         MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
-                .withName("TestManagerEquals")
+                .withName("TestSampleEquals")
                 .withInputPaths(
                         Paths.get("testdata", "samples_comparison_test2", "PostId_VersionCount_17_06_sample_editedGT", "PostId_VersionCount_17_06_sample_editedGT.csv"),
                         Paths.get("testdata", "samples_comparison_test2", "PostId_VersionCount_17_06_sample_editedGT", "files"),
