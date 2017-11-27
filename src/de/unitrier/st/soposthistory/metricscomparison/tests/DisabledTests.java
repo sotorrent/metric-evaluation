@@ -369,10 +369,10 @@ class DisabledTests {
         MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
                 .withName("TestSampleEquals")
                 .withInputPaths(
-                        Paths.get("testdata", "samples_comparison_test2", "PostId_VersionCount_17_06_sample_editedGT", "PostId_VersionCount_17_06_sample_editedGT.csv"),
-                        Paths.get("testdata", "samples_comparison_test2", "PostId_VersionCount_17_06_sample_editedGT", "files"),
-                        Paths.get("testdata", "samples_comparison_test2", "PostId_VersionCount_17_06_sample_editedGT", "completed"))
-                .withOutputDirPath(Paths.get("testdata", "samples_comparison_test2", "PostId_VersionCount_17_06_sample_editedGT", "output"))
+                        Paths.get("testdata", "samples_comparison_test_2", "PostId_VersionCount_17_06_sample_editedGT", "PostId_VersionCount_17_06_sample_editedGT.csv"),
+                        Paths.get("testdata", "samples_comparison_test_2", "PostId_VersionCount_17_06_sample_editedGT", "files"),
+                        Paths.get("testdata", "samples_comparison_test_2", "PostId_VersionCount_17_06_sample_editedGT", "completed"))
+                .withOutputDirPath(Paths.get("testdata", "samples_comparison_test_2", "PostId_VersionCount_17_06_sample_editedGT", "output"))
                 .withAddDefaultMetricsAndThresholds(false)
                 .initialize();
         assertEquals(manager.getPostVersionLists().size(), manager.getPostGroundTruths().size());
