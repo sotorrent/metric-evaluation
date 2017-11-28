@@ -436,6 +436,10 @@ public class MetricEvaluationManager implements Runnable {
         try (Stream<Path> paths = Files.list(samplesDir)) {
             paths.forEach(
                     path -> {
+                        // only consider directories (ignore, e.g., .DS_Store files on macOS)
+                        if (!Files.isDirectory(path)) {
+                            return;
+                        }
                         String name = path.toFile().getName();
                         Path pathToPostIdList = Paths.get(path.toString(), name + ".csv");
                         Path pathToPostHistory = Paths.get(path.toString(), "files");

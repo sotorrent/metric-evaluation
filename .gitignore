@@ -50,6 +50,7 @@ testdata/samples_comparison
 testdata/samples_comparison_test
 testdata/samples_gt
 testdata/samples_test
+testdata/output
 testdata/metrics_comparison/TestSample_per_version.csv
 testdata/metrics_comparison/TestSample_per_post.csv
 testdata/metrics_comparison/TestSample_per_sample.csv
