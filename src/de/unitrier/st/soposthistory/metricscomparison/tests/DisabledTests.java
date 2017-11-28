@@ -463,21 +463,20 @@ class DisabledTests {
         MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
                 .withName("TestMultiplePossibleConnections")
                 .withInputPaths(
-                        Paths.get("testdata", "samples_comparison_test", "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links.csv"),
-                        Paths.get("testdata", "samples_comparison_test", "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "files"),
-                        Paths.get("testdata", "samples_comparison_test", "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "completed"))
-                .withOutputDirPath(Paths.get("testdata", "samples_comparison_test", "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "output"))
+                        Paths.get("testdata", "samples_gt", "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links.csv"),
+                        Paths.get("testdata", "samples_gt", "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "files"),
+                        Paths.get("testdata", "samples_gt", "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "completed"))
+                .withOutputDirPath(Paths.get("testdata", "samples_gt", "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "output"))
                 .withAddDefaultMetricsAndThresholds(false)
                 .initialize();
         assertEquals(manager.getPostVersionLists().size(), manager.getPostGroundTruths().size());
         assertThat(manager.getPostVersionLists().keySet(), is(manager.getPostGroundTruths().keySet()));
 
-
         manager.addSimilarityMetric(
                 new SimilarityMetric(
                         "equals",
                         de.unitrier.st.stringsimilarity.set.Variants::tokenJaccard,
-                        SimilarityMetric.MetricType.SET,
+                        SimilarityMetric.MetricType.EDIT,
                         0.3
                 )
         );
