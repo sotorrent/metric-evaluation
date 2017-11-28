@@ -502,20 +502,37 @@ public class MetricEvaluationManager implements Runnable {
 
         for (double similarityThreshold : similarityThresholds) {
 
-            // ****** Edit based *****
+            // ****** Equality based *****
 
             similarityMetrics.add(new SimilarityMetric(
                     "equals",
-                    de.unitrier.st.stringsimilarity.edit.Variants::equals,
+                    de.unitrier.st.stringsimilarity.equal.Variants::equal,
                     SimilarityMetric.MetricType.EDIT,
                     similarityThreshold)
             );
             similarityMetrics.add(new SimilarityMetric(
                     "equalsNormalized",
-                    de.unitrier.st.stringsimilarity.edit.Variants::equalsNormalized,
+                    de.unitrier.st.stringsimilarity.equal.Variants::equalNormalized,
                     SimilarityMetric.MetricType.EDIT,
                     similarityThreshold)
             );
+
+            similarityMetrics.add(new SimilarityMetric(
+                    "tokenEquals",
+                    de.unitrier.st.stringsimilarity.equal.Variants::tokenEqual,
+                    SimilarityMetric.MetricType.SET,
+                    similarityThreshold)
+            );
+            similarityMetrics.add(new SimilarityMetric(
+                    "tokenEqualsNormalized",
+                    de.unitrier.st.stringsimilarity.equal.Variants::tokenEqualNormalized,
+                    SimilarityMetric.MetricType.SET,
+                    similarityThreshold)
+            );
+
+
+            // ****** Edit based *****
+
             similarityMetrics.add(new SimilarityMetric(
                     "levenshtein",
                     de.unitrier.st.stringsimilarity.edit.Variants::levenshtein,
@@ -1006,19 +1023,6 @@ public class MetricEvaluationManager implements Runnable {
 
 
             // ****** Set based *****
-
-            similarityMetrics.add(new SimilarityMetric(
-                    "tokenEquals",
-                    de.unitrier.st.stringsimilarity.set.Variants::tokenEquals,
-                    SimilarityMetric.MetricType.SET,
-                    similarityThreshold)
-            );
-            similarityMetrics.add(new SimilarityMetric(
-                    "tokenEqualsNormalized",
-                    de.unitrier.st.stringsimilarity.set.Variants::tokenEqualsNormalized,
-                    SimilarityMetric.MetricType.SET,
-                    similarityThreshold)
-            );
 
             similarityMetrics.add(new SimilarityMetric(
                     "tokenJaccard",

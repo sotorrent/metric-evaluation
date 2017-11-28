@@ -45,13 +45,13 @@
         <dependency>
             <groupId>de.unitrier.st.soposthistory</groupId>
             <artifactId>so-posthistory-extractor</artifactId>
-            <version>1.7.5</version>
+            <version>1.7.6</version>
         </dependency>
         <!-- https://github.com/sotorrent/string-similarity/tree/master/releases/ -->
         <dependency>
             <groupId>de.unitrier.st</groupId>
             <artifactId>string-similarity</artifactId>
-            <version>1.2.8</version>
+            <version>1.2.9</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-csv -->
         <dependency>
