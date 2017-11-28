@@ -13,6 +13,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
@@ -28,6 +31,14 @@ class DisabledTests {
 
     private static Path pathToOldMetricComparisonResults = Paths.get(
             "testdata", "metrics_comparison", "results_metric_comparison_old.csv"
+    );
+
+    private static Path pathToSamplesComparisonTestDir = Paths.get(
+            "testdata", "samples_comparison_test"
+    );
+
+    private static Path testOutputDir = Paths.get(
+            "testdata", "output"
     );
 
     static {
@@ -380,38 +391,18 @@ class DisabledTests {
 
         List<Double> similarityThresholds = Arrays.asList(0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9);
 
-        for (double similarityThreshold : similarityThresholds) {
+        for (double threshold : similarityThresholds) {
             manager.addSimilarityMetric(
-                    new SimilarityMetric(
-                            "equals",
-                            de.unitrier.st.stringsimilarity.equal.Variants::equal,
-                            SimilarityMetric.MetricType.EDIT,
-                            similarityThreshold
-                    )
+                    MetricEvaluationManager.getDefaultSimilarityMetric("equals", threshold)
             );
             manager.addSimilarityMetric(
-                    new SimilarityMetric(
-                            "equalsNormalized",
-                            de.unitrier.st.stringsimilarity.equal.Variants::equalNormalized,
-                            SimilarityMetric.MetricType.EDIT,
-                            similarityThreshold
-                    )
+                    MetricEvaluationManager.getDefaultSimilarityMetric("equalsNormalized", threshold)
             );
             manager.addSimilarityMetric(
-                    new SimilarityMetric(
-                            "tokenEquals",
-                            de.unitrier.st.stringsimilarity.equal.Variants::tokenEqual,
-                            SimilarityMetric.MetricType.SET,
-                            similarityThreshold
-                    )
+                    MetricEvaluationManager.getDefaultSimilarityMetric("tokenEquals", threshold)
             );
             manager.addSimilarityMetric(
-                    new SimilarityMetric(
-                            "tokenEqualsNormalized",
-                            de.unitrier.st.stringsimilarity.equal.Variants::tokenEqualNormalized,
-                            SimilarityMetric.MetricType.SET,
-                            similarityThreshold
-                    )
+                    MetricEvaluationManager.getDefaultSimilarityMetric("tokenEqualsNormalized", threshold)
             );
         }
 
@@ -433,19 +424,14 @@ class DisabledTests {
                         Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links.csv"),
                         Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "files"),
                         Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "completed"))
-                .withOutputDirPath(Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "output"))
+                .withOutputDirPath(testOutputDir)
                 .withAddDefaultMetricsAndThresholds(false)
                 .initialize();
         assertEquals(manager.getPostVersionLists().size(), manager.getPostGroundTruths().size());
         assertThat(manager.getPostVersionLists().keySet(), is(manager.getPostGroundTruths().keySet()));
 
         manager.addSimilarityMetric(
-                new SimilarityMetric(
-                        "equals",
-                        de.unitrier.st.stringsimilarity.set.Variants::tokenJaccard,
-                        SimilarityMetric.MetricType.EDIT,
-                        0.3
-                )
+                MetricEvaluationManager.getDefaultSimilarityMetric("equals", 0.3)
         );
 
         Thread managerThread = new Thread(manager);
@@ -453,6 +439,49 @@ class DisabledTests {
         try {
             managerThread.join();
         } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void testAggregatedResultsManagers() {
+        ExecutorService threadPool = Executors.newFixedThreadPool(4);
+        List<MetricEvaluationManager> managers = MetricEvaluationManager.createManagersFromSampleDirectories(
+                pathToSamplesComparisonTestDir, testOutputDir, false
+        );
+        for (MetricEvaluationManager manager : managers) {
+            manager.addSimilarityMetric(
+                    MetricEvaluationManager.getDefaultSimilarityMetric("winnowingTwoGramOverlap", 0.3)
+            );
+            manager.addSimilarityMetric(
+                    MetricEvaluationManager.getDefaultSimilarityMetric("tokenJaccard", 0.6)
+            );
+            manager.addSimilarityMetric(
+                    MetricEvaluationManager.getDefaultSimilarityMetric("twoGramJaccard", 0.9)
+            );
+            // the following metric should produce failed comparisons
+            manager.addSimilarityMetric(
+                    MetricEvaluationManager.getDefaultSimilarityMetric("twoShingleOverlap", 0.6)
+            );
+
+            threadPool.execute(new Thread(manager));
+        }
+
+        threadPool.shutdown();
+        try {
+            threadPool.awaitTermination(1, TimeUnit.DAYS);
+
+            // output file aggregated over all samples
+            File outputFileAggregated= Paths.get(testOutputDir.toString(), "MetricComparison_aggregated.csv").toFile();
+            if (outputFileAggregated.exists()) {
+                if (!outputFileAggregated.delete()) {
+                    throw new IllegalStateException("Error while deleting output file: " + outputFileAggregated);
+                }
+            }
+
+            MetricEvaluationManager.aggregateAndWriteSampleResults(managers, outputFileAggregated);
+        } catch (InterruptedException e) {
+            threadPool.shutdownNow();
             e.printStackTrace();
         }
     }

@@ -34,12 +34,7 @@ class MetricsEvaluationTest {
         assertThat(manager.getPostVersionLists().keySet(), is(manager.getPostGroundTruths().keySet()));
 
         manager.addSimilarityMetric(
-                new SimilarityMetric(
-                "fourGramOverlap",
-                de.unitrier.st.stringsimilarity.set.Variants::fourGramOverlap,
-                SimilarityMetric.MetricType.SET,
-                0.6
-            )
+                MetricEvaluationManager.getDefaultSimilarityMetric("fourGramOverlap", 0.6)
         );
 
         Thread managerThread = new Thread(manager);

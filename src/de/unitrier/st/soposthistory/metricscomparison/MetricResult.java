@@ -1,6 +1,13 @@
 package de.unitrier.st.soposthistory.metricscomparison;
 
+import java.io.IOException;
+import java.util.logging.Logger;
+
+import static de.unitrier.st.soposthistory.util.Util.getClassLogger;
+
 public class MetricResult {
+    private static Logger logger;
+
     private SimilarityMetric similarityMetric;
     private int postCount;
     private int postVersionCount;
@@ -12,6 +19,15 @@ public class MetricResult {
     private int falseNegatives;
     private int failedPredecessorComparisons;
     private long runtime;
+
+    static {
+        // configure logger
+        try {
+            logger = getClassLogger(MetricResult.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     MetricResult(SimilarityMetric similarityMetric) {
         this.similarityMetric = similarityMetric;
@@ -153,6 +169,14 @@ public class MetricResult {
     }
 
     double getFailureRate(int maxFailures) {
-        return maxFailures == 0 ? 0.0 : ((double) failedPredecessorComparisons) / maxFailures;
+        double failureRate = maxFailures == 0 ? 0.0 : ((double) failedPredecessorComparisons) / maxFailures;
+
+        if (failureRate < 0.0 || failureRate > 1.0) {
+            String msg = "Failure rate must be in range [0.0, 1.0], but was " + failureRate;
+            logger.warning(msg);
+            throw new IllegalArgumentException(msg);
+        }
+
+        return failureRate;
     }
 }

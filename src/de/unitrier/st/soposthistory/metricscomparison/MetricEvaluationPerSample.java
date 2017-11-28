@@ -39,9 +39,6 @@ public class MetricEvaluationPerSample extends LinkedList<MetricEvaluationPerPos
     private MetricResult aggregatedResultText;
     private MetricResult aggregatedResultCode;
 
-    private int maxFailuresText;
-    private int maxFailuresCode;
-
     MetricEvaluationPerSample(String sampleName,
                               SimilarityMetric similarityMetric,
                               Set<Integer> postIds,
@@ -114,7 +111,7 @@ public class MetricEvaluationPerSample extends LinkedList<MetricEvaluationPerPos
         }
     }
 
-    void writeToCSV(CSVPrinter csvPrinterSample) throws IOException {
+    void writeToCSV(CSVPrinter csvPrinterSample, int maxFailuresText, int maxFailuresCode) throws IOException {
 
         // write results aggregated per sample
         MetricResult aggregatedResultText = getResultAggregatedBySampleText();
@@ -196,7 +193,6 @@ public class MetricEvaluationPerSample extends LinkedList<MetricEvaluationPerPos
             aggregatedResultText = new MetricResult(similarityMetric);
             for (MetricEvaluationPerPost evaluationPerPost : this) {
                 MetricResult resultText = evaluationPerPost.getResultAggregatedByPostText();
-                maxFailuresText = Math.max(maxFailuresText, resultText.getFailedPredecessorComparisons());
                 aggregatedResultText.add(resultText);
             }
         }
@@ -209,11 +205,32 @@ public class MetricEvaluationPerSample extends LinkedList<MetricEvaluationPerPos
             aggregatedResultCode = new MetricResult(similarityMetric);
             for (MetricEvaluationPerPost evaluationPerPost : this) {
                 MetricResult resultCode = evaluationPerPost.getResultAggregatedByPostCode();
-                maxFailuresCode = Math.max(maxFailuresCode, resultCode.getFailedPredecessorComparisons());
                 aggregatedResultCode.add(resultCode);
             }
         }
         return aggregatedResultCode;
+    }
+
+    static int getMaxFailuresText(List<MetricEvaluationPerSample> evaluations) {
+        int maxFailuresText = 0;
+        for (MetricEvaluationPerSample evaluation : evaluations) {
+            maxFailuresText = Math.max(
+                    maxFailuresText,
+                    evaluation.getResultAggregatedBySampleText().getFailedPredecessorComparisons()
+            );
+        }
+        return maxFailuresText;
+    }
+
+    static int getMaxFailuresCode(List<MetricEvaluationPerSample> evaluations) {
+        int maxFailuresCode = 0;
+        for (MetricEvaluationPerSample evaluation : evaluations) {
+            maxFailuresCode = Math.max(
+                    maxFailuresCode,
+                    evaluation.getResultAggregatedBySampleCode().getFailedPredecessorComparisons()
+            );
+        }
+        return maxFailuresCode;
     }
 
     SimilarityMetric getSimilarityMetric() {

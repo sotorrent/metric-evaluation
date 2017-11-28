@@ -1,20 +1,16 @@
 package de.unitrier.st.soposthistory.metricscomparison;
 
-import de.unitrier.st.soposthistory.util.Util;
 import org.apache.commons.cli.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
 
 import static de.unitrier.st.soposthistory.util.Util.getClassLogger;
 
@@ -69,34 +65,13 @@ class Main {
         // it is recommended to process only one sample at a time to prevent a bias in the runtime measurements
         ExecutorService threadPool = Executors.newFixedThreadPool(threadCount);
 
-        logger.info("Creating MetricEvaluationManagers for samples...");
-        List<MetricEvaluationManager> managers = new LinkedList<>();
+        List<MetricEvaluationManager> managers = MetricEvaluationManager.createManagersFromSampleDirectories(
+                samplesDir, outputDir, true
+        );
 
-        try (Stream<Path> paths = Files.list(samplesDir)) {
-
-            Util.ensureEmptyDirectoryExists(outputDir);
-
-            paths.forEach(
-                    path -> {
-                        String name = path.toFile().getName();
-                        Path pathToPostIdList = Paths.get(path.toString(), name + ".csv");
-                        Path pathToPostHistory = Paths.get(path.toString(), "files");
-                        Path pathToGroundTruth = Paths.get(path.toString(), "completed");
-
-                        MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
-                                .withName(name)
-                                .withInputPaths(pathToPostIdList, pathToPostHistory, pathToGroundTruth)
-                                .withOutputDirPath(outputDir)
-                                .initialize();
-
-                        managers.add(manager);
-
-                        logger.info("Adding manager for sample " + manager.getSampleName() + " to thread pool...");
-                        threadPool.execute(new Thread(manager));
-                    }
-            );
-        } catch (IOException e) {
-            e.printStackTrace();
+        for (MetricEvaluationManager manager : managers) {
+            logger.info("Adding manager for sample " + manager.getSampleName() + " to thread pool...");
+            threadPool.execute(new Thread(manager));
         }
 
         logger.info("Waiting for termination of thread pool...");
