@@ -316,9 +316,9 @@ public class MetricEvaluationManager implements Runnable {
             }
         }
 
-        logger.info("Saving results for sample " + sampleName + "...");
+        logger.info("Thread " + threadId + ": Saving results for sample " + sampleName + "...");
         writeToCSV();
-        logger.info("Results saved.");
+        logger.info("Thread " + threadId + ": Results saved.");
     }
 
     private void writeToCSV() {
