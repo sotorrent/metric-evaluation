@@ -141,8 +141,15 @@ public class MetricResult {
     }
 
     double getYoudensJ() {
-        // https://en.wikipedia.org/wiki/Youden%27s_J_statistic
+        // see https://en.wikipedia.org/wiki/Youden%27s_J_statistic
         return getSensitivity() + getSpecificity() - 1;
+    }
+
+    double getFScore() {
+        // see https://en.wikipedia.org/wiki/F1_score
+        double precision = getPrecision();
+        double recall = getRecall();
+        return 2 * (precision * recall) / (precision + recall);
     }
 
     double getFailureRate(int maxFailures) {

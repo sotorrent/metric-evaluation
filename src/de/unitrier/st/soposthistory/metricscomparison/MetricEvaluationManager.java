@@ -84,7 +84,7 @@ public class MetricEvaluationManager implements Runnable {
 
         // configure CSV format for aggregated metric comparison results (per (metric, threshold) combination)
         csvFormatMetricEvaluationPerSample = CSVFormat.DEFAULT
-                .withHeader("MetricType", "Metric", "Threshold", "YoudensJText", "RuntimeText", "YoudensJCode", "RuntimeCode", "PostCount", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections", "TextBlockVersionCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailuresText", "PrecisionText", "RecallText", "SensitivityText", "SpecificityText", "FailureRateText", "CodeBlockVersionCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailuresCode", "PrecisionCode", "RecallCode", "SensitivityCode", "SpecificityCode", "FailureRateCode")
+                .withHeader("MetricType", "Metric", "Threshold", "YoudensJText", "FScoreText", "RuntimeText", "YoudensJCode", "FScoreCode", "RuntimeCode", "PostCount", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections", "TextBlockVersionCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailuresText", "PrecisionText", "RecallText", "SensitivityText", "SpecificityText", "FailureRateText", "CodeBlockVersionCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailuresCode", "PrecisionCode", "RecallCode", "SensitivityCode", "SpecificityCode", "FailureRateCode")
                 .withDelimiter(';')
                 .withQuote('"')
                 .withQuoteMode(QuoteMode.MINIMAL)
@@ -436,7 +436,7 @@ public class MetricEvaluationManager implements Runnable {
                 MetricResult aggregatedResultCode = aggregatedMetricResultsCode.get(similarityMetric);
 
                 // "MetricType", "Metric", "Threshold",
-                // "YoudensJText", "RuntimeText", "YoudensJCode", "RuntimeCode",
+                // "YoudensJText", "FScoreText", "RuntimeText", "YoudensJCode", "FScoreCode", "RuntimeCode",
                 // "PostCount", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections",
                 // "TextBlockVersionCount", "PossibleConnectionsText",
                 // "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailuresText",
@@ -450,8 +450,10 @@ public class MetricEvaluationManager implements Runnable {
                         similarityMetric.getThreshold(),
 
                         aggregatedResultText.getYoudensJ(),
+                        aggregatedResultText.getFScore(),
                         aggregatedResultText.getRuntime(),
                         aggregatedResultCode.getYoudensJ(),
+                        aggregatedResultCode.getFScore(),
                         aggregatedResultCode.getRuntime(),
 
                         aggregatedResultText.getPostCount(),

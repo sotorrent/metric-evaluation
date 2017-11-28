@@ -133,7 +133,7 @@ public class MetricEvaluationPerSample extends LinkedList<MetricEvaluationPerPos
         }
 
         // "MetricType", "Metric", "Threshold",
-        // "YoudensJText", "RuntimeText", "YoudensJCode", "RuntimeCode",
+        // "YoudensJText", "FScoreText", "RuntimeText", "YoudensJCode", "FScoreCode", "RuntimeCode",
         // "PostCount", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections",
         // "TextBlockVersionCount", "PossibleConnectionsText",
         // "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailuresText",
@@ -147,8 +147,10 @@ public class MetricEvaluationPerSample extends LinkedList<MetricEvaluationPerPos
                 similarityMetric.getThreshold(),
 
                 aggregatedResultText.getYoudensJ(),
+                aggregatedResultText.getFScore(),
                 aggregatedResultText.getRuntime(),
                 aggregatedResultCode.getYoudensJ(),
+                aggregatedResultCode.getFScore(),
                 aggregatedResultCode.getRuntime(),
 
                 aggregatedResultText.getPostCount(),
