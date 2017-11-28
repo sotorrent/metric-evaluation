@@ -507,26 +507,26 @@ public class MetricEvaluationManager implements Runnable {
             similarityMetrics.add(new SimilarityMetric(
                     "equals",
                     de.unitrier.st.stringsimilarity.equal.Variants::equal,
-                    SimilarityMetric.MetricType.EDIT,
+                    SimilarityMetric.MetricType.EQUAL,
                     similarityThreshold)
             );
             similarityMetrics.add(new SimilarityMetric(
                     "equalsNormalized",
                     de.unitrier.st.stringsimilarity.equal.Variants::equalNormalized,
-                    SimilarityMetric.MetricType.EDIT,
+                    SimilarityMetric.MetricType.EQUAL,
                     similarityThreshold)
             );
 
             similarityMetrics.add(new SimilarityMetric(
                     "tokenEquals",
                     de.unitrier.st.stringsimilarity.equal.Variants::tokenEqual,
-                    SimilarityMetric.MetricType.SET,
+                    SimilarityMetric.MetricType.EQUAL,
                     similarityThreshold)
             );
             similarityMetrics.add(new SimilarityMetric(
                     "tokenEqualsNormalized",
                     de.unitrier.st.stringsimilarity.equal.Variants::tokenEqualNormalized,
-                    SimilarityMetric.MetricType.SET,
+                    SimilarityMetric.MetricType.EQUAL,
                     similarityThreshold)
             );
 
