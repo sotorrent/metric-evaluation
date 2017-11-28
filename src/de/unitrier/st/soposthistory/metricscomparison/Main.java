@@ -12,6 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import static de.unitrier.st.soposthistory.util.Util.deleteFileIfExists;
 import static de.unitrier.st.soposthistory.util.Util.getClassLogger;
 
 class Main {
@@ -83,11 +84,7 @@ class Main {
 
             // output file aggregated over all samples
             File outputFileAggregated= Paths.get(outputDir.toString(), "MetricComparison_aggregated.csv").toFile();
-            if (outputFileAggregated.exists()) {
-                if (!outputFileAggregated.delete()) {
-                    throw new IllegalStateException("Error while deleting output file: " + outputFileAggregated);
-                }
-            }
+            deleteFileIfExists(outputFileAggregated);
 
             MetricEvaluationManager.aggregateAndWriteSampleResults(managers, outputFileAggregated);
 

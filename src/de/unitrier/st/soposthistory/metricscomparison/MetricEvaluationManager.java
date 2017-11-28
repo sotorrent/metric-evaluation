@@ -16,8 +16,6 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
-import static de.unitrier.st.soposthistory.util.Util.getClassLogger;
-
 public class MetricEvaluationManager implements Runnable {
     private static int threadIdCounter = 0;
 
@@ -54,7 +52,7 @@ public class MetricEvaluationManager implements Runnable {
     static {
         // configure logger
         try {
-            logger = getClassLogger(MetricEvaluationManager.class);
+            logger = Util.getClassLogger(MetricEvaluationManager.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -193,15 +191,13 @@ public class MetricEvaluationManager implements Runnable {
         }
 
         // ensure that input file exists (directories are tested in read methods)
-        if (!Files.exists(postIdPath) || Files.isDirectory(postIdPath)) {
-            throw new IllegalArgumentException("File not found: " + postIdPath);
-        }
+        Util.ensureFileExists(postIdPath);
 
-        logger.info("Creating new MetricEvaluationManager for sample " + sampleName + " ...");
+        logger.info("Thread " + threadId + ": Creating new MetricEvaluationManager for sample " + sampleName + " ...");
 
         try (CSVParser csvParser = new CSVParser(new FileReader(postIdPath.toFile()), csvFormatPostIds.withFirstRecordAsHeader())) {
 
-            logger.info("Reading PostIds from CSV file " + postIdPath.toFile().toString() + " ...");
+            logger.info("Thread " + threadId + ": Reading PostIds from CSV file " + postIdPath.toFile().toString() + " ...");
 
             for (CSVRecord currentRecord : csvParser) {
                 int postId = Integer.parseInt(currentRecord.get("PostId"));
@@ -218,7 +214,7 @@ public class MetricEvaluationManager implements Runnable {
                 newPostVersionList.normalizeLinks();
 
                 if (newPostVersionList.size() != versionCount) {
-                    String msg = "Version count expected to be " + versionCount + ", but was " + newPostVersionList.size();
+                    String msg = "Thread " + threadId + ": Version count expected to be " + versionCount + ", but was " + newPostVersionList.size();
                     logger.warning(msg);
                     throw new IllegalArgumentException(msg);
                 }
@@ -229,7 +225,7 @@ public class MetricEvaluationManager implements Runnable {
                 PostGroundTruth newPostGroundTruth = PostGroundTruth.readFromCSV(groundTruthPath, postId);
 
                 if (newPostGroundTruth.getPossibleConnections() != newPostVersionList.getPossibleConnections()) {
-                    String msg = "Number of possible connections in ground truth is different " + "from number of possible connections in post history.";
+                    String msg = "Thread " + threadId + ": Number of possible connections in ground truth is different " + "from number of possible connections in post history.";
                     logger.warning(msg);
                     throw new IllegalArgumentException(msg);
                 }
@@ -241,7 +237,7 @@ public class MetricEvaluationManager implements Runnable {
         }
 
         if (validate && ! validate()) {
-            String msg = "Post ground truth files and post version history files do not match.";
+            String msg = "Thread " + threadId + ": Post ground truth files and post version history files do not match.";
             logger.warning(msg);
             throw new IllegalArgumentException(msg);
         }
@@ -331,31 +327,19 @@ public class MetricEvaluationManager implements Runnable {
 
         // output file by version
         File outputFilePerVersion = Paths.get(this.outputDirPath.toString(), sampleName + "_per_version.csv").toFile();
-        if (outputFilePerVersion.exists()) {
-            if (!outputFilePerVersion.delete()) {
-                throw new IllegalStateException("Error while deleting output file: " + outputFilePerVersion);
-            }
-        }
+        Util.deleteFileIfExists(outputFilePerVersion);
 
         // output file aggregated by post
         File outputFilePerPost = Paths.get(this.outputDirPath.toString(), sampleName + "_per_post.csv").toFile();
-        if (outputFilePerPost.exists()) {
-            if (!outputFilePerPost.delete()) {
-                throw new IllegalStateException("Error while deleting output file: " + outputFilePerPost);
-            }
-        }
+        Util.deleteFileIfExists(outputFilePerPost);
 
         // output file aggregated by sample
         File outputFilePerSample = Paths.get(this.outputDirPath.toString(), sampleName + "_per_sample.csv").toFile();
-        if (outputFilePerSample.exists()) {
-            if (!outputFilePerSample.delete()) {
-                throw new IllegalStateException("Error while deleting output file: " + outputFilePerSample);
-            }
-        }
+        Util.deleteFileIfExists(outputFilePerSample);
 
-        logger.info("Writing metric evaluation results per version to CSV file " + outputFilePerVersion.getName() + " ...");
-        logger.info("Writing metric evaluation results per post to CSV file " + outputFilePerPost.getName() + " ...");
-        logger.info("Writing metric evaluation results per sample to CSV file " + outputFilePerSample.getName() + " ...");
+        logger.info("Thread " + threadId + ": Writing metric evaluation results per version to CSV file " + outputFilePerVersion.getName() + " ...");
+        logger.info("Thread " + threadId + ": Writing metric evaluation results per post to CSV file " + outputFilePerPost.getName() + " ...");
+        logger.info("Thread " + threadId + ": Writing metric evaluation results per sample to CSV file " + outputFilePerSample.getName() + " ...");
         try (CSVPrinter csvPrinterVersion = new CSVPrinter(new FileWriter(outputFilePerVersion), csvFormatMetricEvaluationPerVersion);
              CSVPrinter csvPrinterPost = new CSVPrinter(new FileWriter(outputFilePerPost), csvFormatMetricEvaluationPerPost);
              CSVPrinter csvPrinterSample = new CSVPrinter(new FileWriter(outputFilePerSample), csvFormatMetricEvaluationPerSample)) {
@@ -405,7 +389,9 @@ public class MetricEvaluationManager implements Runnable {
             }
         }
 
-        throw new IllegalStateException("Similarity metric " + metricName + " not found in evaluation samples.");
+        String msg = "Similarity metric " + metricName + " not found in evaluation samples.";
+        logger.warning(msg);
+        throw new IllegalArgumentException(msg);
     }
 
     String getSampleName() {

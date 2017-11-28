@@ -105,7 +105,7 @@ public class MetricEvaluationPerPost {
             if (this.currentRepetition != currentRepetition) {
                 String msg = "Repetition count does not match (expected: " + currentRepetition + "; actual: " + this.currentRepetition;
                 logger.warning(msg);
-                throw new IllegalStateException(msg);
+                throw new IllegalArgumentException(msg);
             }
 
             //logger.info("Evaluating metric " + similarityMetric + " on post " + postId);

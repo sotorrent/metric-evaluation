@@ -236,11 +236,11 @@ public class Statistics {
         for (int i = 1; i < directoryFiles.size(); i++) {
             for (int j = 0; j < directoryFiles.get(i).length; j++) {
                 if (!directoryFiles.get(0)[j].getName().toLowerCase().equals(directoryFiles.get(i)[j].getName().toLowerCase())) { // Appearing difference between samples
-                    throw new IllegalArgumentException(
-                            "Files need to be over same samples but there was a difference:"
-                                    + "\n" + directoryFiles.get(0)[j].getName()
-                                    + "\n" + directoryFiles.get(i)[j].getName()
-                    );
+                    String msg = "Files need to be over same samples but there was a difference:"
+                            + "\n" + directoryFiles.get(0)[j].getName()
+                            + "\n" + directoryFiles.get(i)[j].getName();
+                    logger.warning(msg);
+                    throw new IllegalArgumentException(msg);
                 }
             }
         }
