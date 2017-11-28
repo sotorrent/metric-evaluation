@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class Statistics {
     private static Logger logger = null;
 
-    private static final Path rootPathToGTSamples = Paths.get("testdata", "samples_gt");
+    public static final Path rootPathToGTSamples = Paths.get("testdata", "samples_gt");
     public static final List<Path> pathsToGTSamples = getGTSamples();
 
     private static final Path rootPathToTestSamples = Paths.get("testdata", "samples_test");
@@ -476,6 +476,10 @@ public class Statistics {
             File[] postVersionListFilesInFolder = file.listFiles(
                     (dir, name) -> name.matches(PostVersionList.fileNamePattern.pattern())
             );
+
+            if (postVersionListFilesInFolder == null) {
+                continue;
+            }
 
             for (File post : postVersionListFilesInFolder) {
                 int postId = Integer.valueOf(post.getName().replace(".csv", ""));

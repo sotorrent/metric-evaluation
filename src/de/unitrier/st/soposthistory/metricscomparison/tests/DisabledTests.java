@@ -1,7 +1,6 @@
 package de.unitrier.st.soposthistory.metricscomparison.tests;
 
 import de.unitrier.st.soposthistory.metricscomparison.*;
-import de.unitrier.st.soposthistory.util.Config;
 import de.unitrier.st.soposthistory.version.PostVersionList;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -17,6 +16,7 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
+import static de.unitrier.st.soposthistory.metricscomparison.Statistics.rootPathToGTSamples;
 import static de.unitrier.st.soposthistory.util.Util.getClassLogger;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.junit.MatcherAssert.assertThat;
@@ -365,14 +365,14 @@ class DisabledTests {
 
 
     @Test
-    void testMetricEvaluationManagerForEqualMetrics() {
+    void testMetricEvaluationManagerWithEqualityMetrics() {
         MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
                 .withName("TestSampleEquals")
                 .withInputPaths(
-                        Paths.get("testdata", "samples_gt", "PostId_VersionCount_17_06_sample_edited_gt", "PostId_VersionCount_17_06_sample_edited_gt.csv"),
-                        Paths.get("testdata", "samples_gt", "PostId_VersionCount_17_06_sample_edited_gt", "files"),
-                        Paths.get("testdata", "samples_gt", "PostId_VersionCount_17_06_sample_edited_gt", "completed"))
-                .withOutputDirPath(Paths.get("testdata", "samples_gt", "PostId_VersionCount_17_06_sample_edited_gt", "output"))
+                        Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_17_06_sample_edited_gt", "PostId_VersionCount_17_06_sample_edited_gt.csv"),
+                        Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_17_06_sample_edited_gt", "files"),
+                        Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_17_06_sample_edited_gt", "completed"))
+                .withOutputDirPath(Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_17_06_sample_edited_gt", "output"))
                 .withAddDefaultMetricsAndThresholds(false)
                 .initialize();
         assertEquals(manager.getPostVersionLists().size(), manager.getPostGroundTruths().size());
@@ -384,7 +384,7 @@ class DisabledTests {
             manager.addSimilarityMetric(
                     new SimilarityMetric(
                             "equals",
-                            de.unitrier.st.stringsimilarity.edit.Variants::equals,
+                            de.unitrier.st.stringsimilarity.equal.Variants::equal,
                             SimilarityMetric.MetricType.EDIT,
                             similarityThreshold
                     )
@@ -392,7 +392,7 @@ class DisabledTests {
             manager.addSimilarityMetric(
                     new SimilarityMetric(
                             "equalsNormalized",
-                            de.unitrier.st.stringsimilarity.edit.Variants::equalsNormalized,
+                            de.unitrier.st.stringsimilarity.equal.Variants::equalNormalized,
                             SimilarityMetric.MetricType.EDIT,
                             similarityThreshold
                     )
@@ -400,7 +400,7 @@ class DisabledTests {
             manager.addSimilarityMetric(
                     new SimilarityMetric(
                             "tokenEquals",
-                            de.unitrier.st.stringsimilarity.set.Variants::tokenEquals,
+                            de.unitrier.st.stringsimilarity.equal.Variants::tokenEqual,
                             SimilarityMetric.MetricType.SET,
                             similarityThreshold
                     )
@@ -408,7 +408,7 @@ class DisabledTests {
             manager.addSimilarityMetric(
                     new SimilarityMetric(
                             "tokenEqualsNormalized",
-                            de.unitrier.st.stringsimilarity.set.Variants::tokenEqualsNormalized,
+                            de.unitrier.st.stringsimilarity.equal.Variants::tokenEqualNormalized,
                             SimilarityMetric.MetricType.SET,
                             similarityThreshold
                     )
@@ -422,51 +422,18 @@ class DisabledTests {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-        PostVersionList a_19612096 = manager.getPostVersionLists().get(19612096);
-        a_19612096.processVersionHistory(
-                Config.DEFAULT
-                        .withTextSimilarityMetric(de.unitrier.st.stringsimilarity.edit.Variants::equals)
-                        .withTextBackupSimilarityMetric(null)
-                        .withCodeSimilarityMetric(de.unitrier.st.stringsimilarity.edit.Variants::equals)
-                        .withCodeBackupSimilarityMetric(null));
-
-
-        Integer predOfBlock5 = null;
-        Integer predOfBlock9 = null;
-        Integer predOfBlock13 = null;
-
-        try{
-            predOfBlock5 = a_19612096.getPostVersion(50536699).getPostBlocks().get(4).getPred().getLocalId();
-        }catch (Exception ignored){}
-
-        try{
-            predOfBlock9 = a_19612096.getPostVersion(50536699).getPostBlocks().get(4).getPred().getLocalId();
-        }catch (Exception ignored){}
-
-        try{
-            predOfBlock13 = a_19612096.getPostVersion(50536699).getPostBlocks().get(4).getPred().getLocalId();
-        }catch (Exception ignored){}
-
-        assertNull(a_19612096.getPostVersion(50536699).getPostBlocks().get(0).getPred());
-        assert predOfBlock5 != null;
-        assertEquals(5, predOfBlock5.intValue());
-        assert predOfBlock9 != null;
-        assertEquals(9, predOfBlock9.intValue());
-        assert predOfBlock13 != null;
-        assertEquals(13, predOfBlock13.intValue());
     }
 
 
     @Test
-    void testMetricEvaluationManagerForMultiplePossibleConnections() {
+    void testMetricEvaluationManagerWithMultiplePossibleConnections() {
         MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
                 .withName("TestMultiplePossibleConnections")
                 .withInputPaths(
-                        Paths.get("testdata", "samples_gt", "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links.csv"),
-                        Paths.get("testdata", "samples_gt", "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "files"),
-                        Paths.get("testdata", "samples_gt", "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "completed"))
-                .withOutputDirPath(Paths.get("testdata", "samples_gt", "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "output"))
+                        Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links.csv"),
+                        Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "files"),
+                        Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "completed"))
+                .withOutputDirPath(Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "output"))
                 .withAddDefaultMetricsAndThresholds(false)
                 .initialize();
         assertEquals(manager.getPostVersionLists().size(), manager.getPostGroundTruths().size());
