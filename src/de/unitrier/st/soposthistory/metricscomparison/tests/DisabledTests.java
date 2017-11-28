@@ -433,5 +433,37 @@ class DisabledTests {
 
         assertEquals(13, a_19612096.getPostVersion(50536699).getPostBlocks().get(12).getPred().getLocalId().intValue());
         assertEquals(9, a_19612096.getPostVersion(50536699).getPostBlocks().get(8).getPred().getLocalId().intValue());
+
+    @Test
+    void testMetricEvaluationManagerForMultiplePossibleConnections() {
+        MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
+                .withName("TestMultiplePossibleConnections")
+                .withInputPaths(
+                        Paths.get("testdata", "samples_comparison_test2", "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links.csv"),
+                        Paths.get("testdata", "samples_comparison_test2", "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "files"),
+                        Paths.get("testdata", "samples_comparison_test2", "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "completed"))
+                .withOutputDirPath(Paths.get("testdata", "samples_comparison_test2", "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "output"))
+                .withAddDefaultMetricsAndThresholds(false)
+                .initialize();
+        assertEquals(manager.getPostVersionLists().size(), manager.getPostGroundTruths().size());
+        assertThat(manager.getPostVersionLists().keySet(), is(manager.getPostGroundTruths().keySet()));
+
+
+        manager.addSimilarityMetric(
+                new SimilarityMetric(
+                        "equals",
+                        de.unitrier.st.stringsimilarity.set.Variants::tokenJaccard,
+                        SimilarityMetric.MetricType.SET,
+                        0.3
+                )
+        );
+
+        Thread managerThread = new Thread(manager);
+        managerThread.start();
+        try {
+            managerThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
