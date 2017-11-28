@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 public class MetricEvaluationManager implements Runnable {
-    private static int threadIdCounter = 0;
+    private static volatile int threadIdCounter = 0;
 
     private static Logger logger = null;
     static final CSVFormat csvFormatPostIds;
@@ -100,7 +100,7 @@ public class MetricEvaluationManager implements Runnable {
                                     Path postHistoryPath, Path groundTruthPath, Path outputDirPath,
                                     boolean validate, boolean addDefaultMetricsAndThresholds, boolean randomizeOrder,
                                     int numberOfRepetitions, int threadCount) {
-        this.threadId = -1;
+
         this.sampleName = sampleName;
 
         this.postIdPath = postIdPath;
@@ -186,6 +186,8 @@ public class MetricEvaluationManager implements Runnable {
     }
 
     public MetricEvaluationManager initialize() {
+        this.threadId = ++threadIdCounter;
+
         if (addDefaultMetricsAndThresholds) {
             addDefaultSimilarityMetricsAndThresholds();
         }
@@ -282,7 +284,6 @@ public class MetricEvaluationManager implements Runnable {
 
     @Override
     public void run() {
-        threadId = ++threadIdCounter;
         logger.info("Thread " + threadId + " started for sample " + sampleName + "...");
 
         if (!initialized) {
@@ -389,7 +390,7 @@ public class MetricEvaluationManager implements Runnable {
             }
         }
 
-        String msg = "Similarity metric " + metricName + " not found in evaluation samples.";
+        String msg = "Thread " + threadId + ": Similarity metric " + metricName + " not found in evaluation samples.";
         logger.warning(msg);
         throw new IllegalArgumentException(msg);
     }
