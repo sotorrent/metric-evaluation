@@ -39,7 +39,7 @@ class DisabledTests {
     }
 
     @Test
-    void testCompareMetricEvaluationManagerWithOldProject() {
+    void compareMetricEvaluationManagerWithOldProjectTest() {
         MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
                 .withName("TestSample")
                 .withInputPaths(MetricsEvaluationTest.pathToPostIdList, MetricsEvaluationTest.pathToPostHistory,
@@ -196,7 +196,7 @@ class DisabledTests {
     }
 
     @Test
-    void testComparePossibleMultipleConnectionsWithOldProject() {
+    void comparePossibleMultipleConnectionsWithOldProjectTest() {
         // This test case "fails" because the extraction of post blocks has been changed since the creation of the old file.
 
         File oldFile = Paths.get(Statistics.pathToMultipleConnectionsDir.toString(),
