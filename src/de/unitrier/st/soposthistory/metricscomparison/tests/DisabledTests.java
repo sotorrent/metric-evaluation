@@ -431,8 +431,32 @@ class DisabledTests {
                         .withCodeSimilarityMetric(de.unitrier.st.stringsimilarity.edit.Variants::equals)
                         .withCodeBackupSimilarityMetric(null));
 
-        assertEquals(13, a_19612096.getPostVersion(50536699).getPostBlocks().get(12).getPred().getLocalId().intValue());
-        assertEquals(9, a_19612096.getPostVersion(50536699).getPostBlocks().get(8).getPred().getLocalId().intValue());
+
+        Integer predOfBlock5 = null;
+        Integer predOfBlock9 = null;
+        Integer predOfBlock13 = null;
+
+        try{
+            predOfBlock5 = a_19612096.getPostVersion(50536699).getPostBlocks().get(4).getPred().getLocalId();
+        }catch (Exception ignored){}
+
+        try{
+            predOfBlock9 = a_19612096.getPostVersion(50536699).getPostBlocks().get(4).getPred().getLocalId();
+        }catch (Exception ignored){}
+
+        try{
+            predOfBlock13 = a_19612096.getPostVersion(50536699).getPostBlocks().get(4).getPred().getLocalId();
+        }catch (Exception ignored){}
+
+        assertNull(a_19612096.getPostVersion(50536699).getPostBlocks().get(0).getPred());
+        assert predOfBlock5 != null;
+        assertEquals(5, predOfBlock5.intValue());
+        assert predOfBlock9 != null;
+        assertEquals(9, predOfBlock9.intValue());
+        assert predOfBlock13 != null;
+        assertEquals(13, predOfBlock13.intValue());
+    }
+
 
     @Test
     void testMetricEvaluationManagerForMultiplePossibleConnections() {
