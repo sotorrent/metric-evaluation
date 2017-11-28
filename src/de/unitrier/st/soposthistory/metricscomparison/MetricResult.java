@@ -1,5 +1,7 @@
 package de.unitrier.st.soposthistory.metricscomparison;
 
+import de.unitrier.st.soposthistory.util.Util;
+
 import java.io.IOException;
 import java.util.logging.Logger;
 
@@ -171,7 +173,7 @@ public class MetricResult {
     double getFailureRate(int maxFailures) {
         double failureRate = maxFailures == 0 ? 0.0 : ((double) failedPredecessorComparisons) / maxFailures;
 
-        if (failureRate < 0.0 || failureRate > 1.0) {
+        if (Util.lessThan(failureRate, 0.0) || Util.greaterThan(failureRate, 1.0)) {
             String msg = "Failure rate must be in range [0.0, 1.0], but was " + failureRate;
             logger.warning(msg);
             throw new IllegalArgumentException(msg);
