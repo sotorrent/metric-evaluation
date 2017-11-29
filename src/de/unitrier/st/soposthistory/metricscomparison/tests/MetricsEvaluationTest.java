@@ -3,7 +3,6 @@ package de.unitrier.st.soposthistory.metricscomparison.tests;
 import de.unitrier.st.soposthistory.metricscomparison.MetricEvaluationManager;
 import de.unitrier.st.soposthistory.metricscomparison.MetricEvaluationPerPost;
 import de.unitrier.st.soposthistory.metricscomparison.MetricResult;
-import de.unitrier.st.soposthistory.metricscomparison.SimilarityMetric;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;

@@ -1,19 +1,18 @@
 package de.unitrier.st.soposthistory.metricscomparison;
 
 import com.google.common.base.Stopwatch;
+import de.unitrier.st.soposthistory.Config;
 import de.unitrier.st.soposthistory.blocks.CodeBlockVersion;
 import de.unitrier.st.soposthistory.blocks.TextBlockVersion;
 import de.unitrier.st.soposthistory.gt.PostBlockConnection;
 import de.unitrier.st.soposthistory.gt.PostGroundTruth;
-import de.unitrier.st.soposthistory.util.Config;
 import de.unitrier.st.soposthistory.version.PostVersionList;
+import de.unitrier.st.util.Util;
 import org.apache.commons.csv.CSVPrinter;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
-
-import static de.unitrier.st.soposthistory.util.Util.getClassLogger;
 
 /**
  * Evaluation of one similarity metric using one SO post.
@@ -24,7 +23,7 @@ public class MetricEvaluationPerPost {
     static {
         // configure logger
         try {
-            logger = getClassLogger(MetricEvaluationPerPost.class);
+            logger = Util.getClassLogger(MetricEvaluationPerPost.class);
         } catch (IOException e) {
             e.printStackTrace();
         }

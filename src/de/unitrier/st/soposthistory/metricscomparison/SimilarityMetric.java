@@ -10,7 +10,7 @@ public class SimilarityMetric {
     final private MetricType type;
     final private double threshold;
 
-    public SimilarityMetric(String name, BiFunction<String, String, Double> metric,
+    SimilarityMetric(String name, BiFunction<String, String, Double> metric,
                      MetricType type, double threshold) {
         this.name = name;
         this.metric = metric;

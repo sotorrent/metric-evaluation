@@ -2,11 +2,11 @@ package de.unitrier.st.soposthistory.metricscomparison;
 
 import de.unitrier.st.soposthistory.blocks.CodeBlockVersion;
 import de.unitrier.st.soposthistory.blocks.PostBlockVersion;
-import de.unitrier.st.soposthistory.util.Util;
 import de.unitrier.st.soposthistory.version.PostVersion;
 import de.unitrier.st.soposthistory.version.PostVersionList;
 import de.unitrier.st.stringsimilarity.Normalization;
 import de.unitrier.st.stringsimilarity.Tokenization;
+import de.unitrier.st.util.Util;
 import org.apache.commons.csv.*;
 
 import java.io.File;
@@ -23,10 +23,12 @@ import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 import static de.unitrier.st.soposthistory.metricscomparison.MetricEvaluationManager.*;
-import static de.unitrier.st.soposthistory.util.Util.getClassLogger;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+/**
+ * @author lorikdumani
+ */
 public class Statistics {
     private static Logger logger = null;
 
@@ -47,7 +49,7 @@ public class Statistics {
     static {
         // configure logger
         try {
-            logger = getClassLogger(Statistics.class, true);
+            logger = Util.getClassLogger(Statistics.class, true);
         } catch (IOException e) {
             e.printStackTrace();
         }

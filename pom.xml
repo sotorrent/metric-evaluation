@@ -38,6 +38,14 @@
                 <updatePolicy>always</updatePolicy>
             </snapshots>
         </repository>
+        <repository>
+            <id>util</id>
+            <url>https://raw.github.com/sotorrent/util/master/releases/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -45,13 +53,19 @@
         <dependency>
             <groupId>de.unitrier.st.soposthistory</groupId>
             <artifactId>so-posthistory-extractor</artifactId>
-            <version>1.7.6</version>
+            <version>1.7.7</version>
         </dependency>
         <!-- https://github.com/sotorrent/string-similarity/tree/master/releases/ -->
         <dependency>
             <groupId>de.unitrier.st</groupId>
             <artifactId>string-similarity</artifactId>
             <version>1.2.9</version>
+        </dependency>
+        <!-- https://github.com/sotorrent/util/tree/master/releases/ -->
+        <dependency>
+            <groupId>de.unitrier.st</groupId>
+            <artifactId>util</artifactId>
+            <version>1.0.2</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-csv -->
         <dependency>

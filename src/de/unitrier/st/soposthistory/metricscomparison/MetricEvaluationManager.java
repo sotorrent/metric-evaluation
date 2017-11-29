@@ -1,8 +1,8 @@
 package de.unitrier.st.soposthistory.metricscomparison;
 
 import de.unitrier.st.soposthistory.gt.PostGroundTruth;
-import de.unitrier.st.soposthistory.util.Util;
 import de.unitrier.st.soposthistory.version.PostVersionList;
+import de.unitrier.st.util.Util;
 import org.apache.commons.csv.*;
 
 import java.io.File;
@@ -319,48 +319,45 @@ public class MetricEvaluationManager implements Runnable {
     }
 
     private void writeToCSV() {
-        // create output directory if it does not exist
         try {
-            Files.createDirectories(outputDirPath);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            // create output directory if it does not exist
+            Util.createDirectory(outputDirPath);
 
-        // output file by version
-        File outputFilePerVersion = Paths.get(this.outputDirPath.toString(), sampleName + "_per_version.csv").toFile();
-        Util.deleteFileIfExists(outputFilePerVersion);
+            // output file by version
+            Path outputFilePerVersion = Paths.get(this.outputDirPath.toString(), sampleName + "_per_version.csv");
+            Util.deleteFileIfExists(outputFilePerVersion);
 
-        // output file aggregated by post
-        File outputFilePerPost = Paths.get(this.outputDirPath.toString(), sampleName + "_per_post.csv").toFile();
-        Util.deleteFileIfExists(outputFilePerPost);
+            // output file aggregated by post
+            Path outputFilePerPost = Paths.get(this.outputDirPath.toString(), sampleName + "_per_post.csv");
+            Util.deleteFileIfExists(outputFilePerPost);
 
-        // output file aggregated by sample
-        File outputFilePerSample = Paths.get(this.outputDirPath.toString(), sampleName + "_per_sample.csv").toFile();
-        Util.deleteFileIfExists(outputFilePerSample);
+            // output file aggregated by sample
+            Path outputFilePerSample = Paths.get(this.outputDirPath.toString(), sampleName + "_per_sample.csv");
+            Util.deleteFileIfExists(outputFilePerSample);
 
-        logger.info("Thread " + threadId + ": Writing metric evaluation results per version to CSV file " + outputFilePerVersion.getName() + " ...");
-        logger.info("Thread " + threadId + ": Writing metric evaluation results per post to CSV file " + outputFilePerPost.getName() + " ...");
-        logger.info("Thread " + threadId + ": Writing metric evaluation results per sample to CSV file " + outputFilePerSample.getName() + " ...");
-        try (CSVPrinter csvPrinterVersion = new CSVPrinter(new FileWriter(outputFilePerVersion), csvFormatMetricEvaluationPerVersion);
-             CSVPrinter csvPrinterPost = new CSVPrinter(new FileWriter(outputFilePerPost), csvFormatMetricEvaluationPerPost);
-             CSVPrinter csvPrinterSample = new CSVPrinter(new FileWriter(outputFilePerSample), csvFormatMetricEvaluationPerSample)) {
+            logger.info("Thread " + threadId + ": Writing metric evaluation results per version to CSV file " + outputFilePerVersion.toFile().getName() + " ...");
+            logger.info("Thread " + threadId + ": Writing metric evaluation results per post to CSV file " + outputFilePerPost.toFile().getName() + " ...");
+            logger.info("Thread " + threadId + ": Writing metric evaluation results per sample to CSV file " + outputFilePerSample.toFile().getName() + " ...");
+            try (CSVPrinter csvPrinterVersion = new CSVPrinter(new FileWriter(outputFilePerVersion.toFile()), csvFormatMetricEvaluationPerVersion);
+                 CSVPrinter csvPrinterPost = new CSVPrinter(new FileWriter(outputFilePerPost.toFile()), csvFormatMetricEvaluationPerPost);
+                 CSVPrinter csvPrinterSample = new CSVPrinter(new FileWriter(outputFilePerSample.toFile()), csvFormatMetricEvaluationPerSample)) {
 
-            // header is automatically written
+                // header is automatically written
 
-            // write results per per post and per version
-            for (MetricEvaluationPerSample evaluationPerSample : metricEvaluationsPerSample) {
-                for (MetricEvaluationPerPost evaluationPerPost : evaluationPerSample) {
-                    evaluationPerPost.writeToCSV(csvPrinterPost, csvPrinterVersion);
+                // write results per per post and per version
+                for (MetricEvaluationPerSample evaluationPerSample : metricEvaluationsPerSample) {
+                    for (MetricEvaluationPerPost evaluationPerPost : evaluationPerSample) {
+                        evaluationPerPost.writeToCSV(csvPrinterPost, csvPrinterVersion);
+                    }
+                }
+
+                // write aggregated results per sample
+                int maxFailuresText = MetricEvaluationPerSample.getMaxFailuresText(metricEvaluationsPerSample);
+                int maxFailuresCode = MetricEvaluationPerSample.getMaxFailuresCode(metricEvaluationsPerSample);
+                for (MetricEvaluationPerSample evaluationPerSample : metricEvaluationsPerSample) {
+                    evaluationPerSample.writeToCSV(csvPrinterSample, maxFailuresText, maxFailuresCode);
                 }
             }
-
-            // write aggregated results per sample
-            int maxFailuresText = MetricEvaluationPerSample.getMaxFailuresText(metricEvaluationsPerSample);
-            int maxFailuresCode = MetricEvaluationPerSample.getMaxFailuresCode(metricEvaluationsPerSample);
-            for (MetricEvaluationPerSample evaluationPerSample : metricEvaluationsPerSample) {
-                evaluationPerSample.writeToCSV(csvPrinterSample, maxFailuresText, maxFailuresCode);
-            }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -380,12 +377,15 @@ public class MetricEvaluationManager implements Runnable {
 
     public MetricEvaluationPerPost getMetricEvaluation(int postId, String metricName, double threshold) {
         for (MetricEvaluationPerSample evaluationPerSample : metricEvaluationsPerSample) {
-            if (evaluationPerSample.getSimilarityMetric().getName().equals(metricName)
-                    && evaluationPerSample.getSimilarityMetric().getThreshold() == threshold) {
-                for (MetricEvaluationPerPost evaluationPerPost : evaluationPerSample) {
-                    if (evaluationPerPost.getPostId() == postId) {
-                        return evaluationPerPost;
-                    }
+            if (!evaluationPerSample.getSimilarityMetric().getName().equals(metricName)
+                    || evaluationPerSample.getSimilarityMetric().getThreshold() != threshold) {
+                continue;
+            }
+            // correct samples found
+            for (MetricEvaluationPerPost evaluationPerPost : evaluationPerSample) {
+                if (evaluationPerPost.getPostId() == postId) {
+                    // correct post found
+                    return evaluationPerPost;
                 }
             }
         }

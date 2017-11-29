@@ -2,6 +2,8 @@ package de.unitrier.st.soposthistory.metricscomparison;
 
 import org.apache.commons.cli.*;
 
+import de.unitrier.st.util.Util;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -12,9 +14,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-import static de.unitrier.st.soposthistory.util.Util.deleteFileIfExists;
-import static de.unitrier.st.soposthistory.util.Util.getClassLogger;
-
 class Main {
 
     private static Logger logger;
@@ -22,7 +21,7 @@ class Main {
     static {
         // configure logger
         try {
-            logger = getClassLogger(Main.class);
+            logger = Util.getClassLogger(Main.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -83,13 +82,15 @@ class Main {
             logger.info("Saving aggregated results over all samples...");
 
             // output file aggregated over all samples
-            File outputFileAggregated= Paths.get(outputDir.toString(), "MetricComparison_aggregated.csv").toFile();
-            deleteFileIfExists(outputFileAggregated);
+            Path outputFileAggregated= Paths.get(outputDir.toString(), "MetricComparison_aggregated.csv");
+            Util.deleteFileIfExists(outputFileAggregated);
 
-            MetricEvaluationManager.aggregateAndWriteSampleResults(managers, outputFileAggregated);
+            MetricEvaluationManager.aggregateAndWriteSampleResults(managers, outputFileAggregated.toFile());
 
         } catch (InterruptedException e) {
             threadPool.shutdownNow();
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

@@ -2,6 +2,7 @@ package de.unitrier.st.soposthistory.metricscomparison.tests;
 
 import de.unitrier.st.soposthistory.metricscomparison.*;
 import de.unitrier.st.soposthistory.version.PostVersionList;
+import de.unitrier.st.util.Util;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.junit.jupiter.api.Disabled;
@@ -20,7 +21,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
 import static de.unitrier.st.soposthistory.metricscomparison.Statistics.rootPathToGTSamples;
-import static de.unitrier.st.soposthistory.util.Util.getClassLogger;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.junit.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -43,7 +43,7 @@ class DisabledTests {
 
     static {
         try {
-            logger = getClassLogger(de.unitrier.st.soposthistory.metricscomparison.tests.DisabledTests.class);
+            logger = Util.getClassLogger(de.unitrier.st.soposthistory.metricscomparison.tests.DisabledTests.class);
         } catch (IOException e) {
             e.printStackTrace();
         }

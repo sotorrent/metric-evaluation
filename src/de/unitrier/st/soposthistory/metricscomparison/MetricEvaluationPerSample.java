@@ -3,13 +3,12 @@ package de.unitrier.st.soposthistory.metricscomparison;
 import de.unitrier.st.soposthistory.gt.PostBlockConnection;
 import de.unitrier.st.soposthistory.gt.PostGroundTruth;
 import de.unitrier.st.soposthistory.version.PostVersionList;
+import de.unitrier.st.util.Util;
 import org.apache.commons.csv.CSVPrinter;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
-
-import static de.unitrier.st.soposthistory.util.Util.getClassLogger;
 
 /**
  * Evaluation of one similarity metric using a sample of SO posts.
@@ -20,7 +19,7 @@ public class MetricEvaluationPerSample extends LinkedList<MetricEvaluationPerPos
     static {
         // configure logger
         try {
-            logger = getClassLogger(MetricEvaluationPerSample.class);
+            logger = Util.getClassLogger(MetricEvaluationPerSample.class);
         } catch (IOException e) {
             e.printStackTrace();
         }

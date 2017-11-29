@@ -1,11 +1,9 @@
 package de.unitrier.st.soposthistory.metricscomparison;
 
-import de.unitrier.st.soposthistory.util.Util;
+import de.unitrier.st.util.Util;
 
 import java.io.IOException;
 import java.util.logging.Logger;
-
-import static de.unitrier.st.soposthistory.util.Util.getClassLogger;
 
 public class MetricResult {
     private static Logger logger;
@@ -25,7 +23,7 @@ public class MetricResult {
     static {
         // configure logger
         try {
-            logger = getClassLogger(MetricResult.class);
+            logger = Util.getClassLogger(MetricResult.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
