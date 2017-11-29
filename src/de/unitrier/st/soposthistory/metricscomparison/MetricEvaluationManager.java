@@ -85,7 +85,7 @@ public class MetricEvaluationManager implements Runnable {
 
         // configure CSV format for aggregated metric comparison results (per (metric, threshold) combination)
         csvFormatMetricEvaluationPerSample = CSVFormat.DEFAULT
-                .withHeader("MetricType", "Metric", "Threshold", "YoudensJText", "FScoreText", "RuntimeText", "YoudensJCode", "FScoreCode", "RuntimeCode", "PostCount", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections", "TextBlockVersionCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailuresText", "PrecisionText", "RecallText", "SensitivityText", "SpecificityText", "FailureRateText", "CodeBlockVersionCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailuresCode", "PrecisionCode", "RecallCode", "SensitivityCode", "SpecificityCode", "FailureRateCode")
+                .withHeader("MetricType", "Metric", "Threshold", "InformednessText", "MarkednessText", "MatthewsCorrelationText", "FScoreText", "RuntimeText", "InformednessCode", "MarkednessCode", "MatthewsCorrelationCode", "FScoreCode", "RuntimeCode", "PostCount", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections", "TextBlockVersionCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailuresText", "PrecisionText", "RecallText", "SensitivityText", "SpecificityText", "FailureRateText", "CodeBlockVersionCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailuresCode", "PrecisionCode", "RecallCode", "SensitivityCode", "SpecificityCode", "FailureRateCode")
                 .withDelimiter(';')
                 .withQuote('"')
                 .withQuoteMode(QuoteMode.MINIMAL)
@@ -352,10 +352,8 @@ public class MetricEvaluationManager implements Runnable {
                 }
 
                 // write aggregated results per sample
-                int maxFailuresText = MetricEvaluationPerSample.getMaxFailuresText(metricEvaluationsPerSample);
-                int maxFailuresCode = MetricEvaluationPerSample.getMaxFailuresCode(metricEvaluationsPerSample);
                 for (MetricEvaluationPerSample evaluationPerSample : metricEvaluationsPerSample) {
-                    evaluationPerSample.writeToCSV(csvPrinterSample, maxFailuresText, maxFailuresCode);
+                    evaluationPerSample.writeToCSV(csvPrinterSample);
                 }
             }
         } catch (IOException e) {
@@ -493,7 +491,8 @@ public class MetricEvaluationManager implements Runnable {
                 MetricResult aggregatedResultCode = aggregatedMetricResultsCode.get(similarityMetric);
 
                 // "MetricType", "Metric", "Threshold",
-                // "YoudensJText", "FScoreText", "RuntimeText", "YoudensJCode", "FScoreCode", "RuntimeCode",
+                // "InformednessText", "MarkednessText", "MatthewsCorrelationText", "FScoreText", "RuntimeText",
+                // "InformednessCode", "MarkednessCode", "MatthewsCorrelationCode", "FScoreCode", "RuntimeCode",
                 // "PostCount", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections",
                 // "TextBlockVersionCount", "PossibleConnectionsText",
                 // "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailuresText",
@@ -506,10 +505,15 @@ public class MetricEvaluationManager implements Runnable {
                         similarityMetric.getName(),
                         similarityMetric.getThreshold(),
 
-                        aggregatedResultText.getYoudensJ(),
+                        aggregatedResultText.getInformedness(),
+                        aggregatedResultText.getMarkedness(),
+                        aggregatedResultText.getMatthewsCorrelation(),
                         aggregatedResultText.getFScore(),
                         aggregatedResultText.getRuntime(),
-                        aggregatedResultCode.getYoudensJ(),
+
+                        aggregatedResultCode.getInformedness(),
+                        aggregatedResultCode.getMarkedness(),
+                        aggregatedResultCode.getMatthewsCorrelation(),
                         aggregatedResultCode.getFScore(),
                         aggregatedResultCode.getRuntime(),
 
@@ -531,7 +535,7 @@ public class MetricEvaluationManager implements Runnable {
                         aggregatedResultText.getRecall(),
                         aggregatedResultText.getSensitivity(),
                         aggregatedResultText.getSpecificity(),
-                        aggregatedResultText.getFailureRate(maxFailuresText),
+                        aggregatedResultText.getFailureRate(),
 
                         aggregatedResultCode.getPostBlockVersionCount(),
                         aggregatedResultCode.getPossibleConnections(),
@@ -546,7 +550,7 @@ public class MetricEvaluationManager implements Runnable {
                         aggregatedResultCode.getRecall(),
                         aggregatedResultCode.getSensitivity(),
                         aggregatedResultCode.getSpecificity(),
-                        aggregatedResultCode.getFailureRate(maxFailuresCode)
+                        aggregatedResultCode.getFailureRate()
                 );
             }
         } catch (IOException e) {

@@ -144,8 +144,18 @@ public class MetricResult {
         return ((double) truePositives) / (truePositives + falsePositives);
     }
 
+    double getInversePrecision() {
+        // see Powers11
+        return ((double) trueNegatives) / (trueNegatives + falseNegatives);
+    }
+
     double getRecall() {
         return ((double) truePositives) / (truePositives + falseNegatives);
+    }
+
+    double getInverseRecall() {
+        // see Powers11
+        return ((double) trueNegatives) / (trueNegatives + falsePositives);
     }
 
     double getSensitivity() {
@@ -153,12 +163,30 @@ public class MetricResult {
     }
 
     double getSpecificity() {
-        return ((double) trueNegatives) / (trueNegatives + falsePositives);
+        return getInverseRecall();
     }
 
-    double getYoudensJ() {
+    double getMarkedness() {
+        // see Powers11
+        // see https://en.wikipedia.org/wiki/Evaluation_of_binary_classifiers
+        return getPrecision() + getInversePrecision() - 1;
+    }
+
+
+    double getInformedness() {
+        // see Powers11
         // see https://en.wikipedia.org/wiki/Youden%27s_J_statistic
-        return getSensitivity() + getSpecificity() - 1;
+        // see https://en.wikipedia.org/wiki/Evaluation_of_binary_classifiers
+        return getRecall() + getInverseRecall() - 1;
+    }
+
+    double getMatthewsCorrelation() {
+        // see Powers11, Matthews75
+        // see https://en.wikipedia.org/wiki/Matthews_correlation_coefficient
+        // see https://lettier.github.io/posts/2016-08-05-matthews-correlation-coefficient.html
+        double numerator = (truePositives * trueNegatives) - (falsePositives * falseNegatives);
+        double denominator = Math.sqrt((truePositives + falsePositives) * (truePositives + falseNegatives) * (trueNegatives + falsePositives) + (trueNegatives + falseNegatives));
+        return numerator / denominator;
     }
 
     double getFScore() {
@@ -168,8 +196,8 @@ public class MetricResult {
         return 2 * (precision * recall) / (precision + recall);
     }
 
-    double getFailureRate(int maxFailures) {
-        double failureRate = maxFailures == 0 ? 0.0 : ((double) failedPredecessorComparisons) / maxFailures;
+    double getFailureRate() {
+        double failureRate = possibleConnections == 0 ? 0.0 : failedPredecessorComparisons / possibleConnections;
 
         if (Util.lessThan(failureRate, 0.0) || Util.greaterThan(failureRate, 1.0)) {
             String msg = "Failure rate must be in range [0.0, 1.0], but was " + failureRate;

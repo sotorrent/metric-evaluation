@@ -110,7 +110,7 @@ public class MetricEvaluationPerSample extends LinkedList<MetricEvaluationPerPos
         }
     }
 
-    void writeToCSV(CSVPrinter csvPrinterSample, int maxFailuresText, int maxFailuresCode) throws IOException {
+    void writeToCSV(CSVPrinter csvPrinterSample) throws IOException {
 
         // write results aggregated per sample
         MetricResult aggregatedResultText = getResultAggregatedBySampleText();
@@ -129,7 +129,8 @@ public class MetricEvaluationPerSample extends LinkedList<MetricEvaluationPerPos
         }
 
         // "MetricType", "Metric", "Threshold",
-        // "YoudensJText", "FScoreText", "RuntimeText", "YoudensJCode", "FScoreCode", "RuntimeCode",
+        // "InformednessText", "MarkednessText", "MatthewsCorrelationText", "FScoreText", "RuntimeText",
+        // "InformednessCode", "MarkednessCode", "MatthewsCorrelationCode", "FScoreCode", "RuntimeCode",
         // "PostCount", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections",
         // "TextBlockVersionCount", "PossibleConnectionsText",
         // "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailuresText",
@@ -142,10 +143,15 @@ public class MetricEvaluationPerSample extends LinkedList<MetricEvaluationPerPos
                 similarityMetric.getName(),
                 similarityMetric.getThreshold(),
 
-                aggregatedResultText.getYoudensJ(),
+                aggregatedResultText.getInformedness(),
+                aggregatedResultText.getMarkedness(),
+                aggregatedResultText.getMatthewsCorrelation(),
                 aggregatedResultText.getFScore(),
                 aggregatedResultText.getRuntime(),
-                aggregatedResultCode.getYoudensJ(),
+
+                aggregatedResultCode.getInformedness(),
+                aggregatedResultCode.getMarkedness(),
+                aggregatedResultCode.getMatthewsCorrelation(),
                 aggregatedResultCode.getFScore(),
                 aggregatedResultCode.getRuntime(),
 
@@ -167,7 +173,7 @@ public class MetricEvaluationPerSample extends LinkedList<MetricEvaluationPerPos
                 aggregatedResultText.getRecall(),
                 aggregatedResultText.getSensitivity(),
                 aggregatedResultText.getSpecificity(),
-                aggregatedResultText.getFailureRate(maxFailuresText),
+                aggregatedResultText.getFailureRate(),
 
                 aggregatedResultCode.getPostBlockVersionCount(),
                 aggregatedResultCode.getPossibleConnections(),
@@ -182,7 +188,7 @@ public class MetricEvaluationPerSample extends LinkedList<MetricEvaluationPerPos
                 aggregatedResultCode.getRecall(),
                 aggregatedResultCode.getSensitivity(),
                 aggregatedResultCode.getSpecificity(),
-                aggregatedResultCode.getFailureRate(maxFailuresCode)
+                aggregatedResultCode.getFailureRate()
         );
     }
 
@@ -208,28 +214,6 @@ public class MetricEvaluationPerSample extends LinkedList<MetricEvaluationPerPos
             }
         }
         return aggregatedResultCode;
-    }
-
-    static int getMaxFailuresText(List<MetricEvaluationPerSample> evaluations) {
-        int maxFailuresText = 0;
-        for (MetricEvaluationPerSample evaluation : evaluations) {
-            maxFailuresText = Math.max(
-                    maxFailuresText,
-                    evaluation.getResultAggregatedBySampleText().getFailedPredecessorComparisons()
-            );
-        }
-        return maxFailuresText;
-    }
-
-    static int getMaxFailuresCode(List<MetricEvaluationPerSample> evaluations) {
-        int maxFailuresCode = 0;
-        for (MetricEvaluationPerSample evaluation : evaluations) {
-            maxFailuresCode = Math.max(
-                    maxFailuresCode,
-                    evaluation.getResultAggregatedBySampleCode().getFailedPredecessorComparisons()
-            );
-        }
-        return maxFailuresCode;
     }
 
     SimilarityMetric getSimilarityMetric() {
