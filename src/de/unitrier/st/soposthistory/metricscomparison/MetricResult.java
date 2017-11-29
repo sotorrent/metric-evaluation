@@ -141,29 +141,21 @@ public class MetricResult {
     }
 
     double getPrecision() {
-        return ((double) truePositives) / (truePositives + falsePositives);
+        return ((double) truePositives) / ((double) truePositives + (double) falsePositives);
     }
 
     double getInversePrecision() {
         // see Powers11
-        return ((double) trueNegatives) / (trueNegatives + falseNegatives);
+        return ((double) trueNegatives) / ((double) trueNegatives + (double) falseNegatives);
     }
 
     double getRecall() {
-        return ((double) truePositives) / (truePositives + falseNegatives);
+        return ((double) truePositives) / ((double) truePositives + (double) falseNegatives);
     }
 
     double getInverseRecall() {
         // see Powers11
-        return ((double) trueNegatives) / (trueNegatives + falsePositives);
-    }
-
-    double getSensitivity() {
-        return getRecall();
-    }
-
-    double getSpecificity() {
-        return getInverseRecall();
+        return ((double) trueNegatives) / ((double) trueNegatives + (double) falsePositives);
     }
 
     double getMarkedness() {
@@ -184,9 +176,27 @@ public class MetricResult {
         // see Powers11, Matthews75
         // see https://en.wikipedia.org/wiki/Matthews_correlation_coefficient
         // see https://lettier.github.io/posts/2016-08-05-matthews-correlation-coefficient.html
+
+        // conversion to double to prevent integer overflow
+        double truePositives = getTruePositives();
+        double trueNegatives = getTrueNegatives();
+        double falsePositives = getFalsePositives();
+        double falseNegatives = getFalseNegatives();
+
         double numerator = (truePositives * trueNegatives) - (falsePositives * falseNegatives);
-        double denominator = Math.sqrt((truePositives + falsePositives) * (truePositives + falseNegatives) * (trueNegatives + falsePositives) * (trueNegatives + falseNegatives));
-        return numerator / denominator;
+        double denominatorSum = (truePositives + falsePositives) * (truePositives + falseNegatives) * (trueNegatives + falsePositives) * (trueNegatives + falseNegatives);
+        // "If any of the four sums in the denominator is zero, the denominator can be arbitrarily set to one; this results in a Matthews correlation coefficient of zero, which can be shown to be the correct limiting value."
+        double denominator = (denominatorSum == 0 ? 1 : Math.sqrt(denominatorSum));
+
+        double matthewsCorrelationCoefficient = numerator / denominator;
+
+        if (Util.lessThan(matthewsCorrelationCoefficient, 0.0) || Util.greaterThan(matthewsCorrelationCoefficient, 1.0)) {
+            String msg = "Matthews correlation coefficient must be in range [0.0, 1.0], but was " + matthewsCorrelationCoefficient;
+            logger.warning(msg);
+            throw new IllegalArgumentException(msg);
+        }
+
+        return matthewsCorrelationCoefficient;
     }
 
     double getFScore() {
