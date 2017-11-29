@@ -5,20 +5,26 @@ import de.unitrier.st.soposthistory.metricscomparison.MetricEvaluationPerPost;
 import de.unitrier.st.soposthistory.metricscomparison.MetricResult;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.junit.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class MetricsEvaluationTest {
+class MetricEvaluationTest {
     static Path pathToPostIdList = Paths.get("testdata", "gt_test", "post_ids.csv");
     static Path pathToPostHistory = Paths.get("testdata", "gt_test", "files");
     static Path pathToGroundTruth = Paths.get("testdata", "gt_test", "gt");
     static Path outputDir = Paths.get("testdata", "metrics_comparison");
+    static Path testOutputDir = Paths.get("testdata", "output");
+    private static Path pathToSamplesComparisonTestDir = Paths.get("testdata", "samples_comparison_test");
 
     @Test
     void testMetricEvaluationManager() {
@@ -152,6 +158,49 @@ class MetricsEvaluationTest {
             }
 
         } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void testAggregatedResultsManagers() {
+        ExecutorService threadPool = Executors.newFixedThreadPool(4);
+        List<MetricEvaluationManager> managers = MetricEvaluationManager.createManagersFromSampleDirectories(
+                pathToSamplesComparisonTestDir, testOutputDir, false
+        );
+        for (MetricEvaluationManager manager : managers) {
+            manager.addSimilarityMetric(
+                    MetricEvaluationManager.getDefaultSimilarityMetric("winnowingTwoGramOverlap", 0.3)
+            );
+            manager.addSimilarityMetric(
+                    MetricEvaluationManager.getDefaultSimilarityMetric("tokenJaccard", 0.6)
+            );
+            manager.addSimilarityMetric(
+                    MetricEvaluationManager.getDefaultSimilarityMetric("twoGramJaccard", 0.9)
+            );
+            // the following metric should produce failed comparisons
+            manager.addSimilarityMetric(
+                    MetricEvaluationManager.getDefaultSimilarityMetric("twoShingleOverlap", 0.6)
+            );
+
+            threadPool.execute(new Thread(manager));
+        }
+
+        threadPool.shutdown();
+        try {
+            threadPool.awaitTermination(1, TimeUnit.DAYS);
+
+            // output file aggregated over all samples
+            File outputFileAggregated= Paths.get(testOutputDir.toString(), "MetricComparison_aggregated.csv").toFile();
+            if (outputFileAggregated.exists()) {
+                if (!outputFileAggregated.delete()) {
+                    throw new IllegalStateException("Error while deleting output file: " + outputFileAggregated);
+                }
+            }
+
+            MetricEvaluationManager.aggregateAndWriteSampleResults(managers, outputFileAggregated);
+        } catch (InterruptedException e) {
+            threadPool.shutdownNow();
             e.printStackTrace();
         }
     }
