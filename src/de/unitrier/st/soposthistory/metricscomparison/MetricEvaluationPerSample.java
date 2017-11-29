@@ -134,10 +134,10 @@ public class MetricEvaluationPerSample extends LinkedList<MetricEvaluationPerPos
         // "PostCount", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections",
         // "TextBlockVersionCount", "PossibleConnectionsText",
         // "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailuresText",
-        // "PrecisionText", "RecallText", "SensitivityText", "SpecificityText", "FailureRateText",
+        // "PrecisionText", "RecallText", "InversePrecisionText", "InverseRecallText", "FailureRateText",
         // "CodeBlockVersionCount", "PossibleConnectionsCode",
         // "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailuresCode",
-        // "PrecisionCode", "RecallCode", "SensitivityCode", "SpecificityCode", "FailureRateCode"
+        // "PrecisionCode", "RecallCode", "InversePrecisionCode", "InverseRecallCode", "FailureRateCode"
         csvPrinterSample.printRecord(
                 similarityMetric.getType(),
                 similarityMetric.getName(),
@@ -171,8 +171,8 @@ public class MetricEvaluationPerSample extends LinkedList<MetricEvaluationPerPos
 
                 aggregatedResultText.getPrecision(),
                 aggregatedResultText.getRecall(),
-                aggregatedResultText.getSensitivity(),
-                aggregatedResultText.getSpecificity(),
+                aggregatedResultText.getInversePrecision(),
+                aggregatedResultText.getInverseRecall(),
                 aggregatedResultText.getFailureRate(),
 
                 aggregatedResultCode.getPostBlockVersionCount(),
@@ -186,8 +186,8 @@ public class MetricEvaluationPerSample extends LinkedList<MetricEvaluationPerPos
 
                 aggregatedResultCode.getPrecision(),
                 aggregatedResultCode.getRecall(),
-                aggregatedResultCode.getSensitivity(),
-                aggregatedResultCode.getSpecificity(),
+                aggregatedResultCode.getInversePrecision(),
+                aggregatedResultCode.getInverseRecall(),
                 aggregatedResultCode.getFailureRate()
         );
     }

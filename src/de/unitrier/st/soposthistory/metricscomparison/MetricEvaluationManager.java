@@ -85,7 +85,7 @@ public class MetricEvaluationManager implements Runnable {
 
         // configure CSV format for aggregated metric comparison results (per (metric, threshold) combination)
         csvFormatMetricEvaluationPerSample = CSVFormat.DEFAULT
-                .withHeader("MetricType", "Metric", "Threshold", "InformednessText", "MarkednessText", "MatthewsCorrelationText", "FScoreText", "RuntimeText", "InformednessCode", "MarkednessCode", "MatthewsCorrelationCode", "FScoreCode", "RuntimeCode", "PostCount", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections", "TextBlockVersionCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailuresText", "PrecisionText", "RecallText", "SensitivityText", "SpecificityText", "FailureRateText", "CodeBlockVersionCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailuresCode", "PrecisionCode", "RecallCode", "SensitivityCode", "SpecificityCode", "FailureRateCode")
+                .withHeader("MetricType", "Metric", "Threshold", "InformednessText", "MarkednessText", "MatthewsCorrelationText", "FScoreText", "RuntimeText", "InformednessCode", "MarkednessCode", "MatthewsCorrelationCode", "FScoreCode", "RuntimeCode", "PostCount", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections", "TextBlockVersionCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailuresText", "PrecisionText", "RecallText", "InversePrecisionText", "InverseRecallText", "FailureRateText", "CodeBlockVersionCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailuresCode", "PrecisionCode", "RecallCode", "InversePrecisionCode", "InverseRecallCode", "FailureRateCode")
                 .withDelimiter(';')
                 .withQuote('"')
                 .withQuoteMode(QuoteMode.MINIMAL)
@@ -496,10 +496,10 @@ public class MetricEvaluationManager implements Runnable {
                 // "PostCount", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections",
                 // "TextBlockVersionCount", "PossibleConnectionsText",
                 // "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailuresText",
-                // "PrecisionText", "RecallText", "SensitivityText", "SpecificityText", "FailureRateText",
+                // "PrecisionText", "RecallText", "InversePrecisionText", "InverseRecallText", "FailureRateText",
                 // "CodeBlockVersionCount", "PossibleConnectionsCode",
                 // "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailuresCode",
-                // "PrecisionCode", "RecallCode", "SensitivityCode", "SpecificityCode", "FailureRateCode"
+                // "PrecisionCode", "RecallCode", "InversePrecisionCode", "InverseRecallCode", "FailureRateCode"
                 csvPrinterAggregated.printRecord(
                         similarityMetric.getType(),
                         similarityMetric.getName(),
@@ -533,8 +533,8 @@ public class MetricEvaluationManager implements Runnable {
 
                         aggregatedResultText.getPrecision(),
                         aggregatedResultText.getRecall(),
-                        aggregatedResultText.getSensitivity(),
-                        aggregatedResultText.getSpecificity(),
+                        aggregatedResultText.getInversePrecision(),
+                        aggregatedResultText.getInverseRecall(),
                         aggregatedResultText.getFailureRate(),
 
                         aggregatedResultCode.getPostBlockVersionCount(),
@@ -548,8 +548,8 @@ public class MetricEvaluationManager implements Runnable {
 
                         aggregatedResultCode.getPrecision(),
                         aggregatedResultCode.getRecall(),
-                        aggregatedResultCode.getSensitivity(),
-                        aggregatedResultCode.getSpecificity(),
+                        aggregatedResultCode.getInversePrecision(),
+                        aggregatedResultCode.getInverseRecall(),
                         aggregatedResultCode.getFailureRate()
                 );
             }
