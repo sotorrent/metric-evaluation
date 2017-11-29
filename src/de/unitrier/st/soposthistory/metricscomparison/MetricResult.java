@@ -185,7 +185,7 @@ public class MetricResult {
         // see https://en.wikipedia.org/wiki/Matthews_correlation_coefficient
         // see https://lettier.github.io/posts/2016-08-05-matthews-correlation-coefficient.html
         double numerator = (truePositives * trueNegatives) - (falsePositives * falseNegatives);
-        double denominator = Math.sqrt((truePositives + falsePositives) * (truePositives + falseNegatives) * (trueNegatives + falsePositives) + (trueNegatives + falseNegatives));
+        double denominator = Math.sqrt((truePositives + falsePositives) * (truePositives + falseNegatives) * (trueNegatives + falsePositives) * (trueNegatives + falseNegatives));
         return numerator / denominator;
     }
 
