@@ -581,7 +581,7 @@ public class MetricEvaluationManager implements Runnable {
 
     private static void createSelectedSimilarityMetrics() {
         // add metrics selected after evaluation, with additional thresholds
-        for (double threshold=0.0; threshold<=1.0; threshold+=0.05) {
+        for (double threshold=0.0; threshold<=1.0; threshold+=0.01) {
             // text
             selectedSimilarityMetrics.add(new SimilarityMetric(
                     "cosineFourGramNormalizedBool",
