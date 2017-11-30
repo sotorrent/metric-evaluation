@@ -45,7 +45,7 @@ class Main {
         options.addOption(threadCountOption);
 
         Option defaultMetricsOption = new Option("d", "default-metrics", true, "test default metrics");
-        threadCountOption.setRequired(true);
+        defaultMetricsOption.setRequired(true);
         options.addOption(defaultMetricsOption);
 
         CommandLineParser commandLineParser = new DefaultParser();
