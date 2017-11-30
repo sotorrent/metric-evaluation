@@ -13,11 +13,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 public class MetricEvaluationManager implements Runnable {
-    private static volatile int threadIdCounter = 0;
+    private static AtomicInteger threadIdCounter = new AtomicInteger(0);
 
     private static Logger logger = null;
     public static final CSVFormat csvFormatPostIds;
@@ -190,7 +191,7 @@ public class MetricEvaluationManager implements Runnable {
     }
 
     public MetricEvaluationManager initialize() {
-        this.threadId = ++threadIdCounter;
+        this.threadId = threadIdCounter.incrementAndGet();
 
         if (addDefaultSimilarityMetrics) {
             addDefaultSimilarityMetrics();
