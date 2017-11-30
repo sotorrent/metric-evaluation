@@ -1,0 +1,7 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+23046259;62789118;1;1;null;1;""
+23046259;62794097;1;1;1;null;""
+23046259;62789118;2;2;null;2;""
+23046259;62794097;2;2;2;null;""
+23046259;62789118;1;3;null;3;""
+23046259;62794097;1;3;3;null;""

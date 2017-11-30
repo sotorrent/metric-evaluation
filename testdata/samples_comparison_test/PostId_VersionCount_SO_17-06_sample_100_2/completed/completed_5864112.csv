@@ -1,0 +1,5 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+5864112;12646283;1;1;null;1;""
+5864112;12646307;1;1;1;null;""
+5864112;12646283;2;2;null;2;""
+5864112;12646307;2;2;2;null;""

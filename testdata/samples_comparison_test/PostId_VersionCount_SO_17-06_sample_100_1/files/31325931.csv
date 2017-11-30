@@ -1,0 +1,3 @@
+Id;PostId;UserId;PostHistoryTypeId;RevisionGUID;CreationDate;Text;UserDisplayName;Comment
+94735920;31325931;5100053;2;64e8fba0-1354-4b2c-9c5d-dc8fa7f4b3d8;2015-07-09 18:53:47.0;I also ran into this. After updating all packages in my solution I started to get this. The <import /> was there but it was poiting to a different version. So check that too.;;
+94736611;31325931;5100053;5;4b96ba8f-c8f2-4a2a-b3fc-71dadd98c786;2015-07-09 19:04:05.0;I also ran into this. After updating all packages in my solution I started to get this. The `<import />` was there but it was poiting to a different version. So check that too.;;added 2 characters in body

@@ -1,0 +1,7 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+33058542;101540750;1;1;null;1;""
+33058542;101561280;1;1;1;null;""
+33058542;101540750;2;2;null;2;""
+33058542;101561280;2;2;2;null;""
+33058542;101540750;1;3;null;3;""
+33058542;101561280;1;3;3;null;""

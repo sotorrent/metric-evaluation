@@ -1,0 +1,7 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+502437;833091;1;1;null;1;""
+502437;69641534;1;1;1;null;""
+502437;833091;2;2;null;2;""
+502437;69641534;2;2;2;null;""
+502437;833091;1;3;null;3;""
+502437;69641534;1;3;3;null;""

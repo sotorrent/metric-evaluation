@@ -1,0 +1,3 @@
+Id;PostId;UserId;PostHistoryTypeId;RevisionGUID;CreationDate;Text;UserDisplayName;Comment
+37092787;15281065;2145991;2;8899fd95-2c6b-476f-a96c-ee0fe7c4f3c5;2013-03-07 20:26:50.0;"I think the reason for the ""premature"" device closure is that you need to call ""snd_pcm_drain(handle);"" prior to ""snd_pcm_close(handle);"" to ensure that all data is played before the device is closed.";;
+37093936;15281065;376474;5;2940e3a1-f9a3-4c52-af6f-706bb770fe8a;2013-03-07 20:53:16.0;"I think the reason for the ""premature"" device closure is that you need to call `snd_pcm_drain(handle);` prior to `snd_pcm_close(handle);` to ensure that all data is played before the device is closed.";;Added code ticks

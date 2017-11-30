@@ -1,0 +1,5 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+30932556;93191522;2;1;null;1;""
+30932556;93192923;2;1;1;null;""
+30932556;93191522;1;2;null;2;""
+30932556;93192923;1;2;2;null;""

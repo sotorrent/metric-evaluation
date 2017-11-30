@@ -1,0 +1,7 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+3704805;7751964;1;1;null;1;""
+3704805;26574982;1;1;1;null;""
+3704805;7751964;2;2;null;2;""
+3704805;26574982;2;2;2;null;""
+3704805;7751964;1;3;null;3;""
+3704805;26574982;1;3;3;null;""

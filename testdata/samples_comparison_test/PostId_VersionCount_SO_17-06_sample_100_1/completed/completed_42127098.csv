@@ -1,0 +1,9 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+42127098;137943798;1;1;null;1;""
+42127098;137947728;1;1;1;null;""
+42127098;137943798;2;2;null;2;""
+42127098;137947728;2;2;2;null;""
+42127098;137943798;1;3;null;3;""
+42127098;137947728;1;3;3;null;""
+42127098;137947728;2;4;null;null;""
+42127098;137947728;1;5;null;null;""

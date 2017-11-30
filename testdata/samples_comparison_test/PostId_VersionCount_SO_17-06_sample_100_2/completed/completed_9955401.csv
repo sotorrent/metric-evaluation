@@ -1,0 +1,9 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+9955401;22779939;1;1;null;1;""
+9955401;22780007;1;1;1;null;""
+9955401;22779939;2;2;null;2;""
+9955401;22780007;2;2;2;null;""
+9955401;22779939;1;3;null;3;""
+9955401;22780007;1;3;3;null;""
+9955401;22779939;2;4;null;4;""
+9955401;22780007;2;4;4;null;""

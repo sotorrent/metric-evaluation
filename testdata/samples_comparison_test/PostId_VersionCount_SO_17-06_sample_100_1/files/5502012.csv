@@ -1,0 +1,3 @@
+Id;PostId;UserId;PostHistoryTypeId;RevisionGUID;CreationDate;Text;UserDisplayName;Comment
+11797120;5502012;253056;2;c759eaef-0528-45ae-a4a1-ec386422f978;2011-03-31 15:06:24.0;"You just need something like this:&#xD;&#xA;&#xD;&#xA;    char msb = ...; // read MSB&#xD;&#xA;    char lsb = ...; // read LSB&#xD;&#xA;    int val = (msb << 8) | lsb; // combine MSB and LSB to make an int&#xD;&#xA;";;
+11811932;5502012;134633;5;590c9778-cd3c-47e2-97cf-bdaaa52c19b2;2011-04-01 02:13:24.0;"You just need something like this:&#xD;&#xA;&#xD;&#xA;    unsigned char msb = ...; // read MSB&#xD;&#xA;    unsigned char lsb = ...; // read LSB&#xD;&#xA;    int val = (msb << 8) | lsb; // combine MSB and LSB to make an int&#xD;&#xA;";;added 18 characters in body

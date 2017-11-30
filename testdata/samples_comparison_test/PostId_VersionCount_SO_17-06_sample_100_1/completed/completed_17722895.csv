@@ -1,0 +1,7 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+17722895;43911066;1;1;null;null;" Nicht richtig unterteilt.  Keine Verbindung möglich"
+17722895;43913433;1;1;null;1;""
+17722895;43913435;1;1;1;null;""
+17722895;43913433;2;2;null;2;""
+17722895;43913435;2;2;2;null;""
+17722895;43913433;1;3;null;null;""
