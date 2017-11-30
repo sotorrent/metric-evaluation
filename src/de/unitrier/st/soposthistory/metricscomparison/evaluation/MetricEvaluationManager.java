@@ -1,4 +1,4 @@
-package de.unitrier.st.soposthistory.metricscomparison;
+package de.unitrier.st.soposthistory.metricscomparison.evaluation;
 
 import de.unitrier.st.soposthistory.gt.PostGroundTruth;
 import de.unitrier.st.soposthistory.version.PostVersionList;
@@ -20,16 +20,17 @@ public class MetricEvaluationManager implements Runnable {
     private static volatile int threadIdCounter = 0;
 
     private static Logger logger = null;
-    static final CSVFormat csvFormatPostIds;
-    static final CSVFormat csvFormatMetricEvaluationPerPost;
+    public static final CSVFormat csvFormatPostIds;
+    public static final CSVFormat csvFormatMetricEvaluationPerPost;
     public static final CSVFormat csvFormatMetricEvaluationPerVersion;
     private static final CSVFormat csvFormatMetricEvaluationPerSample;
     private static final Path DEFAULT_OUTPUT_DIR = Paths.get("output");
     private static final List<SimilarityMetric> defaultSimilarityMetrics = new LinkedList<>();
+    private static final List<SimilarityMetric> selectedSimilarityMetrics = new LinkedList<>();
 
     private int threadId;
     private String sampleName;
-    private boolean addDefaultMetricsAndThresholds;
+    private boolean addDefaultSimilarityMetrics;
     private boolean randomizeOrder;
     private boolean validate;
     private int numberOfRepetitions;
@@ -93,12 +94,15 @@ public class MetricEvaluationManager implements Runnable {
                 .withNullString("null");
 
         // add default similarity metrics
-        createDefaultSimilarityMetricsAndThresholds();
+        createDefaultSimilarityMetrics();
+
+        // add selected similarity metrics
+        createSelectedSimilarityMetrics();
     }
 
     private MetricEvaluationManager(String sampleName, Path postIdPath,
                                     Path postHistoryPath, Path groundTruthPath, Path outputDirPath,
-                                    boolean validate, boolean addDefaultMetricsAndThresholds, boolean randomizeOrder,
+                                    boolean validate, boolean addDefaultSimilarityMetrics, boolean randomizeOrder,
                                     int numberOfRepetitions, int threadCount) {
 
         this.sampleName = sampleName;
@@ -109,7 +113,7 @@ public class MetricEvaluationManager implements Runnable {
         this.outputDirPath = outputDirPath;
 
         this.validate = validate;
-        this.addDefaultMetricsAndThresholds = addDefaultMetricsAndThresholds;
+        this.addDefaultSimilarityMetrics = addDefaultSimilarityMetrics;
         this.randomizeOrder = randomizeOrder;
         this.numberOfRepetitions = numberOfRepetitions;
         this.threadCount = threadCount;
@@ -139,57 +143,57 @@ public class MetricEvaluationManager implements Runnable {
 
     public MetricEvaluationManager withName(String name) {
         return new MetricEvaluationManager(name, postIdPath, postHistoryPath, groundTruthPath, outputDirPath,
-                validate, addDefaultMetricsAndThresholds, randomizeOrder, numberOfRepetitions, threadCount
+                validate, addDefaultSimilarityMetrics, randomizeOrder, numberOfRepetitions, threadCount
         );
     }
 
     public MetricEvaluationManager withInputPaths(Path postIdPath, Path postHistoryPath, Path groundTruthPath) {
         return new MetricEvaluationManager(sampleName, postIdPath, postHistoryPath, groundTruthPath, outputDirPath,
-                validate, addDefaultMetricsAndThresholds, randomizeOrder, numberOfRepetitions, threadCount
+                validate, addDefaultSimilarityMetrics, randomizeOrder, numberOfRepetitions, threadCount
         );
     }
 
     public MetricEvaluationManager withOutputDirPath(Path outputDirPath) {
         return new MetricEvaluationManager(sampleName, postIdPath, postHistoryPath, groundTruthPath, outputDirPath,
-                validate, addDefaultMetricsAndThresholds, randomizeOrder, numberOfRepetitions, threadCount
+                validate, addDefaultSimilarityMetrics, randomizeOrder, numberOfRepetitions, threadCount
         );
     }
 
     public MetricEvaluationManager withValidate(boolean validate) {
         return new MetricEvaluationManager(sampleName, postIdPath, postHistoryPath, groundTruthPath, outputDirPath,
-                validate, addDefaultMetricsAndThresholds, randomizeOrder, numberOfRepetitions, threadCount
+                validate, addDefaultSimilarityMetrics, randomizeOrder, numberOfRepetitions, threadCount
         );
     }
 
-    public MetricEvaluationManager withAddDefaultMetricsAndThresholds(boolean addDefaultMetricsAndThresholds) {
+    public MetricEvaluationManager withDefaultSimilarityMetrics(boolean addDefaultSimilarityMetrics) {
         return new MetricEvaluationManager(sampleName, postIdPath, postHistoryPath, groundTruthPath, outputDirPath,
-                validate, addDefaultMetricsAndThresholds, randomizeOrder, numberOfRepetitions, threadCount
+                validate, addDefaultSimilarityMetrics, randomizeOrder, numberOfRepetitions, threadCount
         );
     }
 
     public MetricEvaluationManager withRandomizeOrder(boolean randomizeOrder) {
         return new MetricEvaluationManager(sampleName, postIdPath, postHistoryPath, groundTruthPath, outputDirPath,
-                validate, addDefaultMetricsAndThresholds, randomizeOrder, numberOfRepetitions, threadCount
+                validate, addDefaultSimilarityMetrics, randomizeOrder, numberOfRepetitions, threadCount
         );
     }
 
     public MetricEvaluationManager withNumberOfRepetitions(int numberOfRepetitions) {
         return new MetricEvaluationManager(sampleName, postIdPath, postHistoryPath, groundTruthPath, outputDirPath,
-                validate, addDefaultMetricsAndThresholds, randomizeOrder, numberOfRepetitions, threadCount
+                validate, addDefaultSimilarityMetrics, randomizeOrder, numberOfRepetitions, threadCount
         );
     }
 
     public MetricEvaluationManager withThreadCount(int threadCount) {
         return new MetricEvaluationManager(sampleName, postIdPath, postHistoryPath, groundTruthPath, outputDirPath,
-                validate, addDefaultMetricsAndThresholds, randomizeOrder, numberOfRepetitions, threadCount
+                validate, addDefaultSimilarityMetrics, randomizeOrder, numberOfRepetitions, threadCount
         );
     }
 
     public MetricEvaluationManager initialize() {
         this.threadId = ++threadIdCounter;
 
-        if (addDefaultMetricsAndThresholds) {
-            addDefaultSimilarityMetricsAndThresholds();
+        if (addDefaultSimilarityMetrics) {
+            addDefaultSimilarityMetrics();
         }
 
         // ensure that input file exists (directories are tested in read methods)
@@ -249,8 +253,12 @@ public class MetricEvaluationManager implements Runnable {
         return this;
     }
 
-    private void addDefaultSimilarityMetricsAndThresholds() {
+    private void addDefaultSimilarityMetrics() {
         similarityMetrics.addAll(defaultSimilarityMetrics);
+    }
+
+    public void addSelectedSimilarityMetrics() {
+        similarityMetrics.addAll(selectedSimilarityMetrics);
     }
 
     public boolean validate() {
@@ -393,7 +401,7 @@ public class MetricEvaluationManager implements Runnable {
         throw new IllegalArgumentException(msg);
     }
 
-    String getSampleName() {
+    public String getSampleName() {
         return sampleName;
     }
 
@@ -434,7 +442,7 @@ public class MetricEvaluationManager implements Runnable {
                                 .withName(name)
                                 .withInputPaths(pathToPostIdList, pathToPostHistory, pathToGroundTruth)
                                 .withOutputDirPath(outputDir)
-                                .withAddDefaultMetricsAndThresholds(addDefaultMetricsAndThresholds)
+                                .withDefaultSimilarityMetrics(addDefaultMetricsAndThresholds)
                                 .initialize();
 
                         managers.add(manager);
@@ -571,8 +579,125 @@ public class MetricEvaluationManager implements Runnable {
         throw new IllegalArgumentException(msg);
     }
 
-    private static void createDefaultSimilarityMetricsAndThresholds() {
-        List<Double> similarityThresholds = Arrays.asList(0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9); // TODO: add also 0.35, 0.45, 0.55, 0.65, 0.75, 0.85
+    private static void createSelectedSimilarityMetrics() {
+        // add metrics selected after evaluation, with additional thresholds
+        for (double threshold=0.0; threshold<=1.0; threshold+=0.05) {
+            // text
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "cosineFourGramNormalizedBool",
+                    de.unitrier.st.stringsimilarity.profile.Variants::cosineFourGramNormalizedBool,
+                    SimilarityMetric.MetricType.PROFILE,
+                    threshold
+            ));
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                            "cosineFourGramNormalizedNormalizedTermFrequency",
+                            de.unitrier.st.stringsimilarity.profile.Variants::cosineFourGramNormalizedNormalizedTermFrequency,
+                            SimilarityMetric.MetricType.PROFILE,
+                            threshold
+            ));
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "cosineTokenNormalizedBool",
+                    de.unitrier.st.stringsimilarity.profile.Variants::cosineTokenNormalizedBool,
+                    SimilarityMetric.MetricType.PROFILE,
+                    threshold
+            ));
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "cosineThreeGramNormalizedNormalizedTermFrequency",
+                    de.unitrier.st.stringsimilarity.profile.Variants::cosineThreeGramNormalizedNormalizedTermFrequency,
+                    SimilarityMetric.MetricType.PROFILE,
+                    threshold
+            ));
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "cosineThreeGramNormalizedBool",
+                    de.unitrier.st.stringsimilarity.profile.Variants::cosineThreeGramNormalizedBool,
+                    SimilarityMetric.MetricType.PROFILE,
+                    threshold
+            ));
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "cosineTwoShingleNormalizedBool",
+                    de.unitrier.st.stringsimilarity.profile.Variants::cosineTwoShingleNormalizedBool,
+                    SimilarityMetric.MetricType.PROFILE,
+                    threshold
+            ));
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "cosineFiveGramNormalizedBool",
+                    de.unitrier.st.stringsimilarity.profile.Variants::cosineFiveGramNormalizedBool,
+                    SimilarityMetric.MetricType.PROFILE,
+                    threshold
+            ));
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "cosineTokenNormalizedNormalizedTermFrequency",
+                    de.unitrier.st.stringsimilarity.profile.Variants::cosineTokenNormalizedNormalizedTermFrequency,
+                    SimilarityMetric.MetricType.PROFILE,
+                    threshold
+            ));
+
+            // code
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "cosineFiveGramNormalizedNormalizedTermFrequency",
+                    de.unitrier.st.stringsimilarity.profile.Variants::cosineFiveGramNormalizedNormalizedTermFrequency,
+                    SimilarityMetric.MetricType.PROFILE,
+                    threshold
+            ));
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "cosineFourGramNormalizedBool",
+                    de.unitrier.st.stringsimilarity.profile.Variants::cosineFourGramNormalizedBool,
+                    SimilarityMetric.MetricType.PROFILE,
+                    threshold
+            ));
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "manhattanTokenNormalized",
+                    de.unitrier.st.stringsimilarity.profile.Variants::manhattanTokenNormalized,
+                    SimilarityMetric.MetricType.PROFILE,
+                    threshold
+            ));
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "cosineTokenNormalizedBool",
+                    de.unitrier.st.stringsimilarity.profile.Variants::cosineTokenNormalizedBool,
+                    SimilarityMetric.MetricType.PROFILE,
+                    threshold
+            ));
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "cosineTokenNormalizedNormalizedTermFrequency",
+                    de.unitrier.st.stringsimilarity.profile.Variants::cosineTokenNormalizedNormalizedTermFrequency,
+                    SimilarityMetric.MetricType.PROFILE,
+                    threshold
+            ));
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "fourGramDiceNormalizedPadding",
+                    de.unitrier.st.stringsimilarity.set.Variants::fourGramDiceNormalizedPadding,
+                    SimilarityMetric.MetricType.SET,
+                    threshold
+            ));
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "fiveGramDiceNormalizedPadding",
+                    de.unitrier.st.stringsimilarity.set.Variants::fiveGramDiceNormalizedPadding,
+                    SimilarityMetric.MetricType.SET,
+                    threshold
+            ));
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "winnowingFourGramDice",
+                    de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingFourGramDice,
+                    SimilarityMetric.MetricType.FINGERPRINT,
+                    threshold
+            ));
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "winnowingFiveGramDice",
+                    de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingFiveGramDice,
+                    SimilarityMetric.MetricType.FINGERPRINT,
+                    threshold
+            ));
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "winnowingThreeGramDice",
+                    de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingThreeGramDice,
+                    SimilarityMetric.MetricType.FINGERPRINT,
+                    threshold
+            ));
+        }
+    }
+
+    private static void createDefaultSimilarityMetrics() {
+        List<Double> similarityThresholds = Arrays.asList(0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9);
 
         for (double similarityThreshold : similarityThresholds) {
 

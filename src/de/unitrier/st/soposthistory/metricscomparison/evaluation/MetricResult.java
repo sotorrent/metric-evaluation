@@ -1,4 +1,4 @@
-package de.unitrier.st.soposthistory.metricscomparison;
+package de.unitrier.st.soposthistory.metricscomparison.evaluation;
 
 import de.unitrier.st.util.Util;
 

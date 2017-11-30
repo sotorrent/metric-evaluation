@@ -1,8 +1,8 @@
 package de.unitrier.st.soposthistory.metricscomparison.tests;
 
-import de.unitrier.st.soposthistory.metricscomparison.MetricEvaluationManager;
-import de.unitrier.st.soposthistory.metricscomparison.MetricEvaluationPerPost;
-import de.unitrier.st.soposthistory.metricscomparison.MetricResult;
+import de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricEvaluationManager;
+import de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricEvaluationPerPost;
+import de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricResult;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -32,7 +32,7 @@ class MetricEvaluationTest {
                 .withName("TestSample")
                 .withInputPaths(pathToPostIdList, pathToPostHistory, pathToGroundTruth)
                 .withOutputDirPath(outputDir)
-                .withAddDefaultMetricsAndThresholds(false)
+                .withDefaultSimilarityMetrics(false)
                 .initialize();
 
         assertEquals(manager.getPostVersionLists().size(), manager.getPostGroundTruths().size());

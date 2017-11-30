@@ -1,6 +1,9 @@
 package de.unitrier.st.soposthistory.metricscomparison.tests;
 
-import de.unitrier.st.soposthistory.metricscomparison.*;
+import de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricEvaluationManager;
+import de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricEvaluationPerPost;
+import de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricResult;
+import de.unitrier.st.soposthistory.metricscomparison.statistics.Statistics;
 import de.unitrier.st.soposthistory.version.PostVersionList;
 import de.unitrier.st.util.Util;
 import org.apache.commons.csv.CSVParser;
@@ -17,7 +20,7 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
-import static de.unitrier.st.soposthistory.metricscomparison.Statistics.rootPathToGTSamples;
+import static de.unitrier.st.soposthistory.metricscomparison.statistics.Statistics.rootPathToGTSamples;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.junit.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -371,7 +374,7 @@ class DisabledTests {
                         Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "files"),
                         Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "completed"))
                 .withOutputDirPath(MetricEvaluationTest.testOutputDir)
-                .withAddDefaultMetricsAndThresholds(false)
+                .withDefaultSimilarityMetrics(false)
                 .initialize();
         assertEquals(manager.getPostVersionLists().size(), manager.getPostGroundTruths().size());
         assertThat(manager.getPostVersionLists().keySet(), is(manager.getPostGroundTruths().keySet()));
@@ -398,7 +401,7 @@ class DisabledTests {
                         Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_17_06_sample_edited_gt", "files"),
                         Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_17_06_sample_edited_gt", "completed"))
                 .withOutputDirPath(Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_17_06_sample_edited_gt", "output"))
-                .withAddDefaultMetricsAndThresholds(false)
+                .withDefaultSimilarityMetrics(false)
                 .initialize();
         assertEquals(manager.getPostVersionLists().size(), manager.getPostGroundTruths().size());
         assertThat(manager.getPostVersionLists().keySet(), is(manager.getPostGroundTruths().keySet()));

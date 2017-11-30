@@ -1,4 +1,4 @@
-package de.unitrier.st.soposthistory.metricscomparison;
+package de.unitrier.st.soposthistory.metricscomparison.statistics;
 
 import de.unitrier.st.soposthistory.blocks.CodeBlockVersion;
 import de.unitrier.st.soposthistory.blocks.PostBlockVersion;
@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
-import static de.unitrier.st.soposthistory.metricscomparison.MetricEvaluationManager.*;
+import static de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricEvaluationManager.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 

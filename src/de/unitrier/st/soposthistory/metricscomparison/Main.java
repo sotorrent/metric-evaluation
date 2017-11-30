@@ -1,10 +1,10 @@
 package de.unitrier.st.soposthistory.metricscomparison;
 
+import de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricEvaluationManager;
 import org.apache.commons.cli.*;
 
 import de.unitrier.st.util.Util;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -44,6 +44,10 @@ class Main {
         threadCountOption.setRequired(true);
         options.addOption(threadCountOption);
 
+        Option defaultMetricsOption = new Option("d", "default-metrics", true, "test default metrics");
+        threadCountOption.setRequired(true);
+        options.addOption(defaultMetricsOption);
+
         CommandLineParser commandLineParser = new DefaultParser();
         HelpFormatter commandLineFormatter = new HelpFormatter();
         CommandLine commandLine;
@@ -60,17 +64,24 @@ class Main {
         Path samplesDir = Paths.get(commandLine.getOptionValue("samples-dir"));
         Path outputDir = Paths.get(commandLine.getOptionValue("output-dir"));
         int threadCount = Integer.parseInt(commandLine.getOptionValue("thread-count"));
+        boolean defaultMetrics = Boolean.parseBoolean(commandLine.getOptionValue("default-metrics"));
 
         logger.info("Creating thread pool with at most " + threadCount + " threads...");
         // it is recommended to process only one sample at a time to prevent a bias in the runtime measurements
         ExecutorService threadPool = Executors.newFixedThreadPool(threadCount);
 
         List<MetricEvaluationManager> managers = MetricEvaluationManager.createManagersFromSampleDirectories(
-                samplesDir, outputDir, true
+                samplesDir, outputDir, defaultMetrics
         );
 
         for (MetricEvaluationManager manager : managers) {
             logger.info("Adding manager for sample " + manager.getSampleName() + " to thread pool...");
+
+            if (!defaultMetrics) {
+                logger.info("Adding selected metrics to manager for sample " + manager.getSampleName() + "...");
+                manager.addSelectedSimilarityMetrics();
+            }
+
             threadPool.execute(new Thread(manager));
         }
 

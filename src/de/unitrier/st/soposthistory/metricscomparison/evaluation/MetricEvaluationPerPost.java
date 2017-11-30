@@ -1,4 +1,4 @@
-package de.unitrier.st.soposthistory.metricscomparison;
+package de.unitrier.st.soposthistory.metricscomparison.evaluation;
 
 import com.google.common.base.Stopwatch;
 import de.unitrier.st.soposthistory.Config;
