@@ -148,18 +148,18 @@ class DisabledTests {
                     }
                 } else {
                     MetricResult resultsText = tmpMetricEvaluationPerPost.getResultsText(postHistoryId);
-                    assertEquals(truePositivesText, new Integer(resultsText.getTruePositives()));
-                    assertEquals(trueNegativesText, new Integer(resultsText.getPostBlockVersionCount() - resultsText.getTruePositives() - resultsText.getFalsePositives() - resultsText.getFalseNegatives()));
-                    assertEquals(trueNegativesText, new Integer(resultsText.getPostBlockVersionCount() - resultsText.getTruePositives() - resultsText.getFalseNegatives()));
-                    assertEquals(falsePositivesText, new Integer(resultsText.getFalsePositives()));
-                    assertEquals(falseNegativesText, new Integer(resultsText.getFalseNegatives()));
+                    assertEquals(truePositivesText, Integer.valueOf(resultsText.getTruePositives()));
+                    assertEquals(trueNegativesText, Integer.valueOf(resultsText.getPostBlockVersionCount() - resultsText.getTruePositives() - resultsText.getFalsePositives() - resultsText.getFalseNegatives()));
+                    assertEquals(trueNegativesText, Integer.valueOf(resultsText.getPostBlockVersionCount() - resultsText.getTruePositives() - resultsText.getFalseNegatives()));
+                    assertEquals(falsePositivesText, Integer.valueOf(resultsText.getFalsePositives()));
+                    assertEquals(falseNegativesText, Integer.valueOf(resultsText.getFalseNegatives()));
 
                     MetricResult resultsCode = tmpMetricEvaluationPerPost.getResultsCode(postHistoryId);
-                    assertEquals(truePositivesCode, new Integer(resultsCode.getTruePositives()));
-                    assertEquals(trueNegativesCode, new Integer(resultsCode.getPostBlockVersionCount() - resultsCode.getTruePositives() - resultsCode.getFalsePositives() - resultsCode.getFalseNegatives()));
-                    assertEquals(trueNegativesCode, new Integer(resultsCode.getPostBlockVersionCount() - resultsCode.getTruePositives() - resultsCode.getFalseNegatives()));
-                    assertEquals(falsePositivesCode, new Integer(resultsCode.getFalsePositives()));
-                    assertEquals(falseNegativesCode, new Integer(resultsCode.getFalseNegatives()));
+                    assertEquals(truePositivesCode, Integer.valueOf(resultsCode.getTruePositives()));
+                    assertEquals(trueNegativesCode, Integer.valueOf(resultsCode.getPostBlockVersionCount() - resultsCode.getTruePositives() - resultsCode.getFalsePositives() - resultsCode.getFalseNegatives()));
+                    assertEquals(trueNegativesCode, Integer.valueOf(resultsCode.getPostBlockVersionCount() - resultsCode.getTruePositives() - resultsCode.getFalseNegatives()));
+                    assertEquals(falsePositivesCode, Integer.valueOf(resultsCode.getFalsePositives()));
+                    assertEquals(falseNegativesCode, Integer.valueOf(resultsCode.getFalseNegatives()));
                 }
             }
         } catch (InterruptedException | IOException e) {
