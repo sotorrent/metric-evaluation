@@ -210,7 +210,7 @@ public class MetricResult {
         double failureRate = possibleConnections == 0 ? 0.0 : failedPredecessorComparisons / possibleConnections;
 
         if (Util.lessThan(failureRate, 0.0) || Util.greaterThan(failureRate, 1.0)) {
-            String msg = "Failure rate must be in range [0.0, 1.0], but was " + failureRate;
+            String msg = similarityMetric + ": Failure rate must be in range [0.0, 1.0], but was " + failureRate;
             logger.warning(msg);
             throw new IllegalArgumentException(msg);
         }
