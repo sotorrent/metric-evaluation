@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.junit.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MetricEvaluationTest {
     static Path pathToPostIdList = Paths.get("testdata", "gt_test", "post_ids.csv");
@@ -46,6 +47,7 @@ class MetricEvaluationTest {
         managerThread.start();
         try {
             managerThread.join();
+            assertTrue(manager.isFinished()); // assert that execution of manager successfully finished
 
             List<Integer> postHistoryIds_3758880 = manager.getPostGroundTruths().get(3758880).getPostHistoryIds();
             MetricEvaluationPerPost evaluation_a_3758880 = manager.getMetricEvaluation(3758880, "fourGramOverlap", 0.6);
@@ -189,6 +191,10 @@ class MetricEvaluationTest {
         threadPool.shutdown();
         try {
             threadPool.awaitTermination(1, TimeUnit.DAYS);
+
+            for (MetricEvaluationManager manager : managers) {
+                assertTrue(manager.isFinished()); // assert that execution of manager successfully finished
+            }
 
             // output file aggregated over all samples
             File outputFileAggregated= Paths.get(testOutputDir.toString(), "MetricComparison_aggregated.csv").toFile();

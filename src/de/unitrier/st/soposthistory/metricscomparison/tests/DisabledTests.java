@@ -3,6 +3,7 @@ package de.unitrier.st.soposthistory.metricscomparison.tests;
 import de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricEvaluationManager;
 import de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricEvaluationPerPost;
 import de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricResult;
+import de.unitrier.st.soposthistory.metricscomparison.evaluation.SimilarityMetric;
 import de.unitrier.st.soposthistory.metricscomparison.statistics.Statistics;
 import de.unitrier.st.soposthistory.version.PostVersionList;
 import de.unitrier.st.util.Util;
@@ -387,6 +388,7 @@ class DisabledTests {
         managerThread.start();
         try {
             managerThread.join();
+            assertTrue(manager.isFinished()); // assert that execution of manager successfully finished
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -427,6 +429,41 @@ class DisabledTests {
         managerThread.start();
         try {
             managerThread.join();
+            assertTrue(manager.isFinished()); // assert that execution of manager successfully finished
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void testMetricEvaluationManagerWithUnclearMatching() {
+        MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
+                .withName("TestUnclearMatching")
+                .withInputPaths(
+                        Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17_06_sample_unclear_matching", "PostId_VersionCount_SO_17_06_sample_unclear_matching.csv"),
+                        Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17_06_sample_unclear_matching", "files"),
+                        Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17_06_sample_unclear_matching", "completed"))
+                .withOutputDirPath(MetricEvaluationTest.testOutputDir)
+                .withDefaultSimilarityMetrics(false)
+                .withNumberOfRepetitions(1)
+                .initialize();
+        assertEquals(manager.getPostVersionLists().size(), manager.getPostGroundTruths().size());
+        assertThat(manager.getPostVersionLists().keySet(), is(manager.getPostGroundTruths().keySet()));
+
+        // lead to "WARNING: (threeShingleJaccard; 0.8): Failure rate must be in range [0.0, 1.0], but was 3.0"
+        // when aggregating results
+        manager.addSimilarityMetric(new SimilarityMetric(
+                "threeShingleJaccard",
+                de.unitrier.st.stringsimilarity.set.Variants::threeShingleJaccard,
+                SimilarityMetric.MetricType.SET,
+                0.8
+        ));
+
+        Thread managerThread = new Thread(manager);
+        managerThread.start();
+        try {
+            managerThread.join();
+            assertTrue(manager.isFinished()); // assert that execution of manager successfully finished
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

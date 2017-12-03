@@ -50,6 +50,7 @@ public class MetricEvaluationManager implements Runnable {
     private List<MetricEvaluationPerSample> metricEvaluationsPerSample;
 
     private boolean initialized;
+    private boolean finished; // flag used to check if end of run method was reached
 
     static {
         // configure logger
@@ -127,6 +128,7 @@ public class MetricEvaluationManager implements Runnable {
         this.metricEvaluationsPerSample = new LinkedList<>();
 
         this.initialized = false;
+        this.finished = false;
     }
 
     public static final MetricEvaluationManager DEFAULT = new MetricEvaluationManager(
@@ -325,6 +327,9 @@ public class MetricEvaluationManager implements Runnable {
         logger.info("Thread " + threadId + ": Saving results for sample " + sampleName + "...");
         writeToCSV();
         logger.info("Thread " + threadId + ": Results saved.");
+
+        this.finished = true;
+        logger.info("Thread " + threadId + ": Finished.");
     }
 
     private void writeToCSV() {
@@ -404,6 +409,10 @@ public class MetricEvaluationManager implements Runnable {
 
     public String getSampleName() {
         return sampleName;
+    }
+
+    public boolean isFinished() {
+        return finished;
     }
 
     /*
