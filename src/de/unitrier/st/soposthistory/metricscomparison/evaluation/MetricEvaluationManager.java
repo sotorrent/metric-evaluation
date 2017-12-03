@@ -508,19 +508,8 @@ public class MetricEvaluationManager implements Runnable {
                 MetricResult aggregatedResultText = aggregatedMetricResultsText.get(similarityMetric);
                 MetricResult aggregatedResultCode = aggregatedMetricResultsCode.get(similarityMetric);
 
-                if (aggregatedResultText.getPostCount() != aggregatedResultCode.getPostCount()) {
-                    String msg = "Inconsistent post count (text: " + aggregatedResultText.getPostCount() + "; code: "
-                            + aggregatedResultCode.getPostCount() + ")";
-                    logger.warning(msg);
-                    throw new IllegalStateException(msg);
-                }
-
-                if (aggregatedResultText.getPostVersionCount() != aggregatedResultCode.getPostVersionCount()) {
-                    String msg = "Inconsistent post version count (text: " + aggregatedResultText.getPostVersionCount() + "; code: "
-                            + aggregatedResultCode.getPostVersionCount() + ")";
-                    logger.warning(msg);
-                    throw new IllegalStateException(msg);
-                }
+                // validate results
+                MetricResult.validate(aggregatedResultText, aggregatedResultCode);
 
                 // "MetricType", "Metric", "Threshold",
                 // "InformednessText", "MarkednessText", "MatthewsCorrelationText", "FScoreText", "RuntimeText",

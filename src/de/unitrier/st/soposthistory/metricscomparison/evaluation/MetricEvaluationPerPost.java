@@ -251,6 +251,7 @@ public class MetricEvaluationPerPost {
         );
 
         // results
+        int failedPredecessorComparisons = postVersionList.getPostVersion(postHistoryId).getFailedPredecessorComparisons(postBlockTypeFilter);
         int possibleConnectionsGT = postGroundTruth.getPossibleConnections(postHistoryId, postBlockTypeFilter);
         if (possibleConnectionsGT != newResult.getPossibleConnections()) {
             String msg = "Invalid result (expected: " + possibleConnectionsGT + "; actual: " + newResult.getPossibleConnections() + ")";
@@ -265,8 +266,6 @@ public class MetricEvaluationPerPost {
 
         int trueNegativesCount = possibleConnectionsGT - (PostBlockConnection.union(postBlockConnectionsGT, postBlockConnections).size());
         int falseNegativesCount = PostBlockConnection.difference(postBlockConnectionsGT, postBlockConnections).size();
-
-        int failedPredecessorComparisons = postVersionList.getFailedPredecessorComparisons(postBlockTypeFilter);
 
         int allConnectionsCount = truePositivesCount + falsePositivesCount + trueNegativesCount + falseNegativesCount;
         if (possibleConnectionsGT != allConnectionsCount) {
@@ -290,11 +289,8 @@ public class MetricEvaluationPerPost {
         MetricResult aggregatedResultText = getResultAggregatedByPostText();
         MetricResult aggregatedResultCode = getResultAggregatedByPostCode();
 
-        if (aggregatedResultText.getPostVersionCount() != aggregatedResultCode.getPostVersionCount()) {
-            String msg = "Post version count of aggregated results does not match.";
-            logger.warning(msg);
-            throw new IllegalStateException(msg);
-        }
+        // validate results
+        MetricResult.validate(aggregatedResultText, aggregatedResultCode);
 
         // "MetricType", "Metric", "Threshold", "PostId",
         // "PostVersionCount", "PostBlockVersionCount", "PossibleConnections",
@@ -332,6 +328,9 @@ public class MetricEvaluationPerPost {
         for (int postHistoryId : postHistoryIds) {
             MetricResult resultText = resultsText.get(postHistoryId);
             MetricResult resultCode = resultsCode.get(postHistoryId);
+
+            // validate results
+            MetricResult.validate(resultText, resultCode);
 
             // "Sample", "MetricType", "Metric", "Threshold", "PostId", "PostHistoryId", "PossibleConnections",
             // "RuntimeText", "TextBlockCount", "PossibleConnectionsText",

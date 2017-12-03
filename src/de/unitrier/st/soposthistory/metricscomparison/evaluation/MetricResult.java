@@ -217,4 +217,28 @@ public class MetricResult {
 
         return failureRate;
     }
+
+    static void validate(MetricResult resultText, MetricResult resultCode) throws IllegalStateException {
+        if (resultText.getFailedPredecessorComparisons() > resultText.getPossibleConnections()) {
+            String msg = resultText.getSimilarityMetric() + ": Number of failed comparisons is greater than number of possible connections (text).";
+            logger.warning(msg);
+            throw new IllegalStateException(msg);
+        }
+        if (resultCode.getFailedPredecessorComparisons() > resultCode.getPossibleConnections()) {
+            String msg = resultCode.getSimilarityMetric() + ": Number of failed comparisons is greater than number of possible connections (code).";
+            logger.warning(msg);
+            throw new IllegalStateException(msg);
+        }
+        if (resultText.getPostCount() != resultCode.getPostCount()) {
+            String msg = "Post count does not match.";
+            logger.warning(msg);
+            throw new IllegalStateException(msg);
+        }
+
+        if (resultText.getPostVersionCount() != resultCode.getPostVersionCount()) {
+            String msg = "Post version count does not match.";
+            logger.warning(msg);
+            throw new IllegalStateException(msg);
+        }
+    }
 }

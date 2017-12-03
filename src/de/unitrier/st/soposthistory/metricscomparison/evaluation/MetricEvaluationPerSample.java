@@ -116,17 +116,8 @@ public class MetricEvaluationPerSample extends LinkedList<MetricEvaluationPerPos
         MetricResult aggregatedResultText = getResultAggregatedBySampleText();
         MetricResult aggregatedResultCode = getResultAggregatedBySampleCode();
 
-        if (aggregatedResultText.getPostCount() != aggregatedResultCode.getPostCount()) {
-            String msg = "Post count of aggregated results does not match.";
-            logger.warning(msg);
-            throw new IllegalStateException(msg);
-        }
-
-        if (aggregatedResultText.getPostVersionCount() != aggregatedResultCode.getPostVersionCount()) {
-            String msg = "Post version count of aggregated results does not match.";
-            logger.warning(msg);
-            throw new IllegalStateException(msg);
-        }
+        // validate results
+        MetricResult.validate(aggregatedResultText, aggregatedResultCode);
 
         // "MetricType", "Metric", "Threshold",
         // "InformednessText", "MarkednessText", "MatthewsCorrelationText", "FScoreText", "RuntimeText",

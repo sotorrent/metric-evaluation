@@ -49,6 +49,7 @@ class DisabledTests {
                 .withInputPaths(MetricEvaluationTest.pathToPostIdList, MetricEvaluationTest.pathToPostHistory,
                         MetricEvaluationTest.pathToGroundTruth)
                 .withOutputDirPath(MetricEvaluationTest.outputDir)
+                .withNumberOfRepetitions(1)
                 .initialize();
 
         List<Integer> postHistoryIds_3758880 = manager.getPostVersionLists().get(3758880).getPostHistoryIds();
