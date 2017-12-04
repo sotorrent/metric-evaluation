@@ -3,8 +3,6 @@ package de.unitrier.st.soposthistory.metricscomparison.tests;
 import de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricEvaluationManager;
 import de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricEvaluationPerPost;
 import de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricResult;
-import de.unitrier.st.stringsimilarity.Normalization;
-import de.unitrier.st.stringsimilarity.Tokenization;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -263,7 +261,7 @@ class MetricEvaluationTest {
         assertThat(manager.getPostVersionLists().keySet(), is(manager.getPostGroundTruths().keySet()));
 
         manager.addSimilarityMetric(
-                MetricEvaluationManager.getDefaultSimilarityMetric("threeShingleOverlap", 1)
+                MetricEvaluationManager.getDefaultSimilarityMetric("threeShingleOverlap", 0.6)
         );
 
         Thread managerThread = new Thread(manager);
@@ -272,25 +270,18 @@ class MetricEvaluationTest {
             managerThread.join();
             assertTrue(manager.isFinished()); // assert that execution of manager successfully finished
 
-            List<Integer> postHistoryIds_18276636 = manager.getPostGroundTruths().get(18276636).getPostHistoryIds();
-            MetricEvaluationPerPost evaluation_a_18276636 = manager.getMetricEvaluation(18276636, "threeShingleOverlap", 1);
+            List<Integer> postHistoryIds_2096370 = manager.getPostGroundTruths().get(2096370).getPostHistoryIds();
+            MetricEvaluationPerPost evaluation_a_2096370 = manager.getMetricEvaluation(2096370, "threeShingleOverlap", 0.6);
 
-            int postHistoryId_version2 = postHistoryIds_18276636.get(2);
+            int postHistoryId_version2 = postHistoryIds_2096370.get(1);
 
-            System.out.println(
-                    Tokenization.tokens(
-                        Normalization.normalizeForShingle(
-                                    manager.getPostVersionLists().get(18276636).get(2).getCodeBlocks().get(2).getContent()
-                            )
-                    )
-            );
-
-            MetricResult resultsCode = evaluation_a_18276636.getResultsCode(postHistoryId_version2);
-            assertEquals(6, resultsCode.getTruePositives());
+            MetricResult resultsCode = evaluation_a_2096370.getResultsCode(postHistoryId_version2);
+            assertEquals(1, resultsCode.getTruePositives());
             assertEquals(0, resultsCode.getFalsePositives());
-            assertEquals(7*8, resultsCode.getTrueNegatives());
+            assertEquals(2, resultsCode.getTrueNegatives());
             assertEquals(0, resultsCode.getFalseNegatives());
-            assertEquals(6*2 + 8*2, resultsCode.getFailedPredecessorComparisons());
+            assertEquals(1, resultsCode.getFailedPredecessorComparisons());
+
 
         } catch (InterruptedException e) {
             e.printStackTrace();
