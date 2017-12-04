@@ -207,7 +207,7 @@ public class MetricResult {
     }
 
     double getFailureRate() {
-        double failureRate = possibleConnections == 0 ? 0.0 : (double)failedPredecessorComparisons / possibleConnections;
+        double failureRate = possibleConnections == 0 ? 0.0 : ((double) failedPredecessorComparisons) / ((double) possibleConnections);
 
         if (Util.lessThan(failureRate, 0.0) || Util.greaterThan(failureRate, 1.0)) {
             String msg = similarityMetric + ": Failure rate must be in range [0.0, 1.0], but was " + failureRate;
