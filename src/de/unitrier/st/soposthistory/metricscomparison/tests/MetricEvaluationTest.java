@@ -23,16 +23,16 @@ class MetricEvaluationTest {
     static Path pathToPostIdList = Paths.get("testdata", "gt_test", "post_ids.csv");
     static Path pathToPostHistory = Paths.get("testdata", "gt_test", "files");
     static Path pathToGroundTruth = Paths.get("testdata", "gt_test", "gt");
-    static Path outputDir = Paths.get("testdata", "metrics_comparison");
+    static Path metricComparisonOutputDir = Paths.get("testdata", "metrics_comparison");
     static Path testOutputDir = Paths.get("testdata", "output");
     private static Path pathToSamplesComparisonTestDir = Paths.get("testdata", "samples_comparison_test");
 
     @Test
     void testMetricEvaluationManager() {
         MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
-                .withName("TestSample")
+                .withName("TestMetricEvaluationManager")
                 .withInputPaths(pathToPostIdList, pathToPostHistory, pathToGroundTruth)
-                .withOutputDirPath(outputDir)
+                .withOutputDirPath(metricComparisonOutputDir)
                 .withDefaultSimilarityMetrics(false)
                 .initialize();
 
@@ -214,8 +214,9 @@ class MetricEvaluationTest {
     @Test
     void testFailedPredecessorComparisonsText() {
         MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
-                .withName("TestSample")
+                .withName("TestFailedPredecessorComparisonsText")
                 .withInputPaths(pathToPostIdList, pathToPostHistory, pathToGroundTruth)
+                .withOutputDirPath(testOutputDir)
                 .withDefaultSimilarityMetrics(false)
                 .initialize();
 
@@ -252,8 +253,9 @@ class MetricEvaluationTest {
     @Test
     void testFailedPredecessorComparisonsCode() {
         MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
-                .withName("TestSample")
+                .withName("TestFailedPredecessorComparisonsCode")
                 .withInputPaths(pathToPostIdList, pathToPostHistory, pathToGroundTruth)
+                .withOutputDirPath(testOutputDir)
                 .withDefaultSimilarityMetrics(false)
                 .initialize();
 

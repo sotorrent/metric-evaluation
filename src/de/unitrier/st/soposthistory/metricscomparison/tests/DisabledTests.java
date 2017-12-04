@@ -45,10 +45,10 @@ class DisabledTests {
     @Test
     void compareMetricEvaluationManagerWithOldProjectTest() {
         MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
-                .withName("TestSample")
+                .withName("TestCompareWithOldProject")
                 .withInputPaths(MetricEvaluationTest.pathToPostIdList, MetricEvaluationTest.pathToPostHistory,
                         MetricEvaluationTest.pathToGroundTruth)
-                .withOutputDirPath(MetricEvaluationTest.outputDir)
+                .withOutputDirPath(MetricEvaluationTest.metricComparisonOutputDir)
                 .withNumberOfRepetitions(1)
                 .initialize();
 
@@ -405,7 +405,7 @@ class DisabledTests {
                         Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_17_06_sample_edited_gt", "PostId_VersionCount_17_06_sample_edited_gt.csv"),
                         Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_17_06_sample_edited_gt", "files"),
                         Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_17_06_sample_edited_gt", "completed"))
-                .withOutputDirPath(Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_17_06_sample_edited_gt", "output"))
+                .withOutputDirPath(MetricEvaluationTest.testOutputDir)
                 .withDefaultSimilarityMetrics(false)
                 .initialize();
         assertEquals(manager.getPostVersionLists().size(), manager.getPostGroundTruths().size());
