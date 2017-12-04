@@ -135,17 +135,19 @@ class DisabledTests {
                         throw new IllegalArgumentException("Post with id " + postId + " has not been listed in test set");
                     }
 
+
+                    boolean resultsTextNull = false;
+                    boolean resultsCodeNull = false;
                     assertNotNull(postHistoryIds);
                     for (Integer tmpPostHistoryId : postHistoryIds) {
                         MetricResult resultsText = tmpMetricEvaluationPerPost.getResultsText(tmpPostHistoryId);
                         MetricResult resultsCode = tmpMetricEvaluationPerPost.getResultsCode(tmpPostHistoryId);
 
                         // in previous versions, the results were set to null in case one comparison failed
-                        boolean resultsTextNull = resultsText.getFailedPredecessorComparisons() > 0;
-                        boolean resultsCodeNull = resultsCode.getFailedPredecessorComparisons() > 0;
-
-                        assertTrue(resultsTextNull || resultsCodeNull);
+                        resultsTextNull = resultsTextNull || resultsText.getFailedPredecessorComparisons() > 0;
+                        resultsCodeNull = resultsCodeNull || resultsCode.getFailedPredecessorComparisons() > 0;
                     }
+                    assertTrue(resultsTextNull || resultsCodeNull);
                 } else {
                     MetricResult resultsText = tmpMetricEvaluationPerPost.getResultsText(postHistoryId);
                     assertEquals(truePositivesText, Integer.valueOf(resultsText.getTruePositives()));
