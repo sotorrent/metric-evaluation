@@ -3,6 +3,8 @@ package de.unitrier.st.soposthistory.metricscomparison.tests;
 import de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricEvaluationManager;
 import de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricEvaluationPerPost;
 import de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricResult;
+import de.unitrier.st.stringsimilarity.Normalization;
+import de.unitrier.st.stringsimilarity.Tokenization;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -207,6 +209,90 @@ class MetricEvaluationTest {
             MetricEvaluationManager.aggregateAndWriteSampleResults(managers, outputFileAggregated);
         } catch (InterruptedException e) {
             threadPool.shutdownNow();
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void testFailedPredecessorComparisonsText() {
+        MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
+                .withName("TestSample")
+                .withInputPaths(pathToPostIdList, pathToPostHistory, pathToGroundTruth)
+                .withDefaultSimilarityMetrics(false)
+                .initialize();
+
+        assertEquals(manager.getPostVersionLists().size(), manager.getPostGroundTruths().size());
+        assertThat(manager.getPostVersionLists().keySet(), is(manager.getPostGroundTruths().keySet()));
+
+        manager.addSimilarityMetric(
+                MetricEvaluationManager.getDefaultSimilarityMetric("threeShingleOverlap", 0.6)
+        );
+
+        Thread managerThread = new Thread(manager);
+        managerThread.start();
+        try {
+            managerThread.join();
+            assertTrue(manager.isFinished()); // assert that execution of manager successfully finished
+
+            List<Integer> postHistoryIds_3758880 = manager.getPostGroundTruths().get(3758880).getPostHistoryIds();
+            MetricEvaluationPerPost evaluation_a_3758880 = manager.getMetricEvaluation(3758880, "threeShingleOverlap", 0.6);
+
+            int postHistoryId_version2 = postHistoryIds_3758880.get(1);
+
+            MetricResult resultsText = evaluation_a_3758880.getResultsText(postHistoryId_version2);
+            assertEquals(1, resultsText.getTruePositives());
+            assertEquals(0, resultsText.getFalsePositives());
+            assertEquals(5, resultsText.getTrueNegatives());
+            assertEquals(0, resultsText.getFalseNegatives());
+            assertEquals(4, resultsText.getFailedPredecessorComparisons());
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void testFailedPredecessorComparisonsCode() {
+        MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
+                .withName("TestSample")
+                .withInputPaths(pathToPostIdList, pathToPostHistory, pathToGroundTruth)
+                .withDefaultSimilarityMetrics(false)
+                .initialize();
+
+        assertEquals(manager.getPostVersionLists().size(), manager.getPostGroundTruths().size());
+        assertThat(manager.getPostVersionLists().keySet(), is(manager.getPostGroundTruths().keySet()));
+
+        manager.addSimilarityMetric(
+                MetricEvaluationManager.getDefaultSimilarityMetric("threeShingleOverlap", 1)
+        );
+
+        Thread managerThread = new Thread(manager);
+        managerThread.start();
+        try {
+            managerThread.join();
+            assertTrue(manager.isFinished()); // assert that execution of manager successfully finished
+
+            List<Integer> postHistoryIds_18276636 = manager.getPostGroundTruths().get(18276636).getPostHistoryIds();
+            MetricEvaluationPerPost evaluation_a_18276636 = manager.getMetricEvaluation(18276636, "threeShingleOverlap", 1);
+
+            int postHistoryId_version2 = postHistoryIds_18276636.get(2);
+
+            System.out.println(
+                    Tokenization.tokens(
+                        Normalization.normalizeForShingle(
+                                    manager.getPostVersionLists().get(18276636).get(2).getCodeBlocks().get(2).getContent()
+                            )
+                    )
+            );
+
+            MetricResult resultsCode = evaluation_a_18276636.getResultsCode(postHistoryId_version2);
+            assertEquals(6, resultsCode.getTruePositives());
+            assertEquals(0, resultsCode.getFalsePositives());
+            assertEquals(7*8, resultsCode.getTrueNegatives());
+            assertEquals(0, resultsCode.getFalseNegatives());
+            assertEquals(6*2 + 8*2, resultsCode.getFailedPredecessorComparisons());
+
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
