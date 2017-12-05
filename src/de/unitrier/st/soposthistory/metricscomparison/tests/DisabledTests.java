@@ -48,7 +48,7 @@ class DisabledTests {
                 .withName("TestCompareWithOldProject")
                 .withInputPaths(MetricEvaluationTest.pathToPostIdList, MetricEvaluationTest.pathToPostHistory,
                         MetricEvaluationTest.pathToGroundTruth)
-                .withOutputDirPath(MetricEvaluationTest.metricComparisonOutputDir)
+                .withOutputDirPath(MetricEvaluationTest.testOutputDir)
                 .withNumberOfRepetitions(1)
                 .initialize();
 

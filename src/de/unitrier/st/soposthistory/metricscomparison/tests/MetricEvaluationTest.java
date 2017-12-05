@@ -23,8 +23,8 @@ class MetricEvaluationTest {
     static Path pathToPostIdList = Paths.get("testdata", "gt_test", "post_ids.csv");
     static Path pathToPostHistory = Paths.get("testdata", "gt_test", "files");
     static Path pathToGroundTruth = Paths.get("testdata", "gt_test", "gt");
-    static Path metricComparisonOutputDir = Paths.get("testdata", "metrics_comparison");
     static Path testOutputDir = Paths.get("testdata", "output");
+    private static Path metricComparisonOutputDir = Paths.get("testdata", "metrics_comparison");
     private static Path pathToSamplesComparisonTestDir = Paths.get("testdata", "samples_comparison_test");
 
     @Test
@@ -32,7 +32,7 @@ class MetricEvaluationTest {
         MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
                 .withName("TestMetricEvaluationManager")
                 .withInputPaths(pathToPostIdList, pathToPostHistory, pathToGroundTruth)
-                .withOutputDirPath(metricComparisonOutputDir)
+                .withOutputDirPath(testOutputDir)
                 .withDefaultSimilarityMetrics(false)
                 .initialize();
 
