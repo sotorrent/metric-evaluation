@@ -50,6 +50,7 @@ public class MetricEvaluationManager implements Runnable {
     private List<MetricEvaluationPerSample> metricEvaluationsPerSample;
 
     private boolean initialized;
+    private boolean evaluationPrepared; // flag used to check if the metrics and samples have been added
     private boolean finished; // flag used to check if end of run method was reached
 
     static {
@@ -128,6 +129,7 @@ public class MetricEvaluationManager implements Runnable {
         this.metricEvaluationsPerSample = new LinkedList<>();
 
         this.initialized = false;
+        this.evaluationPrepared = false;
         this.finished = false;
     }
 
@@ -245,7 +247,7 @@ public class MetricEvaluationManager implements Runnable {
             e.printStackTrace();
         }
 
-        if (validate && ! validate()) {
+        if (validate && !validate()) {
             String msg = "Thread " + threadId + ": Post ground truth files and post version history files do not match.";
             logger.warning(msg);
             throw new IllegalArgumentException(msg);
@@ -265,6 +267,9 @@ public class MetricEvaluationManager implements Runnable {
     }
 
     public boolean validate() {
+        if (!evaluationPrepared) {
+            prepareEvaluation();
+        }
         for (MetricEvaluationPerSample sample : metricEvaluationsPerSample) {
             if (!sample.validate()) {
                 return false;
@@ -274,6 +279,7 @@ public class MetricEvaluationManager implements Runnable {
     }
 
     private void prepareEvaluation() {
+        metricEvaluationsPerSample.clear();
         for (SimilarityMetric similarityMetric : similarityMetrics) {
             MetricEvaluationPerSample evaluationPerSample = new MetricEvaluationPerSample(
                     sampleName,
@@ -301,7 +307,9 @@ public class MetricEvaluationManager implements Runnable {
             initialize();
         }
 
-        prepareEvaluation();
+        if (!evaluationPrepared) {
+            prepareEvaluation();
+        }
 
         for (int currentRepetition = 1; currentRepetition <= numberOfRepetitions; currentRepetition++) {
             if (randomizeOrder) {
@@ -385,6 +393,7 @@ public class MetricEvaluationManager implements Runnable {
 
     public void addSimilarityMetric(SimilarityMetric metric) {
         similarityMetrics.add(metric);
+        evaluationPrepared = false;
     }
 
     public MetricEvaluationPerPost getMetricEvaluation(int postId, String metricName, double threshold) {
