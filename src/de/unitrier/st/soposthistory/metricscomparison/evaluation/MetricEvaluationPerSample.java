@@ -1,6 +1,8 @@
 package de.unitrier.st.soposthistory.metricscomparison.evaluation;
 
-import de.unitrier.st.soposthistory.gt.PostBlockConnection;
+import de.unitrier.st.soposthistory.blocks.CodeBlockVersion;
+import de.unitrier.st.soposthistory.blocks.PostBlockVersion;
+import de.unitrier.st.soposthistory.blocks.TextBlockVersion;
 import de.unitrier.st.soposthistory.gt.PostGroundTruth;
 import de.unitrier.st.soposthistory.version.PostVersionList;
 import de.unitrier.st.util.Util;
@@ -58,19 +60,30 @@ public class MetricEvaluationPerSample extends LinkedList<MetricEvaluationPerPos
         if (postGroundTruths.size() != postVersionLists.size())
             return false;
 
-        // check if GT and post version list contain the same posts with the same post blocks types in the same positions
+        // check if GT and post version list contain the same posts with the same number of possible connections
         for (int postId : postVersionLists.keySet()) {
             PostGroundTruth gt = postGroundTruths.get(postId);
 
             if (gt == null) {
                 return false;
             } else {
+                // text
                 PostVersionList list = postVersionLists.get(postId);
-
-                Set<PostBlockConnection> connectionsList = list.getConnections();
-                Set<PostBlockConnection> connectionsGT = gt.getConnections();
-
-                if (!PostBlockConnection.matches(connectionsList, connectionsGT)) {
+                int possibleConnectionsList = list.getPossibleConnections(TextBlockVersion.getPostBlockTypeIdFilter());
+                int possibleConnectionsGT = gt.getPossibleConnections(TextBlockVersion.getPostBlockTypeIdFilter());
+                if (possibleConnectionsList != possibleConnectionsGT) {
+                    return false;
+                }
+                // code
+                possibleConnectionsList = list.getPossibleConnections(CodeBlockVersion.getPostBlockTypeIdFilter());
+                possibleConnectionsGT = gt.getPossibleConnections(CodeBlockVersion.getPostBlockTypeIdFilter());
+                if (possibleConnectionsList != possibleConnectionsGT) {
+                    return false;
+                }
+                // both
+                possibleConnectionsList = list.getPossibleConnections(PostBlockVersion.getAllPostBlockTypeIdFilters());
+                possibleConnectionsGT = gt.getPossibleConnections(PostBlockVersion.getAllPostBlockTypeIdFilters());
+                if (possibleConnectionsList != possibleConnectionsGT) {
                     return false;
                 }
             }
