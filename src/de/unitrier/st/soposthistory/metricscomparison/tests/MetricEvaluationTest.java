@@ -1,8 +1,14 @@
 package de.unitrier.st.soposthistory.metricscomparison.tests;
 
+import de.unitrier.st.soposthistory.Config;
+import de.unitrier.st.soposthistory.blocks.CodeBlockVersion;
+import de.unitrier.st.soposthistory.blocks.TextBlockVersion;
+import de.unitrier.st.soposthistory.gt.PostBlockConnection;
+import de.unitrier.st.soposthistory.gt.PostGroundTruth;
 import de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricEvaluationManager;
 import de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricEvaluationPerPost;
 import de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricResult;
+import de.unitrier.st.soposthistory.version.PostVersionList;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -10,6 +16,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -24,7 +31,6 @@ class MetricEvaluationTest {
     static Path pathToPostHistory = Paths.get("testdata", "gt_test", "files");
     static Path pathToGroundTruth = Paths.get("testdata", "gt_test", "gt");
     static Path testOutputDir = Paths.get("testdata", "output");
-    private static Path metricComparisonOutputDir = Paths.get("testdata", "metrics_comparison");
     private static Path pathToSamplesComparisonTestDir = Paths.get("testdata", "samples_comparison_test");
 
     @Test
@@ -288,5 +294,40 @@ class MetricEvaluationTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    void validationTest() {
+        MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
+                .withName("ValidationTestSample")
+                .withInputPaths(pathToPostIdList, pathToPostHistory, pathToGroundTruth)
+                .withValidate(false)
+                .initialize();
+        assertTrue(manager.validate());
+    }
+
+    @Test
+    void equalsTest() {
+        int postId = 10381975;
+        PostVersionList q_10381975 = PostVersionList.readFromCSV(pathToPostHistory, postId, 1, false);
+        q_10381975.processVersionHistory(Config.DEFAULT
+                .withTextSimilarityMetric(de.unitrier.st.stringsimilarity.equal.Variants::equal)
+                .withTextBackupSimilarityMetric(null)
+                .withTextSimilarityThreshold(1.0)
+                .withCodeSimilarityMetric(de.unitrier.st.stringsimilarity.equal.Variants::equal)
+                .withCodeBackupSimilarityMetric(null)
+                .withCodeSimilarityThreshold(1.0)
+        );
+        PostGroundTruth q_10381975_gt = PostGroundTruth.readFromCSV(pathToGroundTruth, postId);
+
+        // check if GT and post version list contain the same post blocks types in the same positions
+        Set<PostBlockConnection> connectionsList = q_10381975.getConnections(TextBlockVersion.getPostBlockTypeIdFilter());
+        Set<PostBlockConnection> connectionsGT = q_10381975_gt.getConnections(TextBlockVersion.getPostBlockTypeIdFilter());
+        assertTrue(PostBlockConnection.matches(connectionsList, connectionsGT));
+
+        // check if GT and post version list contain the same post blocks types in the same positions
+        connectionsList = q_10381975.getConnections(CodeBlockVersion.getPostBlockTypeIdFilter());
+        connectionsGT = q_10381975_gt.getConnections(CodeBlockVersion.getPostBlockTypeIdFilter());
+        assertTrue(PostBlockConnection.matches(connectionsList, connectionsGT));
     }
 }
