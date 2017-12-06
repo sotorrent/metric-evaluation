@@ -360,7 +360,7 @@ class DisabledTests {
             Path pathToGTs = Paths.get(samplePath.toString(), "completed");
 
             MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
-                    .withName("TestSample")
+                    .withName("TestSampleValidation")
                     .withInputPaths(pathToPostIdList, pathToFiles, pathToGTs)
                     .withValidate(false)
                     .initialize();
