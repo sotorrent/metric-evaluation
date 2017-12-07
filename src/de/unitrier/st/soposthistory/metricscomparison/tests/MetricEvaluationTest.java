@@ -33,6 +33,14 @@ class MetricEvaluationTest {
     static Path testOutputDir = Paths.get("testdata", "output");
     private static Path pathToSamplesComparisonTestDir = Paths.get("testdata", "samples_comparison_test");
 
+    private Config configEqual = Config.DEFAULT
+            .withTextSimilarityMetric(de.unitrier.st.stringsimilarity.equal.Variants::equal)
+            .withTextBackupSimilarityMetric(null)
+            .withTextSimilarityThreshold(1.0)
+            .withCodeSimilarityMetric(de.unitrier.st.stringsimilarity.equal.Variants::equal)
+            .withCodeBackupSimilarityMetric(null)
+            .withCodeSimilarityThreshold(1.0);
+
     @Test
     void testMetricEvaluationManager() {
         MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
@@ -310,13 +318,7 @@ class MetricEvaluationTest {
     void equalsTest() {
         int postId = 10381975;
         PostVersionList q_10381975 = PostVersionList.readFromCSV(pathToPostHistory, postId, 1, false);
-        q_10381975.processVersionHistory(Config.DEFAULT
-                .withTextSimilarityMetric(de.unitrier.st.stringsimilarity.equal.Variants::equal)
-                .withTextBackupSimilarityMetric(null)
-                .withTextSimilarityThreshold(1.0)
-                .withCodeSimilarityMetric(de.unitrier.st.stringsimilarity.equal.Variants::equal)
-                .withCodeBackupSimilarityMetric(null)
-                .withCodeSimilarityThreshold(1.0)
+        q_10381975.processVersionHistory(configEqual
         );
         PostGroundTruth q_10381975_gt = PostGroundTruth.readFromCSV(pathToGroundTruth, postId);
 
@@ -366,28 +368,18 @@ class MetricEvaluationTest {
         }
     }
 
-
     @Test
     void equalsTestWithoutManager_10381975() {
         int postId = 10381975;
+
         PostVersionList q_10381975 = PostVersionList.readFromCSV(pathToPostHistory, postId, 1, false);
-        q_10381975.processVersionHistory(Config.DEFAULT
-                .withTextSimilarityMetric(de.unitrier.st.stringsimilarity.equal.Variants::equal)
-                .withTextBackupSimilarityMetric(null)
-                .withTextSimilarityThreshold(1.0)
-                .withCodeSimilarityMetric(de.unitrier.st.stringsimilarity.equal.Variants::equal)
-                .withCodeBackupSimilarityMetric(null)
-                .withCodeSimilarityThreshold(1.0)
-        );
+        q_10381975.processVersionHistory(configEqual);
         PostGroundTruth q_10381975_gt = PostGroundTruth.readFromCSV(pathToGroundTruth, postId);
 
         // text
         Set<PostBlockConnection> connectionsList = q_10381975.getConnections(TextBlockVersion.getPostBlockTypeIdFilter());
         Set<PostBlockConnection> connectionsGT = q_10381975_gt.getConnections(TextBlockVersion.getPostBlockTypeIdFilter());
         assertTrue(PostBlockConnection.difference(connectionsList, connectionsGT).size() == 0);
-
-
-        q_10381975.processVersionHistory();
 
         // check if GT and post version list contain the same post blocks types in the same positions
         connectionsList = q_10381975.getConnections(TextBlockVersion.getPostBlockTypeIdFilter());
@@ -399,10 +391,8 @@ class MetricEvaluationTest {
         int falsePositivesCount = PostBlockConnection.difference(connectionsList, connectionsGT).size();
         assertEquals(0, falsePositivesCount); // equals metric should never have false positives
 
-
         int trueNegativesCount = q_10381975_gt.getPossibleConnections(TextBlockVersion.getPostBlockTypeIdFilter()) - (PostBlockConnection.union(connectionsGT, connectionsList).size());
         assertEquals(9*8 + 8*9 + 9*8 + 9*8 + 9*8, trueNegativesCount);
-
 
         int falseNegativesCount = PostBlockConnection.difference(connectionsGT, connectionsList).size();
         assertEquals(1+1, falseNegativesCount); // comparison between versions 2 and 3 and connection null <- 17 instead of 17 <- 17
@@ -410,24 +400,12 @@ class MetricEvaluationTest {
 
     }
 
-
     @Test
     void equalsTestWithoutManager_32841902() {
         int postId = 32841902;
         PostVersionList q_32841902 = PostVersionList.readFromCSV(pathToPostHistory, postId, 1, false);
-        q_32841902.processVersionHistory(Config.DEFAULT
-                .withTextSimilarityMetric(de.unitrier.st.stringsimilarity.equal.Variants::equal)
-                .withTextBackupSimilarityMetric(null)
-                .withTextSimilarityThreshold(1.0)
-                .withCodeSimilarityMetric(de.unitrier.st.stringsimilarity.equal.Variants::equal)
-                .withCodeBackupSimilarityMetric(null)
-                .withCodeSimilarityThreshold(1.0)
-        );
+        q_32841902.processVersionHistory(configEqual);
         PostGroundTruth q_32841902_gt = PostGroundTruth.readFromCSV(pathToGroundTruth, postId);
-
-        q_32841902.processVersionHistory();
-
-
 
         // check if GT and post version list contain the same post blocks types in the same positions
         Set<PostBlockConnection> connectionsList = q_32841902.getConnections(CodeBlockVersion.getPostBlockTypeIdFilter());
@@ -439,33 +417,20 @@ class MetricEvaluationTest {
         int falsePositivesCount = PostBlockConnection.difference(connectionsList, connectionsGT).size();
         assertEquals(0, falsePositivesCount); // equals metric should never have false positives
 
-
         int trueNegativesCount = q_32841902_gt.getPossibleConnections(TextBlockVersion.getPostBlockTypeIdFilter()) - (PostBlockConnection.union(connectionsGT, connectionsList).size());
         assertEquals(2*2, trueNegativesCount);
-
 
         int falseNegativesCount = PostBlockConnection.difference(connectionsGT, connectionsList).size();
         assertEquals(0, falseNegativesCount);
 
     }
 
-
     @Test
     void equalsTestWithoutManager_13651791() {
         int postId = 13651791;
         PostVersionList q_13651791 = PostVersionList.readFromCSV(pathToPostHistory, postId, 1, false);
-        q_13651791.processVersionHistory(Config.DEFAULT
-                .withTextSimilarityMetric(de.unitrier.st.stringsimilarity.equal.Variants::equal)
-                .withTextBackupSimilarityMetric(null)
-                .withTextSimilarityThreshold(1.0)
-                .withCodeSimilarityMetric(de.unitrier.st.stringsimilarity.equal.Variants::equal)
-                .withCodeBackupSimilarityMetric(null)
-                .withCodeSimilarityThreshold(1.0)
-        );
+        q_13651791.processVersionHistory(configEqual);
         PostGroundTruth q_13651791_gt = PostGroundTruth.readFromCSV(pathToGroundTruth, postId);
-
-        q_13651791.processVersionHistory();
-
 
         for(int i=0; i<q_13651791.size(); i++){
             for(int j=0; j<q_13651791.get(i).getCodeBlocks().size(); j++){
@@ -479,7 +444,6 @@ class MetricEvaluationTest {
             System.out.println();
         }
 
-
         // check if GT and post version list contain the same post blocks types in the same positions
         Set<PostBlockConnection> connectionsList = q_13651791.getConnections(CodeBlockVersion.getPostBlockTypeIdFilter());
         Set<PostBlockConnection> connectionsGT = q_13651791_gt.getConnections(CodeBlockVersion.getPostBlockTypeIdFilter());
@@ -490,37 +454,23 @@ class MetricEvaluationTest {
         int falsePositivesCount = PostBlockConnection.difference(connectionsList, connectionsGT).size();
         assertEquals(0, falsePositivesCount); // equals metric should never have false positives
 
-
         int trueNegativesCount = q_13651791_gt.getPossibleConnections(TextBlockVersion.getPostBlockTypeIdFilter()) - (PostBlockConnection.union(connectionsGT, connectionsList).size());
         assertEquals(4*5, trueNegativesCount);
 
-
         int falseNegativesCount = PostBlockConnection.difference(connectionsGT, connectionsList).size();
         assertEquals(1, falseNegativesCount);
-
     }
 
     @Test
     void equalsTestWithoutManager_33076987() {
         int postId = 33076987;
         PostVersionList q_33076987 = PostVersionList.readFromCSV(pathToPostHistory, postId, 1, false);
-        q_33076987.processVersionHistory(Config.DEFAULT
-                .withTextSimilarityMetric(de.unitrier.st.stringsimilarity.equal.Variants::equal)
-                .withTextBackupSimilarityMetric(null)
-                .withTextSimilarityThreshold(1.0)
-                .withCodeSimilarityMetric(de.unitrier.st.stringsimilarity.equal.Variants::equal)
-                .withCodeBackupSimilarityMetric(null)
-                .withCodeSimilarityThreshold(1.0)
-        );
+        q_33076987.processVersionHistory(configEqual);
         PostGroundTruth q_33076987_gt = PostGroundTruth.readFromCSV(pathToGroundTruth, postId);
-
-        q_33076987.processVersionHistory();
-
 
         // check if GT and post version list contain the same post blocks types in the same positions
         Set<PostBlockConnection> connectionsList = q_33076987.getConnections(TextBlockVersion.getPostBlockTypeIdFilter());
         Set<PostBlockConnection> connectionsGT = q_33076987_gt.getConnections(TextBlockVersion.getPostBlockTypeIdFilter());
-
 
         int truePositivesCount = PostBlockConnection.intersection(connectionsGT, connectionsList).size();
         assertEquals(2, truePositivesCount); // two of three text blocks should be matched. The blocks with local ids 1 are different.
@@ -528,14 +478,10 @@ class MetricEvaluationTest {
         int falsePositivesCount = PostBlockConnection.difference(connectionsList, connectionsGT).size();
         assertEquals(0, falsePositivesCount); // equals metric should never have false positives
 
-
         int trueNegativesCount = q_33076987_gt.getPossibleConnections(TextBlockVersion.getPostBlockTypeIdFilter()) - (PostBlockConnection.union(connectionsGT, connectionsList).size());
         assertEquals(3*3, trueNegativesCount);
 
-
         int falseNegativesCount = PostBlockConnection.difference(connectionsGT, connectionsList).size();
         assertEquals(1, falseNegativesCount);
-
     }
-
 }
