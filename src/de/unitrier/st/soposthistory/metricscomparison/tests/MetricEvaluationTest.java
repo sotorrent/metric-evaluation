@@ -364,5 +364,27 @@ class MetricEvaluationTest {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        q_10381975.processVersionHistory();
+
+        // check if GT and post version list contain the same post blocks types in the same positions
+        connectionsList = q_10381975.getConnections(TextBlockVersion.getPostBlockTypeIdFilter());
+        connectionsGT = q_10381975_gt.getConnections(TextBlockVersion.getPostBlockTypeIdFilter());
+
+        int truePositivesCount = PostBlockConnection.intersection(connectionsGT, connectionsList).size();
+        assertEquals(9+8+9+9+8, truePositivesCount);
+
+        int falsePositivesCount = PostBlockConnection.difference(connectionsList, connectionsGT).size();
+        assertEquals(0, falsePositivesCount); // equals metric should never have false positives
+
+
+        int trueNegativesCount = q_10381975_gt.getPossibleConnections(TextBlockVersion.getPostBlockTypeIdFilter()) - (PostBlockConnection.union(connectionsGT, connectionsList).size());
+        assertEquals(9*8 + 8*9 + 9*8 + 9*8 + 9*8, trueNegativesCount);
+
+
+        int falseNegativesCount = PostBlockConnection.difference(connectionsGT, connectionsList).size();
+        assertEquals(1+1, falseNegativesCount); // comparison between versions 2 and 3 and connection null <- 17 instead of 17 <- 17
+        // as well as between version 5 and 6 and connection null <- 11 instead of 11 <- 11
+
     }
 }
