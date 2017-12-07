@@ -499,4 +499,43 @@ class MetricEvaluationTest {
         assertEquals(1, falseNegativesCount);
 
     }
+
+    @Test
+    void equalsTestWithoutManager_33076987() {
+        int postId = 33076987;
+        PostVersionList q_33076987 = PostVersionList.readFromCSV(pathToPostHistory, postId, 1, false);
+        q_33076987.processVersionHistory(Config.DEFAULT
+                .withTextSimilarityMetric(de.unitrier.st.stringsimilarity.equal.Variants::equal)
+                .withTextBackupSimilarityMetric(null)
+                .withTextSimilarityThreshold(1.0)
+                .withCodeSimilarityMetric(de.unitrier.st.stringsimilarity.equal.Variants::equal)
+                .withCodeBackupSimilarityMetric(null)
+                .withCodeSimilarityThreshold(1.0)
+        );
+        PostGroundTruth q_33076987_gt = PostGroundTruth.readFromCSV(pathToGroundTruth, postId);
+
+        q_33076987.processVersionHistory();
+
+
+        // check if GT and post version list contain the same post blocks types in the same positions
+        Set<PostBlockConnection> connectionsList = q_33076987.getConnections(TextBlockVersion.getPostBlockTypeIdFilter());
+        Set<PostBlockConnection> connectionsGT = q_33076987_gt.getConnections(TextBlockVersion.getPostBlockTypeIdFilter());
+
+
+        int truePositivesCount = PostBlockConnection.intersection(connectionsGT, connectionsList).size();
+        assertEquals(2, truePositivesCount); // two of three text blocks should be matched. The blocks with local ids 1 are different.
+
+        int falsePositivesCount = PostBlockConnection.difference(connectionsList, connectionsGT).size();
+        assertEquals(0, falsePositivesCount); // equals metric should never have false positives
+
+
+        int trueNegativesCount = q_33076987_gt.getPossibleConnections(TextBlockVersion.getPostBlockTypeIdFilter()) - (PostBlockConnection.union(connectionsGT, connectionsList).size());
+        assertEquals(3*3, trueNegativesCount);
+
+
+        int falseNegativesCount = PostBlockConnection.difference(connectionsGT, connectionsList).size();
+        assertEquals(1, falseNegativesCount);
+
+    }
+
 }
