@@ -381,16 +381,17 @@ public class MetricEvaluationTest {
         Set<PostBlockConnection> connectionsGT = a_10381975_gt.getConnections(TextBlockVersion.getPostBlockTypeIdFilter());
         assertTrue(PostBlockConnection.difference(connectionsList, connectionsGT).size() == 0);
 
-        int truePositivesCount = PostBlockConnection.intersection(connectionsGT, connectionsList).size();
+        int truePositivesCount = PostBlockConnection.getTruePositives(connectionsList, connectionsGT).size();
         assertEquals(9+8+9+9+8, truePositivesCount);
 
-        int falsePositivesCount = PostBlockConnection.difference(connectionsList, connectionsGT).size();
+        int falsePositivesCount = PostBlockConnection.getFalsePositives(connectionsList, connectionsGT).size();
         assertEquals(0, falsePositivesCount); // equals metric should never have false positives
 
-        int trueNegativesCount = a_10381975_gt.getPossibleConnections(TextBlockVersion.getPostBlockTypeIdFilter()) - (PostBlockConnection.union(connectionsGT, connectionsList).size());
+        int possibleConnections = a_10381975_gt.getPossibleConnections(TextBlockVersion.getPostBlockTypeIdFilter());
+        int trueNegativesCount = PostBlockConnection.getTrueNegatives(connectionsList, connectionsGT, possibleConnections);
         assertEquals(9*8 + 8*9 + 9*8 + 9*8 + 9*8, trueNegativesCount);
 
-        int falseNegativesCount = PostBlockConnection.difference(connectionsGT, connectionsList).size();
+        int falseNegativesCount = PostBlockConnection.getFalseNegatives(connectionsList, connectionsGT).size();
         // comparison between versions 2 and 3 and connection null <- 17 instead of 17 <- 17
         // as well as between version 5 and 6 and connection null <- 11 instead of 11 <- 11
         assertEquals(1+1, falseNegativesCount);
@@ -408,17 +409,18 @@ public class MetricEvaluationTest {
         Set<PostBlockConnection> connectionsGT = a_32841902_gt.getConnections(CodeBlockVersion.getPostBlockTypeIdFilter());
         assertTrue(PostBlockConnection.difference(connectionsList, connectionsGT).size() == 0);
 
-        int truePositivesCount = PostBlockConnection.intersection(connectionsGT, connectionsList).size();
+        int truePositivesCount = PostBlockConnection.getTruePositives(connectionsList, connectionsGT).size();
         assertEquals(2, truePositivesCount);
 
-        int falsePositivesCount = PostBlockConnection.difference(connectionsList, connectionsGT).size();
+        int falsePositivesCount = PostBlockConnection.getFalsePositives(connectionsList, connectionsGT).size();
         // equals metric should never have false positives
         assertEquals(0, falsePositivesCount);
 
-        int trueNegativesCount = a_32841902_gt.getPossibleConnections(TextBlockVersion.getPostBlockTypeIdFilter()) - (PostBlockConnection.union(connectionsGT, connectionsList).size());
-        assertEquals(2*2, trueNegativesCount);
+        int possibleConnections = a_32841902_gt.getPossibleConnections(CodeBlockVersion.getPostBlockTypeIdFilter());
+        int trueNegativesCount = PostBlockConnection.getTrueNegatives(connectionsList, connectionsGT, possibleConnections);
+        assertEquals(2*2 + 2, trueNegativesCount);
 
-        int falseNegativesCount = PostBlockConnection.difference(connectionsGT, connectionsList).size();
+        int falseNegativesCount = PostBlockConnection.getFalseNegatives(connectionsList, connectionsGT).size();
         assertEquals(0, falseNegativesCount);
     }
 
@@ -434,18 +436,19 @@ public class MetricEvaluationTest {
         Set<PostBlockConnection> connectionsGT = q_13651791_gt.getConnections(CodeBlockVersion.getPostBlockTypeIdFilter());
         assertTrue(PostBlockConnection.difference(connectionsList, connectionsGT).size() == 0);
 
-        int truePositivesCount = PostBlockConnection.intersection(connectionsGT, connectionsList).size();
+        int truePositivesCount = PostBlockConnection.getTruePositives(connectionsList, connectionsGT).size();
         // 4 of 5 should be right because the code blocks with local ids 2 should not be matched by a metric of type EQUAL that does not normalize
         assertEquals(4, truePositivesCount);
 
-        int falsePositivesCount = PostBlockConnection.difference(connectionsList, connectionsGT).size();
+        int falsePositivesCount = PostBlockConnection.getFalsePositives(connectionsList, connectionsGT).size();
         // equals metric should never have false positives
         assertEquals(0, falsePositivesCount);
 
-        int trueNegativesCount = q_13651791_gt.getPossibleConnections(TextBlockVersion.getPostBlockTypeIdFilter()) - (PostBlockConnection.union(connectionsGT, connectionsList).size());
+        int possibleConnections = q_13651791_gt.getPossibleConnections(CodeBlockVersion.getPostBlockTypeIdFilter());
+        int trueNegativesCount = PostBlockConnection.getTrueNegatives(connectionsList, connectionsGT, possibleConnections);
         assertEquals(4*5, trueNegativesCount);
 
-        int falseNegativesCount = PostBlockConnection.difference(connectionsGT, connectionsList).size();
+        int falseNegativesCount = PostBlockConnection.getFalseNegatives(connectionsList, connectionsGT).size();
         assertEquals(1, falseNegativesCount);
     }
 
@@ -461,18 +464,19 @@ public class MetricEvaluationTest {
         Set<PostBlockConnection> connectionsGT = a_33076987_gt.getConnections(TextBlockVersion.getPostBlockTypeIdFilter());
         assertTrue(PostBlockConnection.difference(connectionsList, connectionsGT).size() == 0);
 
-        int truePositivesCount = PostBlockConnection.intersection(connectionsGT, connectionsList).size();
+        int truePositivesCount = PostBlockConnection.getTruePositives(connectionsList, connectionsGT).size();
         // two of three text blocks should be matched. The blocks with local ids 1 are different.
         assertEquals(2, truePositivesCount);
 
-        int falsePositivesCount = PostBlockConnection.difference(connectionsList, connectionsGT).size();
+        int falsePositivesCount = PostBlockConnection.getFalsePositives(connectionsList, connectionsGT).size();
         // equals metric should never have false positives
         assertEquals(0, falsePositivesCount);
 
-        int trueNegativesCount = a_33076987_gt.getPossibleConnections(TextBlockVersion.getPostBlockTypeIdFilter()) - (PostBlockConnection.union(connectionsGT, connectionsList).size());
+        int possibleConnections = a_33076987_gt.getPossibleConnections(TextBlockVersion.getPostBlockTypeIdFilter());
+        int trueNegativesCount = PostBlockConnection.getTrueNegatives(connectionsList, connectionsGT, possibleConnections);
         assertEquals(3*3, trueNegativesCount);
 
-        int falseNegativesCount = PostBlockConnection.difference(connectionsGT, connectionsList).size();
+        int falseNegativesCount = PostBlockConnection.getFalseNegatives(connectionsList, connectionsGT).size();
         assertEquals(1, falseNegativesCount);
     }
 
@@ -488,18 +492,18 @@ public class MetricEvaluationTest {
         Set<PostBlockConnection> connectionsList = a_38742394.getConnections(CodeBlockVersion.getPostBlockTypeIdFilter());
         Set<PostBlockConnection> connectionsGT = a_38742394_gt.getConnections(CodeBlockVersion.getPostBlockTypeIdFilter());
 
-        
-        int truePositivesCount = PostBlockConnection.intersection(connectionsGT, connectionsList).size();
+        int truePositivesCount = PostBlockConnection.getTruePositives(connectionsList, connectionsGT).size();
         assertEquals(1, truePositivesCount);
 
-        int falsePositivesCount = PostBlockConnection.difference(connectionsList, connectionsGT).size();
+        int falsePositivesCount = PostBlockConnection.getFalsePositives(connectionsList, connectionsGT).size();
         // equals metric should never have false positives
         assertEquals(0, falsePositivesCount);
 
-        int trueNegativesCount = a_38742394_gt.getPossibleConnections(TextBlockVersion.getPostBlockTypeIdFilter()) - (PostBlockConnection.union(connectionsGT, connectionsList).size());
+        int possibleConnections = a_38742394_gt.getPossibleConnections(TextBlockVersion.getPostBlockTypeIdFilter());
+        int trueNegativesCount = PostBlockConnection.getTrueNegatives(connectionsList, connectionsGT, possibleConnections);
         assertEquals(2 + 3 + 2 + 2, trueNegativesCount);
 
-        int falseNegativesCount = PostBlockConnection.difference(connectionsGT, connectionsList).size();
+        int falseNegativesCount = PostBlockConnection.getFalseNegatives(connectionsList, connectionsGT).size();
         assertEquals(2, falseNegativesCount);
     }
 }
