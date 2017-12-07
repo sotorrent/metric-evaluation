@@ -485,7 +485,7 @@ class MetricEvaluationTest {
         Set<PostBlockConnection> connectionsGT = q_13651791_gt.getConnections(CodeBlockVersion.getPostBlockTypeIdFilter());
 
         int truePositivesCount = PostBlockConnection.intersection(connectionsGT, connectionsList).size();
-        assertEquals(4, truePositivesCount); // 4 of 5 should be right because the code blocks with local ids 2 should not be matched by a metric of type EQUAL
+        assertEquals(4, truePositivesCount); // 4 of 5 should be right because the code blocks with local ids 2 should not be matched by a metric of type EQUAL that does not normalize
 
         int falsePositivesCount = PostBlockConnection.difference(connectionsList, connectionsGT).size();
         assertEquals(0, falsePositivesCount); // equals metric should never have false positives
