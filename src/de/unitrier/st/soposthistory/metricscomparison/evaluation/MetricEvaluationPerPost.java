@@ -261,11 +261,11 @@ public class MetricEvaluationPerPost {
         Set<PostBlockConnection> postBlockConnections = postVersionList.getPostVersion(postHistoryId).getConnections(postBlockTypeFilter);
         Set<PostBlockConnection> postBlockConnectionsGT = postGroundTruth.getConnections(postHistoryId, postBlockTypeFilter);
 
-        int truePositivesCount = PostBlockConnection.intersection(postBlockConnectionsGT, postBlockConnections).size();
-        int falsePositivesCount = PostBlockConnection.difference(postBlockConnections, postBlockConnectionsGT).size();
+        int truePositivesCount = PostBlockConnection.getTruePositives(postBlockConnections, postBlockConnectionsGT).size();
+        int falsePositivesCount = PostBlockConnection.getFalsePositives(postBlockConnections, postBlockConnectionsGT).size();
 
-        int trueNegativesCount = possibleConnectionsGT - (PostBlockConnection.union(postBlockConnectionsGT, postBlockConnections).size());
-        int falseNegativesCount = PostBlockConnection.difference(postBlockConnectionsGT, postBlockConnections).size();
+        int trueNegativesCount = PostBlockConnection.getTrueNegatives(postBlockConnections, postBlockConnectionsGT, possibleConnectionsGT);
+        int falseNegativesCount = PostBlockConnection.getFalseNegatives(postBlockConnections, postBlockConnectionsGT).size();
 
         int allConnectionsCount = truePositivesCount + falsePositivesCount + trueNegativesCount + falseNegativesCount;
         if (possibleConnectionsGT != allConnectionsCount) {
