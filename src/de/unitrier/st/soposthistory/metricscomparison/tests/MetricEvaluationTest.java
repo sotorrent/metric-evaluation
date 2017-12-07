@@ -368,7 +368,7 @@ class MetricEvaluationTest {
 
 
     @Test
-    void equalsTestWithoutManager() {
+    void equalsTestWithoutManager_10381975() {
         int postId = 10381975;
         PostVersionList q_10381975 = PostVersionList.readFromCSV(pathToPostHistory, postId, 1, false);
         q_10381975.processVersionHistory(Config.DEFAULT
@@ -406,7 +406,46 @@ class MetricEvaluationTest {
 
         int falseNegativesCount = PostBlockConnection.difference(connectionsGT, connectionsList).size();
         assertEquals(1+1, falseNegativesCount); // comparison between versions 2 and 3 and connection null <- 17 instead of 17 <- 17
-        // as well as between version 5 and 6 and connection null <- 11 instead of 11 <- 11
+                                                                // as well as between version 5 and 6 and connection null <- 11 instead of 11 <- 11
+
+    }
+
+
+    @Test
+    void equalsTestWithoutManager_32841902() {
+        int postId = 32841902;
+        PostVersionList q_32841902 = PostVersionList.readFromCSV(pathToPostHistory, postId, 1, false);
+        q_32841902.processVersionHistory(Config.DEFAULT
+                .withTextSimilarityMetric(de.unitrier.st.stringsimilarity.equal.Variants::equal)
+                .withTextBackupSimilarityMetric(null)
+                .withTextSimilarityThreshold(1.0)
+                .withCodeSimilarityMetric(de.unitrier.st.stringsimilarity.equal.Variants::equal)
+                .withCodeBackupSimilarityMetric(null)
+                .withCodeSimilarityThreshold(1.0)
+        );
+        PostGroundTruth q_32841902_gt = PostGroundTruth.readFromCSV(pathToGroundTruth, postId);
+
+        q_32841902.processVersionHistory();
+
+
+
+        // check if GT and post version list contain the same post blocks types in the same positions
+        Set<PostBlockConnection> connectionsList = q_32841902.getConnections(CodeBlockVersion.getPostBlockTypeIdFilter());
+        Set<PostBlockConnection> connectionsGT = q_32841902_gt.getConnections(CodeBlockVersion.getPostBlockTypeIdFilter());
+
+        int truePositivesCount = PostBlockConnection.intersection(connectionsGT, connectionsList).size();
+        assertEquals(2, truePositivesCount);
+
+        int falsePositivesCount = PostBlockConnection.difference(connectionsList, connectionsGT).size();
+        assertEquals(0, falsePositivesCount); // equals metric should never have false positives
+
+
+        int trueNegativesCount = q_32841902_gt.getPossibleConnections(TextBlockVersion.getPostBlockTypeIdFilter()) - (PostBlockConnection.union(connectionsGT, connectionsList).size());
+        assertEquals(2*2, trueNegativesCount);
+
+
+        int falseNegativesCount = PostBlockConnection.difference(connectionsGT, connectionsList).size();
+        assertEquals(0, falseNegativesCount);
 
     }
 }
