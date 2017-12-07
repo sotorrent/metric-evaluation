@@ -389,6 +389,10 @@ public class MetricEvaluationPerPost {
         return aggregatedResultCode;
     }
 
+    public List<Integer> getPostHistoryIds() {
+        return postHistoryIds;
+    }
+
     int getPostId() {
         return postId;
     }

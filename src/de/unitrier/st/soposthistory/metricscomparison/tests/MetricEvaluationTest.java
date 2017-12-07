@@ -335,7 +335,7 @@ class MetricEvaluationTest {
 
         // Check if manager produces false positives or failed comparisons
         MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
-                .withName("EqualsTestSample")
+                .withName("EqualTestSample")
                 .withInputPaths(pathToPostIdList, pathToPostHistory, pathToGroundTruth)
                 .withDefaultSimilarityMetrics(false)
                 .initialize();
@@ -349,20 +349,24 @@ class MetricEvaluationTest {
         try {
             managerThread.join();
             assertTrue(manager.isFinished()); // assert that execution of manager successfully finished
-
             // assert that equality-based metric did not produce false positives or failed comparisons
-            MetricEvaluationPerPost evaluation_q_10381975 = manager.getMetricEvaluation(postId, "equal", 1.0);
-            for (int postHistoryId : q_10381975.getPostHistoryIds()) {
-                MetricResult resultsCode = evaluation_q_10381975.getResultsCode(postHistoryId);
-                assertEquals(0, resultsCode.getFalsePositives());
-                assertEquals(0, resultsCode.getFailedPredecessorComparisons());
-
-                MetricResult resultsText = evaluation_q_10381975.getResultsText(postHistoryId);
-                assertEquals(0, resultsText.getFalsePositives());
-                assertEquals(0, resultsText.getFailedPredecessorComparisons());
-            }
+            validateEqualMetricResults(manager, postId);
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    static void validateEqualMetricResults(MetricEvaluationManager manager, int postId) {
+        // assert that equality-based metric did not produce false positives or failed comparisons
+        MetricEvaluationPerPost evaluation = manager.getMetricEvaluation(postId, "equal", 1.0);
+        for (int postHistoryId : evaluation.getPostHistoryIds()) {
+            MetricResult resultsCode = evaluation.getResultsCode(postHistoryId);
+            assertEquals(0, resultsCode.getFalsePositives());
+            assertEquals(0, resultsCode.getFailedPredecessorComparisons());
+
+            MetricResult resultsText = evaluation.getResultsText(postHistoryId);
+            assertEquals(0, resultsText.getFalsePositives());
+            assertEquals(0, resultsText.getFailedPredecessorComparisons());
         }
     }
 }
