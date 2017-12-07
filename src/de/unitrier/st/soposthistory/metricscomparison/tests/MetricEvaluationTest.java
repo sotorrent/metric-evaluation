@@ -475,4 +475,31 @@ class MetricEvaluationTest {
         int falseNegativesCount = PostBlockConnection.difference(connectionsGT, connectionsList).size();
         assertEquals(1, falseNegativesCount);
     }
+
+    @Test
+    void equalsTestWithoutManagerAnswer38742394() {
+        int postId = 38742394;
+        PostVersionList a_38742394 = PostVersionList.readFromCSV(pathToPostHistory, postId, 1, false);
+        a_38742394.normalizeLinks();
+        a_38742394.processVersionHistory(configEqual);
+        PostGroundTruth a_38742394_gt = PostGroundTruth.readFromCSV(pathToGroundTruth, postId);
+
+        // text
+        Set<PostBlockConnection> connectionsList = a_38742394.getConnections(CodeBlockVersion.getPostBlockTypeIdFilter());
+        Set<PostBlockConnection> connectionsGT = a_38742394_gt.getConnections(CodeBlockVersion.getPostBlockTypeIdFilter());
+
+        
+        int truePositivesCount = PostBlockConnection.intersection(connectionsGT, connectionsList).size();
+        assertEquals(1, truePositivesCount);
+
+        int falsePositivesCount = PostBlockConnection.difference(connectionsList, connectionsGT).size();
+        // equals metric should never have false positives
+        assertEquals(0, falsePositivesCount);
+
+        int trueNegativesCount = a_38742394_gt.getPossibleConnections(TextBlockVersion.getPostBlockTypeIdFilter()) - (PostBlockConnection.union(connectionsGT, connectionsList).size());
+        assertEquals(2 + 3 + 2 + 2, trueNegativesCount);
+
+        int falseNegativesCount = PostBlockConnection.difference(connectionsGT, connectionsList).size();
+        assertEquals(2, falseNegativesCount);
+    }
 }
