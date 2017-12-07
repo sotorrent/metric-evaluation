@@ -2,6 +2,7 @@ package de.unitrier.st.soposthistory.metricscomparison.statistics;
 
 import de.unitrier.st.soposthistory.blocks.CodeBlockVersion;
 import de.unitrier.st.soposthistory.blocks.PostBlockVersion;
+import de.unitrier.st.soposthistory.metricscomparison.tests.MetricEvaluationTest;
 import de.unitrier.st.soposthistory.urls.*;
 import de.unitrier.st.soposthistory.version.PostVersion;
 import de.unitrier.st.soposthistory.version.PostVersionList;
@@ -140,13 +141,9 @@ public class Statistics {
                                         possiblePredecessors.size(),
                                         possibleSuccessors.size(),
                                         Arrays.toString(possiblePredecessors.stream()
-                                                .map(PostBlockVersion::getLocalId)
-                                                .collect(Collectors.toList())
-                                                .toArray()),
+                                                .map(PostBlockVersion::getLocalId).toArray()),
                                         Arrays.toString(possibleSuccessors.stream()
-                                                .map(PostBlockVersion::getLocalId)
-                                                .collect(Collectors.toList())
-                                                .toArray())
+                                                .map(PostBlockVersion::getLocalId).toArray())
                                 );
                             }
                         }
@@ -449,7 +446,8 @@ public class Statistics {
         }
 
         try {
-            PrintWriter printWriter = new PrintWriter("numberOfCodeLineStatistics.csv");
+            File outputFile = Paths.get(MetricEvaluationTest.testOutputDir.toString(),"numberOfCodeLineStatistics.csv").toFile();
+            PrintWriter printWriter = new PrintWriter(outputFile);
 
             printWriter.write("number of code lines;frequencies\n");
             // https://stackoverflow.com/a/1066603

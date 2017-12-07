@@ -26,11 +26,11 @@ import static org.hamcrest.junit.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class MetricEvaluationTest {
+public class MetricEvaluationTest {
     static Path pathToPostIdList = Paths.get("testdata", "gt_test", "post_ids.csv");
     static Path pathToPostHistory = Paths.get("testdata", "gt_test", "files");
     static Path pathToGroundTruth = Paths.get("testdata", "gt_test", "gt");
-    static Path testOutputDir = Paths.get("testdata", "output");
+    public static Path testOutputDir = Paths.get("testdata", "output");
     private static Path pathToSamplesComparisonTestDir = Paths.get("testdata", "samples_comparison_test");
 
     private Config configEqual = Config.DEFAULT
