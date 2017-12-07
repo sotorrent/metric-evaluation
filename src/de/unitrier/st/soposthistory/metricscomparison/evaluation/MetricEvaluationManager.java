@@ -779,26 +779,26 @@ public class MetricEvaluationManager implements Runnable {
             // ****** Equality based *****
 
             defaultSimilarityMetrics.add(new SimilarityMetric(
-                    "equals",
+                    "equal",
                     de.unitrier.st.stringsimilarity.equal.Variants::equal,
                     SimilarityMetric.MetricType.EQUAL,
                     threshold)
             );
             defaultSimilarityMetrics.add(new SimilarityMetric(
-                    "equalsNormalized",
+                    "equalNormalized",
                     de.unitrier.st.stringsimilarity.equal.Variants::equalNormalized,
                     SimilarityMetric.MetricType.EQUAL,
                     threshold)
             );
 
             defaultSimilarityMetrics.add(new SimilarityMetric(
-                    "tokenEquals",
+                    "tokenEqual",
                     de.unitrier.st.stringsimilarity.equal.Variants::tokenEqual,
                     SimilarityMetric.MetricType.EQUAL,
                     threshold)
             );
             defaultSimilarityMetrics.add(new SimilarityMetric(
-                    "tokenEqualsNormalized",
+                    "tokenEqualNormalized",
                     de.unitrier.st.stringsimilarity.equal.Variants::tokenEqualNormalized,
                     SimilarityMetric.MetricType.EQUAL,
                     threshold)
