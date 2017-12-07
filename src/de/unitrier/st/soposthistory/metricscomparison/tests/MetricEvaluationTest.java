@@ -320,14 +320,17 @@ class MetricEvaluationTest {
         );
         PostGroundTruth q_10381975_gt = PostGroundTruth.readFromCSV(pathToGroundTruth, postId);
 
-        // check if GT and post version list contain the same post blocks types in the same positions
+        // check if the post version list does not contain more connections than the ground truth
+        // (which should not happen when using equality-based metrics)
+
+        // text
         Set<PostBlockConnection> connectionsList = q_10381975.getConnections(TextBlockVersion.getPostBlockTypeIdFilter());
         Set<PostBlockConnection> connectionsGT = q_10381975_gt.getConnections(TextBlockVersion.getPostBlockTypeIdFilter());
-        assertTrue(PostBlockConnection.matches(connectionsList, connectionsGT));
+        assertTrue(PostBlockConnection.difference(connectionsList, connectionsGT).size() == 0);
 
-        // check if GT and post version list contain the same post blocks types in the same positions
+        // code
         connectionsList = q_10381975.getConnections(CodeBlockVersion.getPostBlockTypeIdFilter());
         connectionsGT = q_10381975_gt.getConnections(CodeBlockVersion.getPostBlockTypeIdFilter());
-        assertTrue(PostBlockConnection.matches(connectionsList, connectionsGT));
+        assertTrue(PostBlockConnection.difference(connectionsList, connectionsGT).size() == 0);
     }
 }
