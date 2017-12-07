@@ -332,5 +332,37 @@ class MetricEvaluationTest {
         connectionsList = q_10381975.getConnections(CodeBlockVersion.getPostBlockTypeIdFilter());
         connectionsGT = q_10381975_gt.getConnections(CodeBlockVersion.getPostBlockTypeIdFilter());
         assertTrue(PostBlockConnection.difference(connectionsList, connectionsGT).size() == 0);
+
+        // check true/false positives/negatives
+        MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
+                .withName("EqualsTestSample")
+                .withInputPaths(pathToPostIdList, pathToPostHistory, pathToGroundTruth)
+                .withDefaultSimilarityMetrics(false)
+                .initialize();
+
+        manager.addSimilarityMetric(
+                MetricEvaluationManager.getDefaultSimilarityMetric("equal", 1.0)
+        );
+
+        Thread managerThread = new Thread(manager);
+        managerThread.start();
+        try {
+            managerThread.join();
+            assertTrue(manager.isFinished()); // assert that execution of manager successfully finished
+
+            // assert that equality-based metric did not produce false positives or failed comparisons
+            MetricEvaluationPerPost evaluation_q_10381975 = manager.getMetricEvaluation(postId, "equal", 1.0);
+            for (int postHistoryId : q_10381975.getPostHistoryIds()) {
+                MetricResult resultsCode = evaluation_q_10381975.getResultsCode(postHistoryId);
+                assertEquals(0, resultsCode.getFalsePositives());
+                assertEquals(0, resultsCode.getFailedPredecessorComparisons());
+
+                MetricResult resultsText = evaluation_q_10381975.getResultsText(postHistoryId);
+                assertEquals(0, resultsText.getFalsePositives());
+                assertEquals(0, resultsText.getFailedPredecessorComparisons());
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
