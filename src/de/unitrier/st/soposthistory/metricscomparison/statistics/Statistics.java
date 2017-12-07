@@ -2,6 +2,7 @@ package de.unitrier.st.soposthistory.metricscomparison.statistics;
 
 import de.unitrier.st.soposthistory.blocks.CodeBlockVersion;
 import de.unitrier.st.soposthistory.blocks.PostBlockVersion;
+import de.unitrier.st.soposthistory.urls.*;
 import de.unitrier.st.soposthistory.version.PostVersion;
 import de.unitrier.st.soposthistory.version.PostVersionList;
 import de.unitrier.st.stringsimilarity.Normalization;
@@ -9,10 +10,7 @@ import de.unitrier.st.stringsimilarity.Tokenization;
 import de.unitrier.st.util.Util;
 import org.apache.commons.csv.*;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -69,8 +67,10 @@ public class Statistics {
 //        statistics.copyPostsWithPossibleMultipleConnectionsIntoDirectory();
 //        statistics.getDifferencesOfRuntimesBetweenMetricComparisons();
 //        statistics.getStatisticsOfBlockLengthsAndTokenSizes();
+//        statistics.createPostVersionCount(Paths.get("testdata", "samples_comparison_test2", "PostId_VersionCount_17_06_sample_editedGT"));
+          statistics.getStatisticsOfURLs();
 
-        statistics.createPostVersionCount(Paths.get("testdata", "samples_comparison_test2", "PostId_VersionCount_17_06_sample_editedGT"));
+//        statistics.getStatisticsOfCodeBlocks();
     }
 
     private void getMultiplePossibleConnections() {
@@ -191,7 +191,7 @@ public class Statistics {
             e.printStackTrace();
         }
 
-        for (Path pathToSample : pathsToTestSamples.subList(0, 10)) { // only consider large samples here
+        for (Path pathToSample : pathsToTestSamples.subList(0, 10)) { // consider only large samples here
 
             File file = Paths.get(pathToSample.toString(), "files").toFile();
             File[] postVersionListFilesInFolder = file.listFiles(
@@ -344,6 +344,132 @@ public class Statistics {
             e.printStackTrace();
         }
     }
+
+
+    private void getStatisticsOfURLs(){
+
+        int numberOfVersions = 0;
+
+        int numberOfURLsInTextBlocks = 0;
+        int numberOfURLsInTextBlocks_bareLinks = 0;
+        int numberOfURLsInTextBlocks_anchorLinks = 0;
+        int numberOfURLsInTextBlocks_markdownLinkAnglesBrackets = 0;
+        int numberOfURLsInTextBlocks_markdownLinkInline = 0;
+        int numberOfURLsInTextBlocks_markdownLinkReference = 0;
+
+        int count = 0;
+
+        for (Path pathToSample : pathsToTestSamples.subList(0, 10)) { // consider only large samples here
+
+            File file = Paths.get(pathToSample.toString(), "files").toFile();
+            File[] postVersionListFilesInFolder = file.listFiles(
+                    (dir, name) -> name.matches(PostVersionList.fileNamePattern.pattern())
+            );
+
+            assertNotNull(postVersionListFilesInFolder);
+            for (File postVersionListFile : postVersionListFilesInFolder) {
+                if(++count % 1000 == 0) {
+                    System.err.println("Process: " + (double)count / 100000 * 100 + " %");
+                }
+
+
+                Matcher matcher = PostVersionList.fileNamePattern.matcher(postVersionListFile.getName());
+                if (matcher.find()) {
+                    int postId = Integer.parseInt(matcher.group(1));
+                    PostVersionList postVersionList = PostVersionList.readFromCSV(file.toPath(), postId, 0);
+                    numberOfVersions++;
+
+                    String content = postVersionList.getLast().getMergedTextBlockContent();
+                    List<Link> links = Link.extractAll(content);
+                    numberOfURLsInTextBlocks += links.size();
+
+                    for (Link link : links) {
+                        if (link instanceof AnchorLink) {
+                            numberOfURLsInTextBlocks_anchorLinks++;
+                        } else if (link instanceof MarkdownLinkAngleBrackets) {
+                            numberOfURLsInTextBlocks_markdownLinkAnglesBrackets++;
+                        } else if (link instanceof MarkdownLinkInline) {
+                            numberOfURLsInTextBlocks_markdownLinkInline++;
+                        } else if (link instanceof MarkdownLinkReference) {
+                            numberOfURLsInTextBlocks_markdownLinkReference++;
+                        } else {
+                            numberOfURLsInTextBlocks_bareLinks++;
+                        }
+                    }
+                }
+            }
+        }
+
+        System.out.println("number of versions: " + numberOfVersions);
+
+        System.out.println("number of urls overall: " + numberOfURLsInTextBlocks);
+        System.out.println("number of anchorLinks: " + numberOfURLsInTextBlocks_anchorLinks);
+        System.out.println("number of markdownLinkAnglesBrackets: " + numberOfURLsInTextBlocks_markdownLinkAnglesBrackets);
+        System.out.println("number of markdownLinkInline: " + numberOfURLsInTextBlocks_markdownLinkInline);
+        System.out.println("number of markdownLinkReference: " + numberOfURLsInTextBlocks_markdownLinkReference);
+        System.out.println("number of bareLinks: " + numberOfURLsInTextBlocks_bareLinks);
+    }
+
+    private void getStatisticsOfCodeBlocks(){
+
+        Map<Integer, Integer> codeLinesFrequencies = new HashMap<>(); // number of code lines -> frequencies
+
+        int count = 0;
+
+        for (Path pathToSample : pathsToTestSamples.subList(0, 10)) { // consider only large samples here
+
+            File file = Paths.get(pathToSample.toString(), "files").toFile();
+            File[] postVersionListFilesInFolder = file.listFiles(
+                    (dir, name) -> name.matches(PostVersionList.fileNamePattern.pattern())
+            );
+
+            assertNotNull(postVersionListFilesInFolder);
+            for (File postVersionListFile : postVersionListFilesInFolder) {
+                if(++count % 1000 == 0) {
+                    System.err.println("Process: " + (double)count / 100000 * 100 + " %");
+                }
+
+
+                Matcher matcher = PostVersionList.fileNamePattern.matcher(postVersionListFile.getName());
+                if (matcher.find()) {
+                    int postId = Integer.parseInt(matcher.group(1));
+                    PostVersionList postVersionList = PostVersionList.readFromCSV(file.toPath(), postId, 0);
+                    for (CodeBlockVersion codeBlockVersion : postVersionList.getLast().getCodeBlocks()) {
+                        StringTokenizer tokensCodeLines = new StringTokenizer(codeBlockVersion.getContent(), "\n");
+                        int numberOfCodeLines = tokensCodeLines.countTokens();
+
+                        if (codeLinesFrequencies.containsKey(numberOfCodeLines)) {
+                            codeLinesFrequencies.put(numberOfCodeLines, codeLinesFrequencies.get(numberOfCodeLines) + 1);
+                        } else {
+                            codeLinesFrequencies.put(numberOfCodeLines, 1);
+                        }
+                    }
+                }
+            }
+        }
+
+        try {
+            PrintWriter printWriter = new PrintWriter("numberOfCodeLineStatistics.csv");
+
+            printWriter.write("number of code lines;frequencies\n");
+            // https://stackoverflow.com/a/1066603
+            Iterator it = codeLinesFrequencies.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry)it.next();
+                printWriter.write(pair.getKey() + ";" + pair.getValue() + "\n");
+                it.remove(); // avoids a ConcurrentModificationException
+            }
+
+            printWriter.flush();
+            printWriter.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
 
 
 
