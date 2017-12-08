@@ -384,7 +384,7 @@ class DisabledTests {
         assertThat(manager.getPostVersionLists().keySet(), is(manager.getPostGroundTruths().keySet()));
 
         manager.addSimilarityMetric(
-                MetricEvaluationManager.getDefaultSimilarityMetric("equals", 0.3)
+                MetricEvaluationManager.getDefaultSimilarityMetric("equal", 0.3)
         );
 
         Thread managerThread = new Thread(manager);
@@ -415,16 +415,16 @@ class DisabledTests {
 
         for (double threshold : similarityThresholds) {
             manager.addSimilarityMetric(
-                    MetricEvaluationManager.getDefaultSimilarityMetric("equals", threshold)
+                    MetricEvaluationManager.getDefaultSimilarityMetric("equal", threshold)
             );
             manager.addSimilarityMetric(
-                    MetricEvaluationManager.getDefaultSimilarityMetric("equalsNormalized", threshold)
+                    MetricEvaluationManager.getDefaultSimilarityMetric("equalNormalized", threshold)
             );
             manager.addSimilarityMetric(
-                    MetricEvaluationManager.getDefaultSimilarityMetric("tokenEquals", threshold)
+                    MetricEvaluationManager.getDefaultSimilarityMetric("tokenEqual", threshold)
             );
             manager.addSimilarityMetric(
-                    MetricEvaluationManager.getDefaultSimilarityMetric("tokenEqualsNormalized", threshold)
+                    MetricEvaluationManager.getDefaultSimilarityMetric("tokenEqualNormalized", threshold)
             );
         }
 
