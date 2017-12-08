@@ -312,7 +312,6 @@ public class MetricEvaluationTest {
             assertEquals(0, resultsCode.getFalseNegatives());
             assertEquals(1, resultsCode.getFailedPredecessorComparisons());
 
-
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

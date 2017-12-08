@@ -431,8 +431,7 @@ class DisabledTests {
         Thread managerThread = new Thread(manager);
         managerThread.start();
         try {
-            managerThread.join();
-            assertTrue(manager.isFinished()); // assert that execution of manager successfully finished
+            joinAndValidateEqualMetricResults(manager, managerThread);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -452,15 +451,19 @@ class DisabledTests {
             Thread managerThread = new Thread(manager);
             managerThread.start();
             try {
-                managerThread.join();
-                assertTrue(manager.isFinished()); // assert that execution of manager successfully finished
-                for (int postId : manager.getPostIds()) {
-                    // assert that equality-based metric did not produce false positives or failed comparisons
-                    MetricEvaluationTest.validateEqualMetricResults(manager, postId);
-                }
+                joinAndValidateEqualMetricResults(manager, managerThread);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void joinAndValidateEqualMetricResults(MetricEvaluationManager manager, Thread managerThread) throws InterruptedException {
+        managerThread.join();
+        assertTrue(manager.isFinished()); // assert that execution of manager successfully finished
+        for (int postId : manager.getPostIds()) {
+            // assert that equality-based metric did not produce false positives or failed comparisons
+            MetricEvaluationTest.validateEqualMetricResults(manager, postId);
         }
     }
 
