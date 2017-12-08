@@ -71,7 +71,7 @@ public class MetricEvaluationManager implements Runnable {
 
         // configure CSV format for metric comparison results (per post, i.e., per PostVersionList)
         csvFormatMetricEvaluationPerPost = CSVFormat.DEFAULT
-                .withHeader("MetricType", "Metric", "Threshold", "PostId", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections", "RuntimeText", "TextBlockVersionCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailedPredecessorComparisonsText", "RuntimeCode", "CodeBlockVersionCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailedPredecessorComparisonsCode")
+                .withHeader("MetricType", "Metric", "Threshold", "PostId", "Runtime", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections", "TextBlockVersionCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailedPredecessorComparisonsText", "CodeBlockVersionCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailedPredecessorComparisonsCode")
                 .withDelimiter(';')
                 .withQuote('"')
                 .withQuoteMode(QuoteMode.MINIMAL)
@@ -80,7 +80,7 @@ public class MetricEvaluationManager implements Runnable {
 
         // configure CSV format for metric comparison results (per version, i.e., per PostHistoryId)
         csvFormatMetricEvaluationPerVersion = CSVFormat.DEFAULT
-                .withHeader("MetricType", "Metric", "Threshold", "PostId", "PostHistoryId", "PossibleConnections", "RuntimeText", "TextBlockCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailedPredecessorComparisonsText", "RuntimeCode", "CodeBlockCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailedPredecessorComparisonsCode")
+                .withHeader("MetricType", "Metric", "Threshold", "PostId", "PostHistoryId", "Runtime", "PossibleConnections", "TextBlockCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailedPredecessorComparisonsText", "CodeBlockCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailedPredecessorComparisonsCode")
                 .withDelimiter(';')
                 .withQuote('"')
                 .withQuoteMode(QuoteMode.MINIMAL)
@@ -89,7 +89,7 @@ public class MetricEvaluationManager implements Runnable {
 
         // configure CSV format for aggregated metric comparison results (per (metric, threshold) combination)
         csvFormatMetricEvaluationPerSample = CSVFormat.DEFAULT
-                .withHeader("MetricType", "Metric", "Threshold", "InformednessText", "MarkednessText", "MatthewsCorrelationText", "FScoreText", "RuntimeText", "InformednessCode", "MarkednessCode", "MatthewsCorrelationCode", "FScoreCode", "RuntimeCode", "PostCount", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections", "TextBlockVersionCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailuresText", "PrecisionText", "RecallText", "InversePrecisionText", "InverseRecallText", "FailureRateText", "CodeBlockVersionCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailuresCode", "PrecisionCode", "RecallCode", "InversePrecisionCode", "InverseRecallCode", "FailureRateCode")
+                .withHeader("MetricType", "Metric", "Threshold", "Runtime", "InformednessText", "MarkednessText", "MatthewsCorrelationText", "FScoreText", "InformednessCode", "MarkednessCode", "MatthewsCorrelationCode", "FScoreCode", "PostCount", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections", "TextBlockVersionCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailuresText", "PrecisionText", "RecallText", "InversePrecisionText", "InverseRecallText", "FailureRateText", "CodeBlockVersionCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailuresCode", "PrecisionCode", "RecallCode", "InversePrecisionCode", "InverseRecallCode", "FailureRateCode")
                 .withDelimiter(';')
                 .withQuote('"')
                 .withQuoteMode(QuoteMode.MINIMAL)
@@ -524,9 +524,9 @@ public class MetricEvaluationManager implements Runnable {
                 // validate results
                 MetricResult.validate(aggregatedResultText, aggregatedResultCode);
 
-                // "MetricType", "Metric", "Threshold",
-                // "InformednessText", "MarkednessText", "MatthewsCorrelationText", "FScoreText", "RuntimeText",
-                // "InformednessCode", "MarkednessCode", "MatthewsCorrelationCode", "FScoreCode", "RuntimeCode",
+                // "MetricType", "Metric", "Threshold", "Runtime"
+                // "InformednessText", "MarkednessText", "MatthewsCorrelationText", "FScoreText",
+                // "InformednessCode", "MarkednessCode", "MatthewsCorrelationCode", "FScoreCode",
                 // "PostCount", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections",
                 // "TextBlockVersionCount", "PossibleConnectionsText",
                 // "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailuresText",
@@ -538,18 +538,17 @@ public class MetricEvaluationManager implements Runnable {
                         similarityMetric.getType(),
                         similarityMetric.getName(),
                         similarityMetric.getThreshold(),
+                        aggregatedResultText.getRuntime(),
 
                         aggregatedResultText.getInformedness(),
                         aggregatedResultText.getMarkedness(),
                         aggregatedResultText.getMatthewsCorrelation(),
                         aggregatedResultText.getFScore(),
-                        aggregatedResultText.getRuntime(),
 
                         aggregatedResultCode.getInformedness(),
                         aggregatedResultCode.getMarkedness(),
                         aggregatedResultCode.getMatthewsCorrelation(),
                         aggregatedResultCode.getFScore(),
-                        aggregatedResultCode.getRuntime(),
 
                         aggregatedResultText.getPostCount(),
                         aggregatedResultText.getPostVersionCount(),

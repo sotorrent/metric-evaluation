@@ -234,9 +234,13 @@ public class MetricResult {
             logger.warning(msg);
             throw new IllegalStateException(msg);
         }
-
         if (resultText.getPostVersionCount() != resultCode.getPostVersionCount()) {
             String msg = "Post version count does not match.";
+            logger.warning(msg);
+            throw new IllegalStateException(msg);
+        }
+        if (resultText.getRuntime() != resultCode.getRuntime()) {
+            String msg = "Runtime does not match.";
             logger.warning(msg);
             throw new IllegalStateException(msg);
         }

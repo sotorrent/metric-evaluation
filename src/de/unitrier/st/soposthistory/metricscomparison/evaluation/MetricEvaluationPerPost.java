@@ -110,21 +110,15 @@ public class MetricEvaluationPerPost {
             //logger.info("Evaluating metric " + similarityMetric + " on post " + postId);
 
             // alternate the order in which the post history is processed and evaluated
-            if (currentRepetition % 2 == 0) {
-                evaluatePostBlockVersions(config, TextBlockVersion.getPostBlockTypeIdFilter());
-                evaluatePostBlockVersions(config, CodeBlockVersion.getPostBlockTypeIdFilter());
-            } else {
-                evaluatePostBlockVersions(config, CodeBlockVersion.getPostBlockTypeIdFilter());
-                evaluatePostBlockVersions(config, TextBlockVersion.getPostBlockTypeIdFilter());
-            }
+            evaluatePostBlockVersions(config);
         }
     }
 
-    private void evaluatePostBlockVersions(Config config, Set<Integer> postBlockTypeFilter) {
+    private void evaluatePostBlockVersions(Config config) {
         // process version history and measure runtime
         stopWatch.start();
         try {
-            postVersionList.processVersionHistory(config, postBlockTypeFilter);
+            postVersionList.processVersionHistory(config);
         } finally {
             stopWatch.stop();
         }
@@ -132,15 +126,13 @@ public class MetricEvaluationPerPost {
         // save runtime value
         runtime = stopWatch.elapsed().getNano();
 
-        // save and validate results
-        if (postBlockTypeFilter.contains(TextBlockVersion.postBlockTypeId)) {
-            setResultAndRuntime(resultsText, postBlockTypeFilter);
-            validateResultsText();
-        }
-        if (postBlockTypeFilter.contains(CodeBlockVersion.postBlockTypeId)) {
-            setResultAndRuntime(resultsCode, postBlockTypeFilter);
-            validateResultsCode();
-        }
+        // save and validate results (text)
+        setResultAndRuntime(resultsText, TextBlockVersion.getPostBlockTypeIdFilter());
+        validateResultsText();
+
+        // save and validate results (code)
+        setResultAndRuntime(resultsCode, CodeBlockVersion.getPostBlockTypeIdFilter());
+        validateResultsCode();
 
         // reset flag inputTooShort, stopWatch, and runtime variables
         this.reset();
@@ -292,21 +284,21 @@ public class MetricEvaluationPerPost {
         // validate results
         MetricResult.validate(aggregatedResultText, aggregatedResultCode);
 
-        // "MetricType", "Metric", "Threshold", "PostId",
+        // "MetricType", "Metric", "Threshold", "PostId", "Runtime"
         // "PostVersionCount", "PostBlockVersionCount", "PossibleConnections",
-        // "RuntimeText", "TextBlockVersionCount", "PossibleConnectionsText",
+        // "TextBlockVersionCount", "PossibleConnectionsText",
         // "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailedPredecessorComparisonsText",
-        // "RuntimeCode", "CodeBlockVersionCount", "PossibleConnectionsCode",
+        // "CodeBlockVersionCount", "PossibleConnectionsCode",
         // "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailedPredecessorComparisonsCode"
         csvPrinterPost.printRecord(
                 similarityMetric.getType(),
                 similarityMetric.getName(),
                 similarityMetric.getThreshold(),
                 postId,
+                aggregatedResultText.getRuntime(),
                 postVersionList.size(),
                 aggregatedResultText.getPostBlockVersionCount() + aggregatedResultCode.getPostBlockVersionCount(),
                 aggregatedResultText.getPossibleConnections() + aggregatedResultCode.getPossibleConnections(),
-                aggregatedResultText.getRuntime(),
                 aggregatedResultText.getPostBlockVersionCount(),
                 aggregatedResultText.getPossibleConnections(),
                 aggregatedResultText.getTruePositives(),
@@ -314,7 +306,6 @@ public class MetricEvaluationPerPost {
                 aggregatedResultText.getFalsePositives(),
                 aggregatedResultText.getFalseNegatives(),
                 aggregatedResultText.getFailedPredecessorComparisons(),
-                aggregatedResultCode.getRuntime(),
                 aggregatedResultCode.getPostBlockVersionCount(),
                 aggregatedResultCode.getPossibleConnections(),
                 aggregatedResultCode.getTruePositives(),
@@ -332,10 +323,10 @@ public class MetricEvaluationPerPost {
             // validate results
             MetricResult.validate(resultText, resultCode);
 
-            // "Sample", "MetricType", "Metric", "Threshold", "PostId", "PostHistoryId", "PossibleConnections",
-            // "RuntimeText", "TextBlockCount", "PossibleConnectionsText",
+            // "Sample", "MetricType", "Metric", "Threshold", "PostId", "PostHistoryId", "Runtime", "PossibleConnections",
+            // "TextBlockCount", "PossibleConnectionsText",
             // "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailedPredecessorComparisonsText",
-            // "RuntimeCode", "CodeBlockCount", "PossibleConnectionsCode",
+            // "CodeBlockCount", "PossibleConnectionsCode",
             // "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailedPredecessorComparisonsCode"
             csvPrinterVersion.printRecord(
                     similarityMetric.getType(),
@@ -343,8 +334,8 @@ public class MetricEvaluationPerPost {
                     similarityMetric.getThreshold(),
                     postId,
                     postHistoryId,
-                    resultText.getPossibleConnections() + resultCode.getPossibleConnections(),
                     resultText.getRuntime(),
+                    resultText.getPossibleConnections() + resultCode.getPossibleConnections(),
                     resultText.getPostBlockVersionCount(),
                     resultText.getPossibleConnections(),
                     resultText.getTruePositives(),
@@ -352,7 +343,6 @@ public class MetricEvaluationPerPost {
                     resultText.getFalsePositives(),
                     resultText.getFalseNegatives(),
                     resultText.getFailedPredecessorComparisons(),
-                    resultCode.getRuntime(),
                     resultCode.getPostBlockVersionCount(),
                     resultCode.getPossibleConnections(),
                     resultCode.getTruePositives(),

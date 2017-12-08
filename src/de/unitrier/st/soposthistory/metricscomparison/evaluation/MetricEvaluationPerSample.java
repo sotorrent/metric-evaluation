@@ -132,9 +132,9 @@ public class MetricEvaluationPerSample extends LinkedList<MetricEvaluationPerPos
         // validate results
         MetricResult.validate(aggregatedResultText, aggregatedResultCode);
 
-        // "MetricType", "Metric", "Threshold",
-        // "InformednessText", "MarkednessText", "MatthewsCorrelationText", "FScoreText", "RuntimeText",
-        // "InformednessCode", "MarkednessCode", "MatthewsCorrelationCode", "FScoreCode", "RuntimeCode",
+        // "MetricType", "Metric", "Threshold", "Runtime",
+        // "InformednessText", "MarkednessText", "MatthewsCorrelationText", "FScoreText",,
+        // "InformednessCode", "MarkednessCode", "MatthewsCorrelationCode", "FScoreCode",
         // "PostCount", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections",
         // "TextBlockVersionCount", "PossibleConnectionsText",
         // "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailuresText",
@@ -146,18 +146,17 @@ public class MetricEvaluationPerSample extends LinkedList<MetricEvaluationPerPos
                 similarityMetric.getType(),
                 similarityMetric.getName(),
                 similarityMetric.getThreshold(),
+                aggregatedResultText.getRuntime(),
 
                 aggregatedResultText.getInformedness(),
                 aggregatedResultText.getMarkedness(),
                 aggregatedResultText.getMatthewsCorrelation(),
                 aggregatedResultText.getFScore(),
-                aggregatedResultText.getRuntime(),
 
                 aggregatedResultCode.getInformedness(),
                 aggregatedResultCode.getMarkedness(),
                 aggregatedResultCode.getMatthewsCorrelation(),
                 aggregatedResultCode.getFScore(),
-                aggregatedResultCode.getRuntime(),
 
                 aggregatedResultText.getPostCount(),
                 aggregatedResultText.getPostVersionCount(),
