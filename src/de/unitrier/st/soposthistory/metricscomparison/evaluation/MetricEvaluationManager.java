@@ -391,6 +391,10 @@ public class MetricEvaluationManager implements Runnable {
         return postVersionLists;
     }
 
+    public Set<Integer> getPostIds() {
+        return postVersionLists.keySet();
+    }
+
     public void addSimilarityMetric(SimilarityMetric metric) {
         similarityMetrics.add(metric);
         evaluationPrepared = false;

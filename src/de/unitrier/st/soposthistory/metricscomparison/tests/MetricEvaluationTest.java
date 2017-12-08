@@ -9,9 +9,11 @@ import de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricEvaluatio
 import de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricEvaluationPerPost;
 import de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricResult;
 import de.unitrier.st.soposthistory.version.PostVersionList;
+import de.unitrier.st.util.Util;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -20,6 +22,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.junit.MatcherAssert.assertThat;
@@ -27,11 +30,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MetricEvaluationTest {
+    private static Logger logger = null;
+
     static Path pathToPostIdList = Paths.get("testdata", "gt_test", "post_ids.csv");
     static Path pathToPostHistory = Paths.get("testdata", "gt_test", "files");
     static Path pathToGroundTruth = Paths.get("testdata", "gt_test", "gt");
     public static Path testOutputDir = Paths.get("testdata", "output");
     private static Path pathToSamplesComparisonTestDir = Paths.get("testdata", "samples_comparison_test");
+
+    static {
+        // configure logger
+        try {
+            logger = Util.getClassLogger(MetricEvaluationTest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     private Config configEqual = Config.DEFAULT
             .withTextSimilarityMetric(de.unitrier.st.stringsimilarity.equal.Variants::equal)
@@ -315,29 +329,26 @@ public class MetricEvaluationTest {
     }
 
     @Test
-    void equalsTest() {
+    void equalsTestQuestion10381975() {
         int postId = 10381975;
         PostVersionList q_10381975 = PostVersionList.readFromCSV(pathToPostHistory, postId, 1, false);
-        q_10381975.processVersionHistory(configEqual
+        q_10381975.processVersionHistory(Config.DEFAULT
+                .withTextSimilarityMetric(de.unitrier.st.stringsimilarity.equal.Variants::equal)
+                .withTextBackupSimilarityMetric(null)
+                .withTextSimilarityThreshold(1.0)
+                .withCodeSimilarityMetric(de.unitrier.st.stringsimilarity.equal.Variants::equal)
+                .withCodeBackupSimilarityMetric(null)
+                .withCodeSimilarityThreshold(1.0)
         );
         PostGroundTruth q_10381975_gt = PostGroundTruth.readFromCSV(pathToGroundTruth, postId);
 
-        // check if the post version list does not contain more connections than the ground truth
-        // (which should not happen when using equality-based metrics)
+        // check if the post version list does not contain more connections than the ground truth (which should not
+        // happen when using equality-based metrics)
+        validateEqualMetricConnections(q_10381975, q_10381975_gt);
 
-        // text
-        Set<PostBlockConnection> connectionsList = q_10381975.getConnections(TextBlockVersion.getPostBlockTypeIdFilter());
-        Set<PostBlockConnection> connectionsGT = q_10381975_gt.getConnections(TextBlockVersion.getPostBlockTypeIdFilter());
-        assertTrue(PostBlockConnection.difference(connectionsList, connectionsGT).size() == 0);
-
-        // code
-        connectionsList = q_10381975.getConnections(CodeBlockVersion.getPostBlockTypeIdFilter());
-        connectionsGT = q_10381975_gt.getConnections(CodeBlockVersion.getPostBlockTypeIdFilter());
-        assertTrue(PostBlockConnection.difference(connectionsList, connectionsGT).size() == 0);
-
-        // check true/false positives/negatives
+        // check if manager produces false positives or failed comparisons
         MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
-                .withName("EqualsTestSample")
+                .withName("EqualTestSample")
                 .withInputPaths(pathToPostIdList, pathToPostHistory, pathToGroundTruth)
                 .withDefaultSimilarityMetrics(false)
                 .initialize();
@@ -351,20 +362,45 @@ public class MetricEvaluationTest {
         try {
             managerThread.join();
             assertTrue(manager.isFinished()); // assert that execution of manager successfully finished
-
             // assert that equality-based metric did not produce false positives or failed comparisons
-            MetricEvaluationPerPost evaluation_q_10381975 = manager.getMetricEvaluation(postId, "equal", 1.0);
-            for (int postHistoryId : q_10381975.getPostHistoryIds()) {
-                MetricResult resultsCode = evaluation_q_10381975.getResultsCode(postHistoryId);
-                assertEquals(0, resultsCode.getFalsePositives());
-                assertEquals(0, resultsCode.getFailedPredecessorComparisons());
-
-                MetricResult resultsText = evaluation_q_10381975.getResultsText(postHistoryId);
-                assertEquals(0, resultsText.getFalsePositives());
-                assertEquals(0, resultsText.getFailedPredecessorComparisons());
-            }
+            validateEqualMetricResults(manager, postId);
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void validateEqualMetricConnections(PostVersionList postVersionList, PostGroundTruth postGroundTruth) {
+        // check if the post version list does not contain more connections than the ground truth (which should not
+        // happen when using equality-based metrics)
+
+        // text
+        Set<PostBlockConnection> connectionsList = postVersionList.getConnections(TextBlockVersion.getPostBlockTypeIdFilter());
+        Set<PostBlockConnection> connectionsGT = postGroundTruth.getConnections(TextBlockVersion.getPostBlockTypeIdFilter());
+        assertTrue(PostBlockConnection.difference(connectionsList, connectionsGT).size() == 0);
+
+        // code
+        connectionsList = postVersionList.getConnections(CodeBlockVersion.getPostBlockTypeIdFilter());
+        connectionsGT = postGroundTruth.getConnections(CodeBlockVersion.getPostBlockTypeIdFilter());
+        assertTrue(PostBlockConnection.difference(connectionsList, connectionsGT).size() == 0);
+    }
+
+    static void validateEqualMetricResults(MetricEvaluationManager manager, int postId) {
+        // assert that equality-based metric did not produce false positives or failed comparisons
+        MetricEvaluationPerPost evaluation = manager.getMetricEvaluation(postId, "equal", 1.0);
+        for (int postHistoryId : evaluation.getPostHistoryIds()) {
+            MetricResult resultsCode = evaluation.getResultsCode(postHistoryId);
+            if (resultsCode.getFalsePositives() > 0) {
+                logger.warning("False positives for postId " + postId + ", postHistoryId " + postHistoryId);
+            }
+            assertEquals(0, resultsCode.getFalsePositives());
+            assertEquals(0, resultsCode.getFailedPredecessorComparisons());
+
+            MetricResult resultsText = evaluation.getResultsText(postHistoryId);
+            if (resultsText.getFalsePositives() > 0) {
+                logger.warning("False positives for postId " + postId + ", postHistoryId " + postHistoryId);
+            }
+            assertEquals(0, resultsText.getFalsePositives());
+            assertEquals(0, resultsText.getFailedPredecessorComparisons());
         }
     }
 

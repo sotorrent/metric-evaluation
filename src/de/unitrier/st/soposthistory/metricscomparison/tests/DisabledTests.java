@@ -400,7 +400,7 @@ class DisabledTests {
     @Test
     void testMetricEvaluationManagerWithEqualityMetrics() {
         MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
-                .withName("TestSampleEquals")
+                .withName("TestSampleEqual")
                 .withInputPaths(
                         Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_17_06_sample_edited_gt", "PostId_VersionCount_17_06_sample_edited_gt.csv"),
                         Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_17_06_sample_edited_gt", "files"),
@@ -435,6 +435,32 @@ class DisabledTests {
             assertTrue(manager.isFinished()); // assert that execution of manager successfully finished
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Test
+    void testMetricResultsWithEqualMetric() {
+        List<MetricEvaluationManager> managers = MetricEvaluationManager.createManagersFromSampleDirectories(
+                rootPathToGTSamples, MetricEvaluationTest.testOutputDir, false
+        );
+
+        for (MetricEvaluationManager manager : managers) {
+            manager.addSimilarityMetric(
+                    MetricEvaluationManager.getDefaultSimilarityMetric("equal", 1.0)
+            );
+
+            Thread managerThread = new Thread(manager);
+            managerThread.start();
+            try {
+                managerThread.join();
+                assertTrue(manager.isFinished()); // assert that execution of manager successfully finished
+                for (int postId : manager.getPostIds()) {
+                    // assert that equality-based metric did not produce false positives or failed comparisons
+                    MetricEvaluationTest.validateEqualMetricResults(manager, postId);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
