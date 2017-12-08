@@ -489,6 +489,24 @@ public class MetricEvaluationTest {
                 3, 0, 2*3 + 3*2, 0);
     }
 
+    @Test
+    void equalsTestWithoutManagerQuestion23459881() {
+        int postId = 23459881;
+        int postHistoryId = 64356224; // version 2
+        PostVersionList q_23459881 = PostVersionList.readFromCSV(pathToPostHistory, postId, 1, false);
+        q_23459881.normalizeLinks();
+        q_23459881.processVersionHistory(configEqual);
+        PostGroundTruth q_23459881_gt = PostGroundTruth.readFromCSV(pathToGroundTruth, postId);
+
+        // text
+        validateResults(q_23459881, q_23459881_gt, postHistoryId, TextBlockVersion.getPostBlockTypeIdFilter(),
+                3, 0, 3*2 + 3, 0);
+
+        // code
+        validateResults(q_23459881, q_23459881_gt, postHistoryId, CodeBlockVersion.getPostBlockTypeIdFilter(),
+                3, 0, 2*3 + 3, 0);
+    }
+
     private void validateResults(PostVersionList postVersionList, PostGroundTruth postGroundTruth,
                                  Integer postHistoryId, Set<Integer> postBlockTypeFilter,
                                  int expectedTruePositives, int expectedFalsePositives,
