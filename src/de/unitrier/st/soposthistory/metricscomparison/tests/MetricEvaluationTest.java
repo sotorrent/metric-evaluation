@@ -408,6 +408,7 @@ public class MetricEvaluationTest {
         int postId = 10381975;
 
         PostVersionList a_10381975 = PostVersionList.readFromCSV(pathToPostHistory, postId, 2, false);
+        a_10381975.normalizeLinks();
         a_10381975.processVersionHistory(configEqual);
         PostGroundTruth a_10381975_gt = PostGroundTruth.readFromCSV(pathToGroundTruth, postId);
 
@@ -436,6 +437,7 @@ public class MetricEvaluationTest {
     void equalsTestWithoutManagerAnswer32841902() {
         int postId = 32841902;
         PostVersionList a_32841902 = PostVersionList.readFromCSV(pathToPostHistory, postId, 2, false);
+        a_32841902.normalizeLinks();
         a_32841902.processVersionHistory(configEqual);
         PostGroundTruth a_32841902_gt = PostGroundTruth.readFromCSV(pathToGroundTruth, postId);
 
@@ -463,6 +465,7 @@ public class MetricEvaluationTest {
     void equalsTestWithoutManagerQuestion13651791() {
         int postId = 13651791;
         PostVersionList q_13651791 = PostVersionList.readFromCSV(pathToPostHistory, postId, 1, false);
+        q_13651791.normalizeLinks();
         q_13651791.processVersionHistory(configEqual);
         PostGroundTruth q_13651791_gt = PostGroundTruth.readFromCSV(pathToGroundTruth, postId);
 
@@ -491,6 +494,7 @@ public class MetricEvaluationTest {
     void equalsTestWithoutManagerAnswer33076987() {
         int postId = 33076987;
         PostVersionList a_33076987 = PostVersionList.readFromCSV(pathToPostHistory, postId, 1, false);
+        a_33076987.normalizeLinks();
         a_33076987.processVersionHistory(configEqual);
         PostGroundTruth a_33076987_gt = PostGroundTruth.readFromCSV(pathToGroundTruth, postId);
 
@@ -540,5 +544,54 @@ public class MetricEvaluationTest {
 
         int falseNegativesCount = PostBlockConnection.getFalseNegatives(connectionsList, connectionsGT).size();
         assertEquals(2, falseNegativesCount);
+    }
+
+    @Test
+    void equalsTestWithoutManagerAnswer37196630() {
+        int postId = 37196630;
+        PostVersionList a_37196630 = PostVersionList.readFromCSV(pathToPostHistory, postId, 1, false);
+        a_37196630.normalizeLinks();
+        a_37196630.processVersionHistory(configEqual);
+        PostGroundTruth a_37196630_gt = PostGroundTruth.readFromCSV(pathToGroundTruth, postId);
+
+        // text
+        Set<PostBlockConnection> connections_version_3 = a_37196630.getPostVersion(117953545)
+                .getConnections(TextBlockVersion.getPostBlockTypeIdFilter());
+        Set<PostBlockConnection> connections_version_3_gt = a_37196630_gt
+                .getConnections(117953545, TextBlockVersion.getPostBlockTypeIdFilter());
+
+        int truePositivesCount = PostBlockConnection.getTruePositives(connections_version_3, connections_version_3_gt).size();
+        assertEquals(3, truePositivesCount);
+
+        int falsePositivesCount = PostBlockConnection.getFalsePositives(connections_version_3, connections_version_3_gt).size();
+        // equals metric should never have false positives
+        assertEquals(0, falsePositivesCount);
+
+        int possibleConnections = a_37196630_gt.getPossibleConnections(117953545, TextBlockVersion.getPostBlockTypeIdFilter());
+        int trueNegativesCount = PostBlockConnection.getTrueNegatives(connections_version_3, connections_version_3_gt, possibleConnections);
+        assertEquals(2*4 + 3*4, trueNegativesCount);
+
+        int falseNegativesCount = PostBlockConnection.getFalseNegatives(connections_version_3, connections_version_3_gt).size();
+        assertEquals(1, falseNegativesCount);
+
+        // code
+        connections_version_3 = a_37196630.getPostVersion(117953545)
+                .getConnections(CodeBlockVersion.getPostBlockTypeIdFilter());
+        connections_version_3_gt = a_37196630_gt
+                .getConnections(117953545, CodeBlockVersion.getPostBlockTypeIdFilter());
+
+        truePositivesCount = PostBlockConnection.getTruePositives(connections_version_3, connections_version_3_gt).size();
+        assertEquals(3, truePositivesCount);
+
+        falsePositivesCount = PostBlockConnection.getFalsePositives(connections_version_3, connections_version_3_gt).size();
+        // equals metric should never have false positives
+        assertEquals(0, falsePositivesCount);
+
+        possibleConnections = a_37196630_gt.getPossibleConnections(117953545, CodeBlockVersion.getPostBlockTypeIdFilter());
+        trueNegativesCount = PostBlockConnection.getTrueNegatives(connections_version_3, connections_version_3_gt, possibleConnections);
+        assertEquals(2*3 + 3*2, trueNegativesCount);
+
+        falseNegativesCount = PostBlockConnection.getFalseNegatives(connections_version_3, connections_version_3_gt).size();
+        assertEquals(0, falseNegativesCount);
     }
 }

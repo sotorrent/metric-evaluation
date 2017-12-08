@@ -411,7 +411,7 @@ class DisabledTests {
         assertEquals(manager.getPostVersionLists().size(), manager.getPostGroundTruths().size());
         assertThat(manager.getPostVersionLists().keySet(), is(manager.getPostGroundTruths().keySet()));
 
-        List<Double> similarityThresholds = Arrays.asList(0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9);
+        List<Double> similarityThresholds = Arrays.asList(0.0, 0.5, 1.0);
 
         for (double threshold : similarityThresholds) {
             manager.addSimilarityMetric(
