@@ -746,10 +746,35 @@ public class MetricEvaluationManager implements Runnable {
                     SimilarityMetric.MetricType.SET,
                     threshold)
             );
+            // selected backup metrics (99% quantile)
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "cosineTokenNormalizedNormalizedTermFrequency",
+                    de.unitrier.st.stringsimilarity.profile.Variants::cosineTokenNormalizedNormalizedTermFrequency,
+                    SimilarityMetric.MetricType.PROFILE,
+                    threshold)
+            );
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "cosineTokenNormalizedBool",
+                    de.unitrier.st.stringsimilarity.profile.Variants::cosineTokenNormalizedBool,
+                    SimilarityMetric.MetricType.PROFILE,
+                    threshold)
+            );
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "twoGramJaccard",
+                    de.unitrier.st.stringsimilarity.set.Variants::twoGramJaccard,
+                    SimilarityMetric.MetricType.SET,
+                    threshold)
+            );
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "manhattanTokenNormalized",
+                    de.unitrier.st.stringsimilarity.profile.Variants::manhattanTokenNormalized,
+                    SimilarityMetric.MetricType.PROFILE,
+                    threshold)
+            );
         }
 
-        // Check if all metrics have been added (#selected metrics + baseline metric) * #thresholds
-        if (selectedSimilarityMetrics.size() != (19+1) * thresholds.size()) {
+        // Check if all metrics have been added (#selected metrics + #selected backup metrics + baseline metric) * #thresholds
+        if (selectedSimilarityMetrics.size() != (19+4+1) * thresholds.size()) {
             throw new IllegalArgumentException("Not all selected metrics added");
         }
     }
