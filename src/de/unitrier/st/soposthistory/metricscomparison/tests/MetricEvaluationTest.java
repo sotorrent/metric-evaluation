@@ -349,6 +349,7 @@ public class MetricEvaluationTest {
         MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
                 .withName("EqualTestSample")
                 .withInputPaths(pathToPostIdList, pathToPostHistory, pathToGroundTruth)
+                .withOutputDirPath(testOutputDir)
                 .withDefaultSimilarityMetrics(false)
                 .initialize();
 
