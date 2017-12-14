@@ -60,7 +60,7 @@ public class MetricEvaluationPerSample extends LinkedList<MetricEvaluationPerPos
         if (postGroundTruths.size() != postVersionLists.size())
             return false;
 
-        // check if GT and post version list contain the same posts with the same number of possible connections
+        // check if GT and post version list contain the same posts with the same number of possible comparisons
         for (int postId : postVersionLists.keySet()) {
             PostGroundTruth gt = postGroundTruths.get(postId);
 
@@ -69,21 +69,21 @@ public class MetricEvaluationPerSample extends LinkedList<MetricEvaluationPerPos
             } else {
                 // text
                 PostVersionList list = postVersionLists.get(postId);
-                int possibleConnectionsList = list.getPossibleConnections(TextBlockVersion.getPostBlockTypeIdFilter());
-                int possibleConnectionsGT = gt.getPossibleConnections(TextBlockVersion.getPostBlockTypeIdFilter());
-                if (possibleConnectionsList != possibleConnectionsGT) {
+                int possibleComparisonsList = list.getPossibleComparisons(TextBlockVersion.getPostBlockTypeIdFilter());
+                int possibleCompariosnsGT = gt.getPossibleComparisons(TextBlockVersion.getPostBlockTypeIdFilter());
+                if (possibleComparisonsList != possibleCompariosnsGT) {
                     return false;
                 }
                 // code
-                possibleConnectionsList = list.getPossibleConnections(CodeBlockVersion.getPostBlockTypeIdFilter());
-                possibleConnectionsGT = gt.getPossibleConnections(CodeBlockVersion.getPostBlockTypeIdFilter());
-                if (possibleConnectionsList != possibleConnectionsGT) {
+                possibleComparisonsList = list.getPossibleComparisons(CodeBlockVersion.getPostBlockTypeIdFilter());
+                possibleCompariosnsGT = gt.getPossibleComparisons(CodeBlockVersion.getPostBlockTypeIdFilter());
+                if (possibleComparisonsList != possibleCompariosnsGT) {
                     return false;
                 }
                 // both
-                possibleConnectionsList = list.getPossibleConnections(PostBlockVersion.getAllPostBlockTypeIdFilters());
-                possibleConnectionsGT = gt.getPossibleConnections(PostBlockVersion.getAllPostBlockTypeIdFilters());
-                if (possibleConnectionsList != possibleConnectionsGT) {
+                possibleComparisonsList = list.getPossibleComparisons(PostBlockVersion.getAllPostBlockTypeIdFilters());
+                possibleCompariosnsGT = gt.getPossibleComparisons(PostBlockVersion.getAllPostBlockTypeIdFilters());
+                if (possibleComparisonsList != possibleCompariosnsGT) {
                     return false;
                 }
             }
@@ -135,11 +135,11 @@ public class MetricEvaluationPerSample extends LinkedList<MetricEvaluationPerPos
         // "MetricType", "Metric", "Threshold", "Runtime",
         // "InformednessText", "MarkednessText", "MatthewsCorrelationText", "FScoreText",,
         // "InformednessCode", "MarkednessCode", "MatthewsCorrelationCode", "FScoreCode",
-        // "PostCount", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections",
-        // "TextBlockVersionCount", "PossibleConnectionsText",
+        // "PostCount", "PostVersionCount", "PostBlockVersionCount", "PossibleComparisons",
+        // "TextBlockVersionCount", "PossibleComparisonsText",
         // "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailuresText",
         // "PrecisionText", "RecallText", "InversePrecisionText", "InverseRecallText", "FailureRateText",
-        // "CodeBlockVersionCount", "PossibleConnectionsCode",
+        // "CodeBlockVersionCount", "PossibleComparisonsCode",
         // "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailuresCode",
         // "PrecisionCode", "RecallCode", "InversePrecisionCode", "InverseRecallCode", "FailureRateCode"
         csvPrinterSample.printRecord(
@@ -161,10 +161,10 @@ public class MetricEvaluationPerSample extends LinkedList<MetricEvaluationPerPos
                 aggregatedResultText.getPostCount(),
                 aggregatedResultText.getPostVersionCount(),
                 aggregatedResultText.getPostBlockVersionCount() + aggregatedResultCode.getPostBlockVersionCount(),
-                aggregatedResultText.getPossibleConnections() + aggregatedResultCode.getPossibleConnections(),
+                aggregatedResultText.getPossibleComparisons() + aggregatedResultCode.getPossibleComparisons(),
 
                 aggregatedResultText.getPostBlockVersionCount(),
-                aggregatedResultText.getPossibleConnections(),
+                aggregatedResultText.getPossibleComparisons(),
 
                 aggregatedResultText.getTruePositives(),
                 aggregatedResultText.getTrueNegatives(),
@@ -179,7 +179,7 @@ public class MetricEvaluationPerSample extends LinkedList<MetricEvaluationPerPos
                 aggregatedResultText.getFailureRate(),
 
                 aggregatedResultCode.getPostBlockVersionCount(),
-                aggregatedResultCode.getPossibleConnections(),
+                aggregatedResultCode.getPossibleComparisons(),
 
                 aggregatedResultCode.getTruePositives(),
                 aggregatedResultCode.getTrueNegatives(),

@@ -142,11 +142,11 @@ public class MetricEvaluationPerPost {
 
     private void validateResultsText() {
         int textBlockVersionCount = 0;
-        int textPossibleConnections = 0;
+        int textPossibleComparisons = 0;
 
         for (int postHistoryId : postHistoryIds) {
             textBlockVersionCount += resultsText.get(postHistoryId).getPostBlockVersionCount();
-            textPossibleConnections += resultsText.get(postHistoryId).getPossibleConnections();
+            textPossibleComparisons += resultsText.get(postHistoryId).getPossibleComparisons();
         }
 
         if (textBlockVersionCount != postVersionList.getTextBlockVersionCount()) {
@@ -155,8 +155,8 @@ public class MetricEvaluationPerPost {
             throw new IllegalStateException(msg);
         }
 
-        if (textPossibleConnections != postVersionList.getPossibleConnections(TextBlockVersion.getPostBlockTypeIdFilter())) {
-            String msg = "PossibleConnections for text blocks do not match.";
+        if (textPossibleComparisons != postVersionList.getPossibleComparisons(TextBlockVersion.getPostBlockTypeIdFilter())) {
+            String msg = "PossibleComparisons for text blocks do not match.";
             logger.warning(msg);
             throw new IllegalStateException(msg);
         }
@@ -164,11 +164,11 @@ public class MetricEvaluationPerPost {
 
     private void validateResultsCode() {
         int codeBlockVersionCount = 0;
-        int codePossibleConnections = 0;
+        int codePossibleComparisons = 0;
 
         for (int postHistoryId : postHistoryIds) {
             codeBlockVersionCount += resultsCode.get(postHistoryId).getPostBlockVersionCount();
-            codePossibleConnections += resultsCode.get(postHistoryId).getPossibleConnections();
+            codePossibleComparisons += resultsCode.get(postHistoryId).getPossibleComparisons();
         }
 
         if (codeBlockVersionCount != postVersionList.getCodeBlockVersionCount()) {
@@ -177,8 +177,8 @@ public class MetricEvaluationPerPost {
             throw new IllegalStateException(msg);
         }
 
-        if (codePossibleConnections != postVersionList.getPossibleConnections(CodeBlockVersion.getPostBlockTypeIdFilter())) {
-            String msg = "PossibleConnections for code blocks do not match.";
+        if (codePossibleComparisons != postVersionList.getPossibleComparisons(CodeBlockVersion.getPostBlockTypeIdFilter())) {
+            String msg = "PossibleComparisons for code blocks do not match.";
             logger.warning(msg);
             throw new IllegalStateException(msg);
         }
@@ -198,14 +198,14 @@ public class MetricEvaluationPerPost {
                 MetricResult newResult = getResultAndSetRuntime(postHistoryId, resultInMap, postBlockTypeFilter);
 
                 boolean postBlockVersionCountEqual = resultInMap.getPostBlockVersionCount() == newResult.getPostBlockVersionCount();
-                boolean possibleConnectionsEqual = resultInMap.getPossibleConnections() == newResult.getPossibleConnections();
+                boolean possibleComparisonsEqual = resultInMap.getPossibleComparisons() == newResult.getPossibleComparisons();
                 boolean truePositivesEqual = resultInMap.getTruePositives() == newResult.getTruePositives();
                 boolean falsePositivesEqual = resultInMap.getFalsePositives() == newResult.getFalsePositives();
                 boolean trueNegativesEqual = resultInMap.getTrueNegatives() == newResult.getTrueNegatives();
                 boolean falseNegativesEqual = resultInMap.getFalseNegatives() == newResult.getFalseNegatives();
                 boolean failedPredecessorComparisonsEqual = resultInMap.getFailedPredecessorComparisons() == newResult.getFailedPredecessorComparisons();
 
-                if (!postBlockVersionCountEqual || ! possibleConnectionsEqual
+                if (!postBlockVersionCountEqual || ! possibleComparisonsEqual
                         || !truePositivesEqual || !falsePositivesEqual || !trueNegativesEqual || !falseNegativesEqual
                         || !failedPredecessorComparisonsEqual) {
                     String msg = "Metric results changed from repetition " + (currentRepetition - 1) + " to " + currentRepetition;
@@ -237,16 +237,16 @@ public class MetricEvaluationPerPost {
                 postVersionList.getPostVersion(postHistoryId).getPostBlocks(postBlockTypeFilter).size()
         );
 
-        // possible connections
-        newResult.setPossibleConnections(
-                postVersionList.getPostVersion(postHistoryId).getPossibleConnections(postBlockTypeFilter)
+        // possible comparisons
+        newResult.setPossibleComparisons(
+                postVersionList.getPostVersion(postHistoryId).getPossibleComparisons(postBlockTypeFilter)
         );
 
         // results
         int failedPredecessorComparisons = postVersionList.getPostVersion(postHistoryId).getFailedPredecessorComparisons(postBlockTypeFilter);
-        int possibleConnectionsGT = postGroundTruth.getPossibleConnections(postHistoryId, postBlockTypeFilter);
-        if (possibleConnectionsGT != newResult.getPossibleConnections()) {
-            String msg = "Invalid result (expected: " + possibleConnectionsGT + "; actual: " + newResult.getPossibleConnections() + ")";
+        int possibleComparisonsGT = postGroundTruth.getPossibleComparisons(postHistoryId, postBlockTypeFilter);
+        if (possibleComparisonsGT != newResult.getPossibleComparisons()) {
+            String msg = "Invalid result (expected: " + possibleComparisonsGT + "; actual: " + newResult.getPossibleComparisons() + ")";
             logger.warning(msg);
             throw new IllegalStateException(msg);
         }
@@ -256,12 +256,12 @@ public class MetricEvaluationPerPost {
         int truePositivesCount = PostBlockConnection.getTruePositives(postBlockConnections, postBlockConnectionsGT).size();
         int falsePositivesCount = PostBlockConnection.getFalsePositives(postBlockConnections, postBlockConnectionsGT).size();
 
-        int trueNegativesCount = PostBlockConnection.getTrueNegatives(postBlockConnections, postBlockConnectionsGT, possibleConnectionsGT);
+        int trueNegativesCount = PostBlockConnection.getTrueNegatives(postBlockConnections, postBlockConnectionsGT, possibleComparisonsGT);
         int falseNegativesCount = PostBlockConnection.getFalseNegatives(postBlockConnections, postBlockConnectionsGT).size();
 
         int allConnectionsCount = truePositivesCount + falsePositivesCount + trueNegativesCount + falseNegativesCount;
-        if (possibleConnectionsGT != allConnectionsCount) {
-            String msg = "Invalid result (expected: " + possibleConnectionsGT + "; actual: " + allConnectionsCount + ")";
+        if (possibleComparisonsGT != allConnectionsCount) {
+            String msg = "Invalid result (expected: " + possibleComparisonsGT + "; actual: " + allConnectionsCount + ")";
             logger.warning(msg);
             throw new IllegalStateException(msg);
         }
@@ -285,10 +285,10 @@ public class MetricEvaluationPerPost {
         MetricResult.validate(aggregatedResultText, aggregatedResultCode);
 
         // "MetricType", "Metric", "Threshold", "PostId", "Runtime"
-        // "PostVersionCount", "PostBlockVersionCount", "PossibleConnections",
-        // "TextBlockVersionCount", "PossibleConnectionsText",
+        // "PostVersionCount", "PostBlockVersionCount", "PossibleComparisons",
+        // "TextBlockVersionCount", "PossibleComparisonsText",
         // "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailedPredecessorComparisonsText",
-        // "CodeBlockVersionCount", "PossibleConnectionsCode",
+        // "CodeBlockVersionCount", "PossibleComparisonsCode",
         // "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailedPredecessorComparisonsCode"
         csvPrinterPost.printRecord(
                 similarityMetric.getType(),
@@ -298,16 +298,16 @@ public class MetricEvaluationPerPost {
                 aggregatedResultText.getRuntime(),
                 postVersionList.size(),
                 aggregatedResultText.getPostBlockVersionCount() + aggregatedResultCode.getPostBlockVersionCount(),
-                aggregatedResultText.getPossibleConnections() + aggregatedResultCode.getPossibleConnections(),
+                aggregatedResultText.getPossibleComparisons() + aggregatedResultCode.getPossibleComparisons(),
                 aggregatedResultText.getPostBlockVersionCount(),
-                aggregatedResultText.getPossibleConnections(),
+                aggregatedResultText.getPossibleComparisons(),
                 aggregatedResultText.getTruePositives(),
                 aggregatedResultText.getTrueNegatives(),
                 aggregatedResultText.getFalsePositives(),
                 aggregatedResultText.getFalseNegatives(),
                 aggregatedResultText.getFailedPredecessorComparisons(),
                 aggregatedResultCode.getPostBlockVersionCount(),
-                aggregatedResultCode.getPossibleConnections(),
+                aggregatedResultCode.getPossibleComparisons(),
                 aggregatedResultCode.getTruePositives(),
                 aggregatedResultCode.getTrueNegatives(),
                 aggregatedResultCode.getFalsePositives(),
@@ -323,10 +323,10 @@ public class MetricEvaluationPerPost {
             // validate results
             MetricResult.validate(resultText, resultCode);
 
-            // "Sample", "MetricType", "Metric", "Threshold", "PostId", "PostHistoryId", "Runtime", "PossibleConnections",
-            // "TextBlockCount", "PossibleConnectionsText",
+            // "Sample", "MetricType", "Metric", "Threshold", "PostId", "PostHistoryId", "Runtime", "PossibleComparisons",
+            // "TextBlockCount", "PossibleComparisonsText",
             // "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailedPredecessorComparisonsText",
-            // "CodeBlockCount", "PossibleConnectionsCode",
+            // "CodeBlockCount", "PossibleComparisonsCode",
             // "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailedPredecessorComparisonsCode"
             csvPrinterVersion.printRecord(
                     similarityMetric.getType(),
@@ -335,16 +335,16 @@ public class MetricEvaluationPerPost {
                     postId,
                     postHistoryId,
                     resultText.getRuntime(),
-                    resultText.getPossibleConnections() + resultCode.getPossibleConnections(),
+                    resultText.getPossibleComparisons() + resultCode.getPossibleComparisons(),
                     resultText.getPostBlockVersionCount(),
-                    resultText.getPossibleConnections(),
+                    resultText.getPossibleComparisons(),
                     resultText.getTruePositives(),
                     resultText.getTrueNegatives(),
                     resultText.getFalsePositives(),
                     resultText.getFalseNegatives(),
                     resultText.getFailedPredecessorComparisons(),
                     resultCode.getPostBlockVersionCount(),
-                    resultCode.getPossibleConnections(),
+                    resultCode.getPossibleComparisons(),
                     resultCode.getTruePositives(),
                     resultCode.getTrueNegatives(),
                     resultCode.getFalsePositives(),

@@ -12,7 +12,7 @@ public class MetricResult {
     private int postCount;
     private int postVersionCount;
     private int postBlockVersionCount;
-    private int possibleConnections;
+    private int possibleComparisons;
     private int truePositives;
     private int falsePositives;
     private int trueNegatives;
@@ -34,7 +34,7 @@ public class MetricResult {
         this.postCount = 0;
         this.postVersionCount = 0;
         this.postBlockVersionCount = 0;
-        this.possibleConnections = 0;
+        this.possibleComparisons = 0;
         this.truePositives = 0;
         this.falsePositives = 0;
         this.trueNegatives = 0;
@@ -59,8 +59,8 @@ public class MetricResult {
         return postBlockVersionCount;
     }
 
-    int getPossibleConnections() {
-        return possibleConnections;
+    int getPossibleComparisons() {
+        return possibleComparisons;
     }
 
     public int getTruePositives() {
@@ -99,8 +99,8 @@ public class MetricResult {
         this.postBlockVersionCount = postBlockVersionCount;
     }
 
-    void setPossibleConnections(int possibleConnections) {
-        this.possibleConnections = possibleConnections;
+    void setPossibleComparisons(int possibleComparisons) {
+        this.possibleComparisons = possibleComparisons;
     }
 
     void setTruePositives(int truePositives) {
@@ -131,7 +131,7 @@ public class MetricResult {
         postCount += result.getPostCount();
         postVersionCount += result.getPostVersionCount();
         postBlockVersionCount += result.getPostBlockVersionCount();
-        possibleConnections += result.getPossibleConnections();
+        possibleComparisons += result.getPossibleComparisons();
         truePositives += result.getTruePositives();
         falsePositives += result.getFalsePositives();
         trueNegatives += result.getTrueNegatives();
@@ -207,7 +207,7 @@ public class MetricResult {
     }
 
     double getFailureRate() {
-        double failureRate = possibleConnections == 0 ? 0.0 : ((double) failedPredecessorComparisons) / ((double) possibleConnections);
+        double failureRate = possibleComparisons == 0 ? 0.0 : ((double) failedPredecessorComparisons) / ((double) possibleComparisons);
 
         if (Util.lessThan(failureRate, 0.0) || Util.greaterThan(failureRate, 1.0)) {
             String msg = similarityMetric + ": Failure rate must be in range [0.0, 1.0], but was " + failureRate;
@@ -219,13 +219,13 @@ public class MetricResult {
     }
 
     static void validate(MetricResult resultText, MetricResult resultCode) throws IllegalStateException {
-        if (resultText.getFailedPredecessorComparisons() > resultText.getPossibleConnections()) {
-            String msg = resultText.getSimilarityMetric() + ": Number of failed comparisons is greater than number of possible connections (text).";
+        if (resultText.getFailedPredecessorComparisons() > resultText.getPossibleComparisons()) {
+            String msg = resultText.getSimilarityMetric() + ": Number of failed comparisons is greater than number of possible comparisons (text).";
             logger.warning(msg);
             throw new IllegalStateException(msg);
         }
-        if (resultCode.getFailedPredecessorComparisons() > resultCode.getPossibleConnections()) {
-            String msg = resultCode.getSimilarityMetric() + ": Number of failed comparisons is greater than number of possible connections (code).";
+        if (resultCode.getFailedPredecessorComparisons() > resultCode.getPossibleComparisons()) {
+            String msg = resultCode.getSimilarityMetric() + ": Number of failed comparisons is greater than number of possible comparisons (code).";
             logger.warning(msg);
             throw new IllegalStateException(msg);
         }

@@ -530,13 +530,13 @@ public class MetricEvaluationTest {
         // equals metric should never have false positives
         assertEquals(expectedFalsePositives, falsePositivesCount);
 
-        int possibleConnections;
+        int possibleComparisons;
         if (postHistoryId == null) {
-            possibleConnections = postGroundTruth.getPossibleConnections(postBlockTypeFilter);
+            possibleComparisons = postGroundTruth.getPossibleComparisons(postBlockTypeFilter);
         } else {
-            possibleConnections = postGroundTruth.getPossibleConnections(postHistoryId, postBlockTypeFilter);
+            possibleComparisons = postGroundTruth.getPossibleComparisons(postHistoryId, postBlockTypeFilter);
         }
-        int trueNegativesCount = PostBlockConnection.getTrueNegatives(connections, connections_gt, possibleConnections);
+        int trueNegativesCount = PostBlockConnection.getTrueNegatives(connections, connections_gt, possibleComparisons);
         assertEquals(expectedTrueNegatives, trueNegativesCount);
 
         int falseNegativesCount = PostBlockConnection.getFalseNegatives(connections, connections_gt).size();
