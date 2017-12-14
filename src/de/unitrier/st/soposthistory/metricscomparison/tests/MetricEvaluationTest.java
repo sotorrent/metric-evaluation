@@ -102,13 +102,13 @@ public class MetricEvaluationTest {
             resultsText = evaluation_a_3758880.getResultsText(postHistoryId);
             assertEquals(1, resultsText.getTruePositives());
             assertEquals(0, resultsText.getFalsePositives());
-            assertEquals(5, resultsText.getTrueNegatives());
+            assertEquals(1, resultsText.getTrueNegatives());
             assertEquals(0, resultsText.getFalseNegatives());
 
             resultsCode = evaluation_a_3758880.getResultsCode(postHistoryId);
             assertEquals(2, resultsCode.getTruePositives());
             assertEquals(0, resultsCode.getFalsePositives());
-            assertEquals(4, resultsCode.getTrueNegatives());
+            assertEquals(0, resultsCode.getTrueNegatives());
             assertEquals(0, resultsCode.getFalseNegatives());
 
             // version 3 to 10 only for text blocks (they don't differ)
@@ -118,7 +118,7 @@ public class MetricEvaluationTest {
                 resultsText = evaluation_a_3758880.getResultsText(postHistoryId);
                 assertEquals(2, resultsText.getTruePositives());
                 assertEquals(0, resultsText.getFalsePositives());
-                assertEquals(2, resultsText.getTrueNegatives());
+                assertEquals(0, resultsText.getTrueNegatives());
                 assertEquals(0, resultsText.getFalseNegatives());
             }
 
@@ -126,7 +126,7 @@ public class MetricEvaluationTest {
             resultsText = evaluation_a_3758880.getResultsText(postHistoryId);
             assertEquals(2, resultsText.getTruePositives());
             assertEquals(0, resultsText.getFalsePositives());
-            assertEquals(4, resultsText.getTrueNegatives());
+            assertEquals(1, resultsText.getTrueNegatives());
             assertEquals(0, resultsText.getFalseNegatives());
 
             // version 3 and 6 for code
@@ -137,7 +137,7 @@ public class MetricEvaluationTest {
                 resultsCode = evaluation_a_3758880.getResultsCode(postHistoryId);
                 assertEquals(1, resultsCode.getTruePositives());
                 assertEquals(0, resultsCode.getFalsePositives());
-                assertEquals(2, resultsCode.getTrueNegatives());
+                assertEquals(0, resultsCode.getTrueNegatives());
                 assertEquals(1, resultsCode.getFalseNegatives());
             }
 
@@ -149,7 +149,7 @@ public class MetricEvaluationTest {
                 resultsCode = evaluation_a_3758880.getResultsCode(postHistoryId);
                 assertEquals(2, resultsCode.getTruePositives());
                 assertEquals(0, resultsCode.getFalsePositives());
-                assertEquals(2, resultsCode.getTrueNegatives());
+                assertEquals(0, resultsCode.getTrueNegatives());
                 assertEquals(0, resultsCode.getFalseNegatives());
             }
 
@@ -177,13 +177,13 @@ public class MetricEvaluationTest {
                 resultsText = evaluation_a_22037280.getResultsText(postHistoryId);
                 assertEquals(3, resultsText.getTruePositives());
                 assertEquals(0, resultsText.getFalsePositives());
-                assertEquals(6, resultsText.getTrueNegatives());
+                assertEquals(0, resultsText.getTrueNegatives());
                 assertEquals(0, resultsText.getFalseNegatives());
 
                 resultsCode = evaluation_a_22037280.getResultsCode(postHistoryId);
                 assertEquals(2, resultsCode.getTruePositives());
                 assertEquals(0, resultsCode.getFalsePositives());
-                assertEquals(2, resultsCode.getTrueNegatives());
+                assertEquals(0, resultsCode.getTrueNegatives());
                 assertEquals(0, resultsCode.getFalseNegatives());
             }
 
@@ -269,7 +269,7 @@ public class MetricEvaluationTest {
             MetricResult resultsText = evaluation_a_3758880.getResultsText(postHistoryId_version2);
             assertEquals(1, resultsText.getTruePositives());
             assertEquals(0, resultsText.getFalsePositives());
-            assertEquals(5, resultsText.getTrueNegatives());
+            assertEquals(1, resultsText.getTrueNegatives());
             assertEquals(0, resultsText.getFalseNegatives());
             assertEquals(4, resultsText.getFailedPredecessorComparisons());
 
@@ -308,7 +308,7 @@ public class MetricEvaluationTest {
             MetricResult resultsCode = evaluation_a_2096370.getResultsCode(postHistoryId_version2);
             assertEquals(1, resultsCode.getTruePositives());
             assertEquals(0, resultsCode.getFalsePositives());
-            assertEquals(2, resultsCode.getTrueNegatives());
+            assertEquals(0, resultsCode.getTrueNegatives());
             assertEquals(0, resultsCode.getFalseNegatives());
             assertEquals(1, resultsCode.getFailedPredecessorComparisons());
 

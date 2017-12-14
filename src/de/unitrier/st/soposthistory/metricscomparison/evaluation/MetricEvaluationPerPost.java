@@ -233,14 +233,12 @@ public class MetricEvaluationPerPost {
         newResult.setPostVersionCount(1);
 
         // post block count
-        newResult.setPostBlockVersionCount(
-                postVersionList.getPostVersion(postHistoryId).getPostBlocks(postBlockTypeFilter).size()
-        );
+        int postBlockCount = postVersionList.getPostVersion(postHistoryId).getPostBlocks(postBlockTypeFilter).size();
+        newResult.setPostBlockVersionCount(postBlockCount);
 
         // possible comparisons
-        newResult.setPossibleComparisons(
-                postVersionList.getPostVersion(postHistoryId).getPossibleComparisons(postBlockTypeFilter)
-        );
+        int possibleComparisons = postVersionList.getPostVersion(postHistoryId).getPossibleComparisons(postBlockTypeFilter);
+        newResult.setPossibleComparisons(possibleComparisons);
 
         // results
         int failedPredecessorComparisons = postVersionList.getPostVersion(postHistoryId).getFailedPredecessorComparisons(postBlockTypeFilter);
@@ -256,12 +254,13 @@ public class MetricEvaluationPerPost {
         int truePositivesCount = PostBlockConnection.getTruePositives(postBlockConnections, postBlockConnectionsGT).size();
         int falsePositivesCount = PostBlockConnection.getFalsePositives(postBlockConnections, postBlockConnectionsGT).size();
 
-        int trueNegativesCount = PostBlockConnection.getTrueNegatives(postBlockConnections, postBlockConnectionsGT, possibleComparisonsGT);
+        int possibleConnectionsGT = postGroundTruth.getPossibleConnections(postHistoryId, postBlockTypeFilter);
+        int trueNegativesCount = PostBlockConnection.getTrueNegatives(postBlockConnections, postBlockConnectionsGT, possibleConnectionsGT);
         int falseNegativesCount = PostBlockConnection.getFalseNegatives(postBlockConnections, postBlockConnectionsGT).size();
 
         int allConnectionsCount = truePositivesCount + falsePositivesCount + trueNegativesCount + falseNegativesCount;
-        if (possibleComparisonsGT != allConnectionsCount) {
-            String msg = "Invalid result (expected: " + possibleComparisonsGT + "; actual: " + allConnectionsCount + ")";
+        if (possibleConnectionsGT != allConnectionsCount) {
+            String msg = "Invalid result (expected: " + possibleConnectionsGT + "; actual: " + allConnectionsCount + ")";
             logger.warning(msg);
             throw new IllegalStateException(msg);
         }
