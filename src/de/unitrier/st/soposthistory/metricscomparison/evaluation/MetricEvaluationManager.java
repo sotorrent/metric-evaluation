@@ -624,6 +624,7 @@ public class MetricEvaluationManager implements Runnable {
 
         // do not use for loop with += 0.01 --> leads to rounding errors
         for (double threshold : thresholds) {
+
             // baseline metric
             selectedSimilarityMetrics.add(new SimilarityMetric(
                     "equal",
@@ -631,10 +632,35 @@ public class MetricEvaluationManager implements Runnable {
                     SimilarityMetric.MetricType.EQUAL,
                     threshold
             ));
-            // selected metrics (99% quantile)
+
+            // selected metrics (95% quantile of sample_random, sample_java_random, and sample_random_99)
             selectedSimilarityMetrics.add(new SimilarityMetric(
-                    "tokenDiceNormalized",
-                    de.unitrier.st.stringsimilarity.set.Variants::tokenDiceNormalized,
+                    "twoGramJaccardNormalizedPadding",
+                    de.unitrier.st.stringsimilarity.set.Variants::twoGramJaccardNormalizedPadding,
+                    SimilarityMetric.MetricType.SET,
+                    threshold)
+            );
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "winnowingThreeGramDiceNormalized",
+                    de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingThreeGramDiceNormalized,
+                    SimilarityMetric.MetricType.FINGERPRINT,
+                    threshold)
+            );
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "cosineTwoGramNormalizedBool",
+                    de.unitrier.st.stringsimilarity.profile.Variants::cosineTwoGramNormalizedBool,
+                    SimilarityMetric.MetricType.PROFILE,
+                    threshold)
+            );
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "threeGramDice",
+                    de.unitrier.st.stringsimilarity.set.Variants::threeGramDice,
+                    SimilarityMetric.MetricType.SET,
+                    threshold)
+            );
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "twoGramDiceNormalized",
+                    de.unitrier.st.stringsimilarity.set.Variants::twoGramDiceNormalized,
                     SimilarityMetric.MetricType.SET,
                     threshold)
             );
@@ -645,15 +671,69 @@ public class MetricEvaluationManager implements Runnable {
                     threshold)
             );
             selectedSimilarityMetrics.add(new SimilarityMetric(
-                    "fourGramDiceNormalized",
-                    de.unitrier.st.stringsimilarity.set.Variants::fourGramDiceNormalized,
+                    "threeGramJaccard",
+                    de.unitrier.st.stringsimilarity.set.Variants::threeGramJaccard,
                     SimilarityMetric.MetricType.SET,
                     threshold)
             );
             selectedSimilarityMetrics.add(new SimilarityMetric(
-                    "threeGramDiceNormalized",
-                    de.unitrier.st.stringsimilarity.set.Variants::threeGramDiceNormalized,
+                    "winnowingFourGramDice",
+                    de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingFourGramDice,
+                    SimilarityMetric.MetricType.FINGERPRINT,
+                    threshold)
+            );
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "fiveGramDice",
+                    de.unitrier.st.stringsimilarity.set.Variants::fiveGramDice,
                     SimilarityMetric.MetricType.SET,
+                    threshold)
+            );
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "fourGramJaccard",
+                    de.unitrier.st.stringsimilarity.set.Variants::fourGramJaccard,
+                    SimilarityMetric.MetricType.SET,
+                    threshold)
+            );
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "winnowingThreeGramLongestCommonSubsequence",
+                    de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingThreeGramLongestCommonSubsequence,
+                    SimilarityMetric.MetricType.FINGERPRINT,
+                    threshold)
+            );
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "fourGramDice",
+                    de.unitrier.st.stringsimilarity.set.Variants::fourGramDice,
+                    SimilarityMetric.MetricType.SET,
+                    threshold)
+            );
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "threeGramJaccardNormalized",
+                    de.unitrier.st.stringsimilarity.set.Variants::threeGramJaccardNormalized,
+                    SimilarityMetric.MetricType.SET,
+                    threshold)
+            );
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "tokenJaccardNormalized",
+                    de.unitrier.st.stringsimilarity.set.Variants::tokenJaccardNormalized,
+                    SimilarityMetric.MetricType.SET,
+                    threshold)
+            );
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "cosineThreeGramNormalizedBool",
+                    de.unitrier.st.stringsimilarity.profile.Variants::cosineThreeGramNormalizedBool,
+                    SimilarityMetric.MetricType.PROFILE,
+                    threshold)
+            );
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "cosineThreeGramNormalizedNormalizedTermFrequency",
+                    de.unitrier.st.stringsimilarity.profile.Variants::cosineThreeGramNormalizedNormalizedTermFrequency,
+                    SimilarityMetric.MetricType.PROFILE,
+                    threshold)
+            );
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "cosineFourGramNormalizedNormalizedTermFrequency",
+                    de.unitrier.st.stringsimilarity.profile.Variants::cosineFourGramNormalizedNormalizedTermFrequency,
+                    SimilarityMetric.MetricType.PROFILE,
                     threshold)
             );
             selectedSimilarityMetrics.add(new SimilarityMetric(
@@ -663,21 +743,33 @@ public class MetricEvaluationManager implements Runnable {
                     threshold)
             );
             selectedSimilarityMetrics.add(new SimilarityMetric(
-                    "fiveGramDiceNormalized",
-                    de.unitrier.st.stringsimilarity.set.Variants::fiveGramDiceNormalized,
+                    "manhattanFourGramNormalized",
+                    de.unitrier.st.stringsimilarity.profile.Variants::manhattanFourGramNormalized,
+                    SimilarityMetric.MetricType.PROFILE,
+                    threshold)
+            );
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "winnowingFourGramDiceNormalized",
+                    de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingFourGramDiceNormalized,
+                    SimilarityMetric.MetricType.FINGERPRINT,
+                    threshold)
+            );
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "winnowingFiveGramDiceNormalized",
+                    de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingFiveGramDiceNormalized,
+                    SimilarityMetric.MetricType.FINGERPRINT,
+                    threshold)
+            );
+            selectedSimilarityMetrics.add(new SimilarityMetric(
+                    "threeGramDiceNormalized",
+                    de.unitrier.st.stringsimilarity.set.Variants::threeGramDiceNormalized,
                     SimilarityMetric.MetricType.SET,
                     threshold)
             );
             selectedSimilarityMetrics.add(new SimilarityMetric(
-                    "cosineThreeGramNormalizedBool",
-                    de.unitrier.st.stringsimilarity.profile.Variants::cosineThreeGramNormalizedBool,
-                    SimilarityMetric.MetricType.PROFILE,
-                    threshold
-            ));
-            selectedSimilarityMetrics.add(new SimilarityMetric(
-                    "manhattanFourGramNormalized",
-                    de.unitrier.st.stringsimilarity.profile.Variants::manhattanFourGramNormalized,
-                    SimilarityMetric.MetricType.PROFILE,
+                    "threeGramDiceNormalizedPadding",
+                    de.unitrier.st.stringsimilarity.set.Variants::threeGramDiceNormalizedPadding,
+                    SimilarityMetric.MetricType.SET,
                     threshold)
             );
             selectedSimilarityMetrics.add(new SimilarityMetric(
@@ -687,101 +779,38 @@ public class MetricEvaluationManager implements Runnable {
                     threshold)
             );
             selectedSimilarityMetrics.add(new SimilarityMetric(
-                    "fiveGramJaccardNormalized",
-                    de.unitrier.st.stringsimilarity.set.Variants::fiveGramJaccardNormalized,
+                    "fourGramJaccardNormalizedPadding",
+                    de.unitrier.st.stringsimilarity.set.Variants::fourGramJaccardNormalizedPadding,
                     SimilarityMetric.MetricType.SET,
                     threshold)
             );
             selectedSimilarityMetrics.add(new SimilarityMetric(
-                    "fiveGramDiceNormalizedPadding",
-                    de.unitrier.st.stringsimilarity.set.Variants::fiveGramDiceNormalizedPadding,
+                    "threeGramJaccardNormalizedPadding",
+                    de.unitrier.st.stringsimilarity.set.Variants::threeGramJaccardNormalizedPadding,
                     SimilarityMetric.MetricType.SET,
-                    threshold)
-            );
-            selectedSimilarityMetrics.add(new SimilarityMetric(
-                    "winnowingFiveGramDice",
-                    de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingFiveGramDice,
-                    SimilarityMetric.MetricType.FINGERPRINT,
-                    threshold)
-            );
-            selectedSimilarityMetrics.add(new SimilarityMetric(
-                    "threeGramDice",
-                    de.unitrier.st.stringsimilarity.set.Variants::threeGramDice,
-                    SimilarityMetric.MetricType.SET,
-                    threshold)
-            );
-            selectedSimilarityMetrics.add(new SimilarityMetric(
-                    "fourGramDice",
-                    de.unitrier.st.stringsimilarity.set.Variants::fourGramDice,
-                    SimilarityMetric.MetricType.SET,
-                    threshold
-            ));
-            selectedSimilarityMetrics.add(new SimilarityMetric(
-                    "fiveGramDice",
-                    de.unitrier.st.stringsimilarity.set.Variants::fiveGramDice,
-                    SimilarityMetric.MetricType.SET,
-                    threshold)
-            );
-            selectedSimilarityMetrics.add(new SimilarityMetric(
-                    "twoShingleDiceNormalized",
-                    de.unitrier.st.stringsimilarity.set.Variants::twoShingleDiceNormalized,
-                    SimilarityMetric.MetricType.SET,
-                    threshold)
-            );
-            selectedSimilarityMetrics.add(new SimilarityMetric(
-                    "fiveGramJaccard",
-                    de.unitrier.st.stringsimilarity.set.Variants::fiveGramJaccard,
-                    SimilarityMetric.MetricType.SET,
-                    threshold)
-            );
-            selectedSimilarityMetrics.add(new SimilarityMetric(
-                    "manhattanTwoShingleNormalized",
-                    de.unitrier.st.stringsimilarity.profile.Variants::manhattanTwoShingleNormalized,
-                    SimilarityMetric.MetricType.PROFILE,
-                    threshold)
-            );
-            selectedSimilarityMetrics.add(new SimilarityMetric(
-                    "winnowingFourGramOptimalAlignment",
-                    de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingFourGramOptimalAlignment,
-                    SimilarityMetric.MetricType.FINGERPRINT,
-                    threshold)
-            );
-            selectedSimilarityMetrics.add(new SimilarityMetric(
-                    "manhattanThreeShingleNormalized",
-                    de.unitrier.st.stringsimilarity.profile.Variants::manhattanThreeShingleNormalized,
-                    SimilarityMetric.MetricType.PROFILE,
                     threshold)
             );
 
-            // selected backup metrics (99% quantile)
+            // selected backup metrics (95% quantile of sample_random, sample_java_random, and sample_random_99)
+            //
+            // tokenJaccardNormalized already added
+            //
             selectedSimilarityMetrics.add(new SimilarityMetric(
-                    "cosineTokenNormalizedNormalizedTermFrequency",
-                    de.unitrier.st.stringsimilarity.profile.Variants::cosineTokenNormalizedNormalizedTermFrequency,
-                    SimilarityMetric.MetricType.PROFILE,
-                    threshold)
-            );
-            selectedSimilarityMetrics.add(new SimilarityMetric(
-                    "cosineTokenNormalizedBool",
-                    de.unitrier.st.stringsimilarity.profile.Variants::cosineTokenNormalizedBool,
-                    SimilarityMetric.MetricType.PROFILE,
-                    threshold)
-            );
-            selectedSimilarityMetrics.add(new SimilarityMetric(
-                    "twoGramJaccard",
-                    de.unitrier.st.stringsimilarity.set.Variants::twoGramJaccard,
+                    "tokenDiceNormalized",
+                    de.unitrier.st.stringsimilarity.set.Variants::tokenDiceNormalized,
                     SimilarityMetric.MetricType.SET,
                     threshold)
             );
             selectedSimilarityMetrics.add(new SimilarityMetric(
-                    "manhattanTokenNormalized",
-                    de.unitrier.st.stringsimilarity.profile.Variants::manhattanTokenNormalized,
-                    SimilarityMetric.MetricType.PROFILE,
+                    "tokenDice",
+                    de.unitrier.st.stringsimilarity.set.Variants::tokenDice,
+                    SimilarityMetric.MetricType.SET,
                     threshold)
             );
         }
 
         // Check if all metrics have been added (#selected metrics + #selected backup metrics + baseline metric) * #thresholds
-        if (selectedSimilarityMetrics.size() != (20+4+1) * thresholds.size()) {
+        if (selectedSimilarityMetrics.size() != (26+2+1) * thresholds.size()) {
             throw new IllegalArgumentException("Not all selected metrics added");
         }
     }
