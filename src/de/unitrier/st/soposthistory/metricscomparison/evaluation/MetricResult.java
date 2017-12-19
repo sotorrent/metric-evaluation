@@ -190,7 +190,7 @@ public class MetricResult {
 
         double matthewsCorrelationCoefficient = numerator / denominator;
 
-        if (Util.lessThan(matthewsCorrelationCoefficient, 0.0) || Util.greaterThan(matthewsCorrelationCoefficient, 1.0)) {
+        if (Util.lessThan(matthewsCorrelationCoefficient, -1.0) || Util.greaterThan(matthewsCorrelationCoefficient, 1.0)) {
             String msg = "Matthews correlation coefficient must be in range [0.0, 1.0], but was " + matthewsCorrelationCoefficient;
             logger.warning(msg);
             throw new IllegalArgumentException(msg);
