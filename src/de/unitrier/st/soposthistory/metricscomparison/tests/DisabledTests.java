@@ -30,10 +30,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class DisabledTests {
     private static Logger logger;
 
-    private static Path pathToOldMetricComparisonResults = Paths.get(
-            "testdata", "metrics_comparison", "results_metric_comparison_old.csv"
-    );
-
     static {
         try {
             logger = Util.getClassLogger(de.unitrier.st.soposthistory.metricscomparison.tests.DisabledTests.class);
@@ -43,128 +39,21 @@ class DisabledTests {
     }
 
     @Test
-    void compareMetricEvaluationManagerWithOldProjectTest() {
+    void testMetricEvaluationManagerTestData() {
         MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
-                .withName("TestCompareWithOldProject")
+                .withName("TestData")
                 .withInputPaths(MetricEvaluationTest.pathToPostIdList, MetricEvaluationTest.pathToPostHistory,
                         MetricEvaluationTest.pathToGroundTruth)
                 .withOutputDirPath(MetricEvaluationTest.testOutputDir)
                 .withNumberOfRepetitions(1)
                 .initialize();
 
-        List<Integer> postHistoryIds_3758880 = manager.getPostVersionLists().get(3758880).getPostHistoryIds();
-        List<Integer> postHistoryIds_22037280 = manager.getPostVersionLists().get(22037280).getPostHistoryIds();
-
-        Set<String> excludedVariants = new HashSet<>();
-        excludedVariants.add("Kondrak05");
-
-        CSVParser csvParser;
-
         Thread managerThread = new Thread(manager);
         managerThread.start();
         try {
             managerThread.join();
-
-            csvParser = CSVParser.parse(
-                    pathToOldMetricComparisonResults.toFile(),
-                    StandardCharsets.UTF_8,
-                    MetricEvaluationManager.csvFormatMetricEvaluationPerVersion.withFirstRecordAsHeader()
-            );
-
-            csvParser.getHeaderMap();
-            List<CSVRecord> records = csvParser.getRecords();
-            for (CSVRecord record : records) {
-                String metric = record.get("metric");
-
-                boolean skipRecord = false;
-                for(String excludedVariant : excludedVariants) {
-                    if (metric.contains(excludedVariant)) {
-                        skipRecord = true;
-                        break;
-                    }
-                }
-
-                if(skipRecord) {
-                    continue;
-                }
-
-                Double threshold = Double.valueOf(record.get("threshold"));
-                // comparison manager computes only thresholds mod 0.10 by now so unequal thresholds will be skipped
-                if ((int) (threshold * 100) % 10 != 0) {
-                    continue;
-                }
-
-                Integer postId = Integer.valueOf(record.get("postid"));
-
-                Integer postHistoryId = null;
-
-                Integer truePositivesText = null;
-                Integer trueNegativesText = null;
-                Integer falsePositivesText = null;
-                Integer falseNegativesText = null;
-
-                Integer truePositivesCode = null;
-                Integer trueNegativesCode = null;
-                Integer falsePositivesCode = null;
-                Integer falseNegativesCode = null;
-
-                try {
-                    postHistoryId = Integer.valueOf(record.get("posthistoryid"));
-
-                    truePositivesText = Integer.valueOf(record.get("#truepositivestext"));
-                    trueNegativesText = Integer.valueOf(record.get("#truenegativestext"));
-                    falsePositivesText = Integer.valueOf(record.get("#falsepositivestext"));
-                    falseNegativesText = Integer.valueOf(record.get("#falsenegativestext"));
-
-                    truePositivesCode = Integer.valueOf(record.get("#truepositivescode"));
-                    trueNegativesCode = Integer.valueOf(record.get("#truenegativescode"));
-                    falsePositivesCode = Integer.valueOf(record.get("#falsepositivescode"));
-                    falseNegativesCode = Integer.valueOf(record.get("#falsenegativescode"));
-                } catch (NumberFormatException ignored) {
-                }
-
-                MetricEvaluationPerPost tmpMetricEvaluationPerPost = manager.getMetricEvaluation(postId, metric, threshold);
-
-                if (postHistoryId == null) {
-                    List<Integer> postHistoryIds;
-                    if (postId == 3758880) {
-                        postHistoryIds = postHistoryIds_3758880;
-                    } else if (postId == 22037280) {
-                        postHistoryIds = postHistoryIds_22037280;
-                    } else {
-                        throw new IllegalArgumentException("Post with id " + postId + " has not been listed in test set");
-                    }
-
-
-                    boolean resultsTextNull = false;
-                    boolean resultsCodeNull = false;
-                    assertNotNull(postHistoryIds);
-                    for (Integer tmpPostHistoryId : postHistoryIds) {
-                        MetricResult resultsText = tmpMetricEvaluationPerPost.getResultsText(tmpPostHistoryId);
-                        MetricResult resultsCode = tmpMetricEvaluationPerPost.getResultsCode(tmpPostHistoryId);
-
-                        // in previous versions, the results were set to null in case one comparison failed
-                        resultsTextNull = resultsTextNull || resultsText.getFailedPredecessorComparisons() > 0;
-                        resultsCodeNull = resultsCodeNull || resultsCode.getFailedPredecessorComparisons() > 0;
-                    }
-                    assertTrue(resultsTextNull || resultsCodeNull);
-                } else {
-                    MetricResult resultsText = tmpMetricEvaluationPerPost.getResultsText(postHistoryId);
-                    assertEquals(truePositivesText, Integer.valueOf(resultsText.getTruePositives()));
-                    assertEquals(trueNegativesText, Integer.valueOf(resultsText.getPostBlockVersionCount() - resultsText.getTruePositives() - resultsText.getFalsePositives() - resultsText.getFalseNegatives()));
-                    assertEquals(trueNegativesText, Integer.valueOf(resultsText.getPostBlockVersionCount() - resultsText.getTruePositives() - resultsText.getFalseNegatives()));
-                    assertEquals(falsePositivesText, Integer.valueOf(resultsText.getFalsePositives()));
-                    assertEquals(falseNegativesText, Integer.valueOf(resultsText.getFalseNegatives()));
-
-                    MetricResult resultsCode = tmpMetricEvaluationPerPost.getResultsCode(postHistoryId);
-                    assertEquals(truePositivesCode, Integer.valueOf(resultsCode.getTruePositives()));
-                    assertEquals(trueNegativesCode, Integer.valueOf(resultsCode.getPostBlockVersionCount() - resultsCode.getTruePositives() - resultsCode.getFalsePositives() - resultsCode.getFalseNegatives()));
-                    assertEquals(trueNegativesCode, Integer.valueOf(resultsCode.getPostBlockVersionCount() - resultsCode.getTruePositives() - resultsCode.getFalseNegatives()));
-                    assertEquals(falsePositivesCode, Integer.valueOf(resultsCode.getFalsePositives()));
-                    assertEquals(falseNegativesCode, Integer.valueOf(resultsCode.getFalseNegatives()));
-                }
-            }
-        } catch (InterruptedException | IOException e) {
+            assertTrue(manager.isFinished()); // assert that execution of manager successfully finished
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }

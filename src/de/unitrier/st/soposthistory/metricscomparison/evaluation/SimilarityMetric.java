@@ -22,15 +22,15 @@ public class SimilarityMetric {
         return name;
     }
 
-    BiFunction<String, String, Double> getMetric() {
+    public BiFunction<String, String, Double> getMetric() {
         return metric;
     }
 
-    MetricType getType() {
+    public MetricType getType() {
         return type;
     }
 
-    double getThreshold() {
+    public double getThreshold() {
         return threshold;
     }
 

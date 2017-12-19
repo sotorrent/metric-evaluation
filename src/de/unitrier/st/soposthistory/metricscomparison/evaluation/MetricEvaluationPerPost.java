@@ -386,6 +386,10 @@ public class MetricEvaluationPerPost {
         return postId;
     }
 
+    public SimilarityMetric getSimilarityMetric() {
+        return similarityMetric;
+    }
+
     public MetricResult getResultsText(int postHistoryId) {
         return resultsText.get(postHistoryId);
     }
