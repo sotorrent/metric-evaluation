@@ -681,7 +681,7 @@ public class MetricEvaluationManager implements Runnable {
             }
         }
 
-        logger.info("Thread " + threadId + ": " + metricNames.size() + " metric names read.");
+        logger.info("Thread " + threadId + ": " + similarityMetrics.size() + " metrics added.");
     }
 
     /**
