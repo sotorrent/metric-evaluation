@@ -1,0 +1,5 @@
+Metric
+cosineTokenNormalizedTermFrequency
+cosineTokenNormalizedNormalizedTermFrequency
+tokenJaccardNormalized
+tokenDice

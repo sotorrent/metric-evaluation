@@ -41,6 +41,10 @@ public class SimilarityMetric {
                 && threshold == other.getThreshold();
     }
 
+    SimilarityMetric createCopyWithNewThreshold(double threshold) {
+        return new SimilarityMetric(name, metric, type, threshold);
+    }
+
     @Override
     public String toString() {
         return "(" + name + "; " + threshold + ")";

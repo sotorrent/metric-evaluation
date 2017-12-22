@@ -44,9 +44,9 @@ class Main {
         threadCountOption.setRequired(true);
         options.addOption(threadCountOption);
 
-        Option defaultMetricsOption = new Option("d", "default-metrics", true, "test default metrics");
-        defaultMetricsOption.setRequired(true);
-        options.addOption(defaultMetricsOption);
+        Option selectedMetricsDirOption = new Option("d", "selected-metrics-dir", true, "path to directory with selected metrics");
+        selectedMetricsDirOption.setRequired(false);
+        options.addOption(selectedMetricsDirOption);
 
         CommandLineParser commandLineParser = new DefaultParser();
         HelpFormatter commandLineFormatter = new HelpFormatter();
@@ -64,22 +64,30 @@ class Main {
         Path samplesDir = Paths.get(commandLine.getOptionValue("samples-dir"));
         Path outputDir = Paths.get(commandLine.getOptionValue("output-dir"));
         int threadCount = Integer.parseInt(commandLine.getOptionValue("thread-count"));
-        boolean defaultMetrics = Boolean.parseBoolean(commandLine.getOptionValue("default-metrics"));
+        boolean addDefaultMetrics;
+        Path selectedMetricsDir = null;
+
+        if (commandLine.hasOption("selected-metrics-dir")) {
+            addDefaultMetrics = false;
+            selectedMetricsDir = Paths.get(commandLine.getOptionValue("selected-metrics-dir"));
+        } else {
+            addDefaultMetrics = true;
+        }
 
         logger.info("Creating thread pool with at most " + threadCount + " threads...");
         // it is recommended to process only one sample at a time to prevent a bias in the runtime measurements
         ExecutorService threadPool = Executors.newFixedThreadPool(threadCount);
 
         List<MetricEvaluationManager> managers = MetricEvaluationManager.createManagersFromSampleDirectories(
-                samplesDir, outputDir, defaultMetrics
+                samplesDir, outputDir, addDefaultMetrics
         );
 
         for (MetricEvaluationManager manager : managers) {
             logger.info("Adding manager for sample " + manager.getSampleName() + " to thread pool...");
 
-            if (!defaultMetrics) {
+            if (!addDefaultMetrics) {
                 logger.info("Adding selected metrics to manager for sample " + manager.getSampleName() + "...");
-                manager.addSelectedSimilarityMetrics();
+                manager.addSelectedSimilarityMetrics(selectedMetricsDir);
             }
 
             threadPool.execute(new Thread(manager));
