@@ -28,6 +28,7 @@ public class MetricEvaluationManager implements Runnable {
     private static final CSVFormat csvFormatSelectedMetrics;
     private static final Path DEFAULT_OUTPUT_DIR = Paths.get("output");
     private static final List<SimilarityMetric> defaultSimilarityMetrics = new LinkedList<>();
+    private static final List<SimilarityMetric> selectedSimilarityMetrics = new LinkedList<>();
 
     private int threadId;
     private String sampleName;
@@ -266,6 +267,10 @@ public class MetricEvaluationManager implements Runnable {
 
     private void addDefaultSimilarityMetrics() {
         similarityMetrics.addAll(defaultSimilarityMetrics);
+    }
+
+    public void addSelectedSimilarityMetrics() {
+        similarityMetrics.addAll(selectedSimilarityMetrics);
     }
 
     public boolean validate() {
@@ -609,7 +614,7 @@ public class MetricEvaluationManager implements Runnable {
     /**
      * Add metrics selected after evaluation, with additional thresholds and baseline metric (equal).
      */
-    public void addSelectedSimilarityMetrics(Path selectedMetricsDir) {
+    public static void createSelectedSimilarityMetrics(Path selectedMetricsDir) {
         Util.ensureDirectoryExists(selectedMetricsDir);
 
         Set<String> metricNames = new HashSet<>();
@@ -632,12 +637,12 @@ public class MetricEvaluationManager implements Runnable {
         Path pathToBackupMetrics = Paths.get(selectedMetricsDir.toString(), "backup_metrics.csv");
         Util.ensureFileExists(pathToBackupMetrics);
 
-        logger.info("Thread " + threadId + ": Reading selected and backup metrics from directory " + selectedMetricsDir + " ...");
+        logger.info("Reading selected and backup metrics from directory " + selectedMetricsDir + " ...");
 
         try (CSVParser csvParserSelectedMetrics = new CSVParser(new FileReader(pathToSelectedMetrics.toFile()), csvFormatSelectedMetrics.withFirstRecordAsHeader());
              CSVParser csvParserBackupMetrics = new CSVParser(new FileReader(pathToBackupMetrics.toFile()), csvFormatSelectedMetrics.withFirstRecordAsHeader())) {
 
-            logger.info("Thread " + threadId + ": Reading selected metrics from CSV file " + pathToSelectedMetrics.toFile().toString() + " ...");
+            logger.info("Reading selected metrics from CSV file " + pathToSelectedMetrics.toFile().toString() + " ...");
             for (CSVRecord currentRecord : csvParserSelectedMetrics) {
                 String metric = currentRecord.get("Metric").trim();
                 if (metric.length() > 0) {
@@ -645,7 +650,7 @@ public class MetricEvaluationManager implements Runnable {
                 }
             }
 
-            logger.info("Thread " + threadId + ": Reading backup metrics from CSV file " + pathToBackupMetrics.toFile().toString() + " ...");
+            logger.info("Reading backup metrics from CSV file " + pathToBackupMetrics.toFile().toString() + " ...");
             for (CSVRecord currentRecord : csvParserBackupMetrics) {
                 String metric = currentRecord.get("Metric").trim();
                 if (metric.length() > 0) {
@@ -653,7 +658,7 @@ public class MetricEvaluationManager implements Runnable {
                 }
             }
 
-            logger.info("Thread " + threadId + ": " + metricNames.size() + " metric names read.");
+            logger.info(metricNames.size() + " metric names read.");
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -668,7 +673,7 @@ public class MetricEvaluationManager implements Runnable {
         // do not use for loop with += 0.01 --> leads to rounding errors
         for (double threshold : thresholds) {
             // baseline metric
-            addSimilarityMetric(new SimilarityMetric(
+            selectedSimilarityMetrics.add(new SimilarityMetric(
                     "equal",
                     de.unitrier.st.stringsimilarity.equal.Variants::equal,
                     SimilarityMetric.MetricType.EQUAL,
@@ -677,11 +682,11 @@ public class MetricEvaluationManager implements Runnable {
 
             // add selected and backup metrics
             for (SimilarityMetric defaultMetric : defaultSimilarityMetrics) {
-                addSimilarityMetric(defaultMetric.createCopyWithNewThreshold(threshold));
+                selectedSimilarityMetrics.add(defaultMetric.createCopyWithNewThreshold(threshold));
             }
         }
 
-        logger.info("Thread " + threadId + ": " + similarityMetrics.size() + " metrics added.");
+        logger.info(selectedSimilarityMetrics.size() + " metrics added.");
     }
 
     /**

@@ -82,12 +82,17 @@ class Main {
                 samplesDir, outputDir, addDefaultMetrics
         );
 
+        if (!addDefaultMetrics) {
+            logger.info("Creating selected metrics...");
+            MetricEvaluationManager.createSelectedSimilarityMetrics(selectedMetricsDir);
+        }
+
         for (MetricEvaluationManager manager : managers) {
             logger.info("Adding manager for sample " + manager.getSampleName() + " to thread pool...");
 
             if (!addDefaultMetrics) {
                 logger.info("Adding selected metrics to manager for sample " + manager.getSampleName() + "...");
-                manager.addSelectedSimilarityMetrics(selectedMetricsDir);
+                manager.addSelectedSimilarityMetrics();
             }
 
             threadPool.execute(new Thread(manager));
