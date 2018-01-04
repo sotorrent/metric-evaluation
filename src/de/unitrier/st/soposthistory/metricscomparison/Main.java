@@ -48,7 +48,7 @@ class Main {
         selectedMetricsDirOption.setRequired(false);
         options.addOption(selectedMetricsDirOption);
 
-        Option defaultMetricOption = new Option("dm", "test-default-metric", true, "if true, only the default metric is tested");
+        Option defaultMetricOption = new Option("dm", "test-default-metric", false, "if present, only the default metric is tested");
         selectedMetricsDirOption.setRequired(false);
         options.addOption(defaultMetricOption);
 
