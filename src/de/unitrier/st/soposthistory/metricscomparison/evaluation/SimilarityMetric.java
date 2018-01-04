@@ -3,7 +3,7 @@ package de.unitrier.st.soposthistory.metricscomparison.evaluation;
 import java.util.function.BiFunction;
 
 public class SimilarityMetric {
-    public enum MetricType {EQUAL, EDIT, FINGERPRINT, PROFILE, SET}
+    public enum MetricType {EQUAL, EDIT, FINGERPRINT, PROFILE, SET, DEFAULT}
 
     final private String name;
     final private BiFunction<String, String, Double> metric;

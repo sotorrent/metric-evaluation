@@ -1,8 +1,6 @@
 package de.unitrier.st.soposthistory.metricscomparison.tests;
 
 import de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricEvaluationManager;
-import de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricEvaluationPerPost;
-import de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricResult;
 import de.unitrier.st.soposthistory.metricscomparison.evaluation.SimilarityMetric;
 import de.unitrier.st.soposthistory.metricscomparison.statistics.Statistics;
 import de.unitrier.st.soposthistory.version.PostVersionList;
@@ -267,7 +265,7 @@ class DisabledTests {
                         Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "files"),
                         Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "completed"))
                 .withOutputDirPath(MetricEvaluationTest.testOutputDir)
-                .withDefaultSimilarityMetrics(false)
+                .withAllSimilarityMetrics(false)
                 .initialize();
         assertEquals(manager.getPostVersionLists().size(), manager.getPostGroundTruths().size());
         assertThat(manager.getPostVersionLists().keySet(), is(manager.getPostGroundTruths().keySet()));
@@ -295,7 +293,7 @@ class DisabledTests {
                         Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_17_06_sample_edited_gt", "files"),
                         Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_17_06_sample_edited_gt", "completed"))
                 .withOutputDirPath(MetricEvaluationTest.testOutputDir)
-                .withDefaultSimilarityMetrics(false)
+                .withAllSimilarityMetrics(false)
                 .initialize();
         assertEquals(manager.getPostVersionLists().size(), manager.getPostGroundTruths().size());
         assertThat(manager.getPostVersionLists().keySet(), is(manager.getPostGroundTruths().keySet()));
@@ -365,7 +363,7 @@ class DisabledTests {
                         Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17_06_sample_unclear_matching", "files"),
                         Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17_06_sample_unclear_matching", "completed"))
                 .withOutputDirPath(MetricEvaluationTest.testOutputDir)
-                .withDefaultSimilarityMetrics(false)
+                .withAllSimilarityMetrics(false)
                 .withNumberOfRepetitions(1)
                 .initialize();
         assertEquals(manager.getPostVersionLists().size(), manager.getPostGroundTruths().size());

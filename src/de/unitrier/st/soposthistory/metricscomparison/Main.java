@@ -48,6 +48,10 @@ class Main {
         selectedMetricsDirOption.setRequired(false);
         options.addOption(selectedMetricsDirOption);
 
+        Option defaultMetricOption = new Option("dm", "test-default-metric", true, "if true, only the default metric is tested");
+        selectedMetricsDirOption.setRequired(false);
+        options.addOption(defaultMetricOption);
+
         CommandLineParser commandLineParser = new DefaultParser();
         HelpFormatter commandLineFormatter = new HelpFormatter();
         CommandLine commandLine;
@@ -64,14 +68,16 @@ class Main {
         Path samplesDir = Paths.get(commandLine.getOptionValue("samples-dir"));
         Path outputDir = Paths.get(commandLine.getOptionValue("output-dir"));
         int threadCount = Integer.parseInt(commandLine.getOptionValue("thread-count"));
-        boolean addDefaultMetrics;
+        boolean addSelectedMetrics = commandLine.hasOption("selected-metrics-dir");
+        boolean testDefaultMetric = commandLine.hasOption("test-default-metric");
+        boolean addAllMetricsAndThresholds = !addSelectedMetrics && !testDefaultMetric;
         Path selectedMetricsDir = null;
 
-        if (commandLine.hasOption("selected-metrics-dir")) {
-            addDefaultMetrics = false;
+        if (addSelectedMetrics) {
+            if (testDefaultMetric) {
+                throw new IllegalArgumentException("Either selected-metrics-dir OR test-default-metric can be configured.");
+            }
             selectedMetricsDir = Paths.get(commandLine.getOptionValue("selected-metrics-dir"));
-        } else {
-            addDefaultMetrics = true;
         }
 
         logger.info("Creating thread pool with at most " + threadCount + " threads...");
@@ -79,10 +85,10 @@ class Main {
         ExecutorService threadPool = Executors.newFixedThreadPool(threadCount);
 
         List<MetricEvaluationManager> managers = MetricEvaluationManager.createManagersFromSampleDirectories(
-                samplesDir, outputDir, addDefaultMetrics
+                samplesDir, outputDir, addAllMetricsAndThresholds
         );
 
-        if (!addDefaultMetrics) {
+        if (addSelectedMetrics) {
             logger.info("Creating selected metrics...");
             MetricEvaluationManager.createSelectedSimilarityMetrics(selectedMetricsDir);
         }
@@ -90,9 +96,14 @@ class Main {
         for (MetricEvaluationManager manager : managers) {
             logger.info("Adding manager for sample " + manager.getSampleName() + " to thread pool...");
 
-            if (!addDefaultMetrics) {
+            if (addSelectedMetrics) {
                 logger.info("Adding selected metrics to manager for sample " + manager.getSampleName() + "...");
                 manager.addSelectedSimilarityMetrics();
+            }
+
+            if (testDefaultMetric) {
+                logger.info("Adding default metric to manager for sample " + manager.getSampleName() + "...");
+                manager.addDefaultSimilarityMetric();
             }
 
             threadPool.execute(new Thread(manager));

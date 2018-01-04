@@ -62,7 +62,7 @@ public class MetricEvaluationTest {
                 .withName("TestMetricEvaluationManager")
                 .withInputPaths(pathToPostIdList, pathToPostHistory, pathToGroundTruth)
                 .withOutputDirPath(testOutputDir)
-                .withDefaultSimilarityMetrics(false)
+                .withAllSimilarityMetrics(false)
                 .initialize();
 
         assertEquals(manager.getPostVersionLists().size(), manager.getPostGroundTruths().size());
@@ -277,7 +277,7 @@ public class MetricEvaluationTest {
                 .withName("TestFailedPredecessorComparisonsText")
                 .withInputPaths(pathToPostIdList, pathToPostHistory, pathToGroundTruth)
                 .withOutputDirPath(testOutputDir)
-                .withDefaultSimilarityMetrics(false)
+                .withAllSimilarityMetrics(false)
                 .initialize();
 
         assertEquals(manager.getPostVersionLists().size(), manager.getPostGroundTruths().size());
@@ -316,7 +316,7 @@ public class MetricEvaluationTest {
                 .withName("TestFailedPredecessorComparisonsCode")
                 .withInputPaths(pathToPostIdList, pathToPostHistory, pathToGroundTruth)
                 .withOutputDirPath(testOutputDir)
-                .withDefaultSimilarityMetrics(false)
+                .withAllSimilarityMetrics(false)
                 .initialize();
 
         assertEquals(manager.getPostVersionLists().size(), manager.getPostGroundTruths().size());
@@ -382,7 +382,7 @@ public class MetricEvaluationTest {
                 .withName("EqualTestSample")
                 .withInputPaths(pathToPostIdList, pathToPostHistory, pathToGroundTruth)
                 .withOutputDirPath(testOutputDir)
-                .withDefaultSimilarityMetrics(false)
+                .withAllSimilarityMetrics(false)
                 .initialize();
 
         manager.addSimilarityMetric(

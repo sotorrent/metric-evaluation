@@ -53,7 +53,6 @@ public class MetricEvaluationPerPost {
     private Map<Integer, MetricResult> resultsCode;
     private MetricResult aggregatedResultCode;
 
-
     MetricEvaluationPerPost(SimilarityMetric similarityMetric,
                             int postId,
                             PostVersionList postVersionList,
@@ -91,11 +90,16 @@ public class MetricEvaluationPerPost {
     }
 
     void startEvaluation(int currentRepetition) {
-        Config config = Config.METRICS_COMPARISON
-                .withTextSimilarityMetric(similarityMetric.getMetric())
-                .withTextSimilarityThreshold(similarityMetric.getThreshold())
-                .withCodeSimilarityMetric(similarityMetric.getMetric())
-                .withCodeSimilarityThreshold(similarityMetric.getThreshold());
+        Config config;
+        if (similarityMetric.getName().equals("default")) {
+            config = Config.DEFAULT;
+        } else {
+            config = Config.METRICS_COMPARISON
+                    .withTextSimilarityMetric(similarityMetric.getMetric())
+                    .withTextSimilarityThreshold(similarityMetric.getThreshold())
+                    .withCodeSimilarityMetric(similarityMetric.getMetric())
+                    .withCodeSimilarityThreshold(similarityMetric.getThreshold());
+        }
 
         // the post version list is shared by all metric evaluations conducted for the corresponding post
         synchronized (postVersionList) {
