@@ -15,7 +15,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiFunction;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
@@ -738,100 +737,142 @@ public class MetricEvaluationManager implements Runnable {
      * Add combined metrics selected after evaluation, with baseline metric (equal).
      */
     public static void createCombinedSimilarityMetrics() {
-        // text
-        List<String> metricNamesText = Arrays.asList(
-                "manhattanFourGramNormalized",
-                "threeGramDice",
-                "manhattanThreeGramNormalized",
-                "fourGramDice",
-                "fourGramJaccard",
-                "equal"
+
+        List<SimilarityMetric> metricsText = new LinkedList<>();
+        metricsText.add(
+            new SimilarityMetric(
+                    "manhattanFourGramNormalized",
+                    de.unitrier.st.stringsimilarity.profile.Variants::manhattanFourGramNormalized,
+                    SimilarityMetric.MetricType.PROFILE,
+                    0.16)
         );
-        List<Double> thresholdsText = Arrays.asList(
-                            0.13, 0.14, 0.15, 0.16, 0.17, 0.18, 0.19, 0.2,
-                0.21, 0.22, 0.23, 0.24, 0.25, 0.26, 0.27, 0.28, 0.29, 0.3
+        metricsText.add(
+                new SimilarityMetric(
+                        "manhattanFourGramNormalized",
+                        de.unitrier.st.stringsimilarity.profile.Variants::manhattanFourGramNormalized,
+                        SimilarityMetric.MetricType.PROFILE,
+                        0.17)
         );
-        List<String> backupMetricNamesText = Arrays.asList(
-                "cosineTokenNormalizedTermFrequency",
-                "tokenJaccardNormalized"
+        metricsText.add(
+                new SimilarityMetric(
+                        "manhattanFourGramNormalized",
+                        de.unitrier.st.stringsimilarity.profile.Variants::manhattanFourGramNormalized,
+                        SimilarityMetric.MetricType.PROFILE,
+                        0.18)
         );
-        List<Double> backupThresholdsText = Arrays.asList(
-                                                                0.19, 0.2,
-                0.21, 0.22, 0.23, 0.24, 0.25, 0.26, 0.27, 0.28, 0.29, 0.3,
-                0.31, 0.32, 0.33, 0.34, 0.35, 0.36, 0.37
+        metricsText.add(
+                new SimilarityMetric(
+                        "manhattanThreeGramNormalized",
+                        de.unitrier.st.stringsimilarity.profile.Variants::manhattanThreeGramNormalized,
+                        SimilarityMetric.MetricType.PROFILE,
+                        0.20)
+        );
+        metricsText.add(
+                new SimilarityMetric(
+                        "manhattanThreeGramNormalized",
+                        de.unitrier.st.stringsimilarity.profile.Variants::manhattanThreeGramNormalized,
+                        SimilarityMetric.MetricType.PROFILE,
+                        0.21)
+        );
+        metricsText.add(
+                new SimilarityMetric(
+                        "manhattanThreeGramNormalized",
+                        de.unitrier.st.stringsimilarity.profile.Variants::manhattanThreeGramNormalized,
+                        SimilarityMetric.MetricType.PROFILE,
+                        0.22)
+        );
+        metricsText.add(
+                new SimilarityMetric(
+                        "manhattanThreeGramNormalized",
+                        de.unitrier.st.stringsimilarity.profile.Variants::manhattanThreeGramNormalized,
+                        SimilarityMetric.MetricType.PROFILE,
+                        0.23)
+        );
+        metricsText.add(
+                new SimilarityMetric(
+                        "manhattanThreeGramNormalized",
+                        de.unitrier.st.stringsimilarity.profile.Variants::manhattanThreeGramNormalized,
+                        SimilarityMetric.MetricType.PROFILE,
+                        0.24)
+        );
+        metricsText.add(
+                new SimilarityMetric(
+                        "manhattanThreeGramNormalized",
+                        de.unitrier.st.stringsimilarity.profile.Variants::manhattanThreeGramNormalized,
+                        SimilarityMetric.MetricType.PROFILE,
+                        0.25)
+        );
+        metricsText.add(
+                new SimilarityMetric(
+                        "threeGramDice",
+                        de.unitrier.st.stringsimilarity.set.Variants::threeGramDice,
+                        SimilarityMetric.MetricType.SET,
+                        0.30)
+        );
+        metricsText.add(
+                new SimilarityMetric(
+                        "fourGramDice",
+                        de.unitrier.st.stringsimilarity.set.Variants::fourGramDice,
+                        SimilarityMetric.MetricType.SET,
+                        0.22)
+        );
+        metricsText.add(
+                new SimilarityMetric(
+                        "fourGramDice",
+                        de.unitrier.st.stringsimilarity.set.Variants::fourGramDice,
+                        SimilarityMetric.MetricType.SET,
+                        0.23)
+        );
+        metricsText.add(
+                new SimilarityMetric(
+                        "fourGramJaccard",
+                        de.unitrier.st.stringsimilarity.set.Variants::fourGramJaccard,
+                        SimilarityMetric.MetricType.SET,
+                        0.13)
         );
 
-        // code
-        List<String> metricNamesCode = Arrays.asList(
-                "winnowingFourGramDiceNormalized",
-                "fourGramDiceNormalizedPadding",
-                "fourGramJaccardNormalizedPadding",
-                "threeGramJaccardNormalizedPadding",
-                "equal"
+        List<SimilarityMetric> metricsTextBackup = new LinkedList<>();
+        metricsTextBackup.add(
+                new SimilarityMetric(
+                        "cosineTokenNormalizedTermFrequency",
+                        de.unitrier.st.stringsimilarity.profile.Variants::cosineTokenNormalizedTermFrequency,
+                        SimilarityMetric.MetricType.PROFILE,
+                        0.36)
         );
-        List<Double> thresholdsCode = Arrays.asList(
-                                        0.15, 0.16, 0.17, 0.18, 0.19, 0.2,
-                0.21, 0.22, 0.23, 0.24, 0.25, 0.26, 0.27, 0.28, 0.29, 0.3,
-                0.31
+        metricsTextBackup.add(
+                new SimilarityMetric(
+                        "cosineTokenNormalizedTermFrequency",
+                        de.unitrier.st.stringsimilarity.profile.Variants::cosineTokenNormalizedTermFrequency,
+                        SimilarityMetric.MetricType.PROFILE,
+                        0.37)
         );
-        List<String> backupMetricNamesCode = Arrays.asList(
-                "cosineTokenNormalizedNormalizedTermFrequency"
+        metricsTextBackup.add(
+                new SimilarityMetric(
+                        "tokenJaccardNormalized",
+                        de.unitrier.st.stringsimilarity.set.Variants::tokenJaccardNormalized,
+                        SimilarityMetric.MetricType.SET,
+                        0.37)
         );
-        List<Double> backupThresholdsCode = Arrays.asList(
-                0.26, 0.27
-        );
 
-        for (String metricNameText : metricNamesText) {
-            for (String backupMetricNameText : backupMetricNamesText) {
-                for (String metricNameCode : metricNamesCode) {
-                    for (String backupMetricNameCode : backupMetricNamesCode) {
-                        for (double thresholdText : thresholdsText) {
-                            for (double backupThresholdText : backupThresholdsText) {
-                                for (double thresholdCode : thresholdsCode) {
-                                    for (double backupThresholdCode : backupThresholdsCode) {
-                                        SimilarityMetric metric;
 
-                                        // text
-                                        metric = getSimilarityMetric(metricNameText, 0.5);
-                                        BiFunction<String, String, Double> metricText = metric.getConfig().getTextSimilarityMetric();
-                                        SimilarityMetric.MetricType metricTypeText = metric.getTypeText();
-                                        metric = getSimilarityMetric(backupMetricNameText, 0.5);
-                                        BiFunction<String, String, Double> metricTextBackup = metric.getConfig().getTextBackupSimilarityMetric();
-                                        SimilarityMetric.MetricType backupMetricTypeText = metric.getBackupTypeText();
+        List<SimilarityMetric> metricsCode = new LinkedList<>();
+        // TODO: add
 
-                                        // code
-                                        metric = getSimilarityMetric(metricNameCode, 0.5);
-                                        BiFunction<String, String, Double> metricCode = metric.getConfig().getCodeSimilarityMetric();
-                                        SimilarityMetric.MetricType metricTypeCode = metric.getTypeCode();
-                                        metric = getSimilarityMetric(backupMetricNameCode, 0.5);
-                                        BiFunction<String, String, Double> metricCodeBackup = metric.getConfig().getCodeBackupSimilarityMetric();
-                                        SimilarityMetric.MetricType backupMetricTypeCode = metric.getBackupTypeCode();
+        List<SimilarityMetric> metricsCodeBackup = new LinkedList<>();
+        // TODO: add
 
-                                        Config config = Config.METRICS_COMPARISON
-                                                .withTextSimilarityMetric(metricText)
-                                                .withTextSimilarityThreshold(thresholdText)
-                                                .withTextBackupSimilarityMetric(metricTextBackup)
-                                                .withTextBackupSimilarityThreshold(backupThresholdText)
-                                                .withCodeSimilarityMetric(metricCode)
-                                                .withCodeSimilarityThreshold(thresholdCode)
-                                                .withCodeBackupSimilarityMetric(metricCodeBackup)
-                                                .withCodeBackupSimilarityThreshold(backupThresholdCode);
+        for (SimilarityMetric metricText : metricsText) {
+            for (SimilarityMetric metricTextBackup : metricsTextBackup) {
+                for (SimilarityMetric metricCode : metricsCode) {
+                    for (SimilarityMetric metricCodeBackup : metricsCodeBackup) {
+                        // TODO: combine and add metrics to combinedSimilarityMetrics
 
-                                        combinedSimilarityMetrics.add(new SimilarityMetric(
-                                                metricNameText, metricTypeText, backupMetricNameText, backupMetricTypeText,
-                                                metricNameCode, metricTypeCode, backupMetricNameCode, backupMetricTypeCode,
-                                                config
-                                        ));
-
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
             }
         }
 
+        logger.info(combinedSimilarityMetrics.size() + " metrics added.");
     }
 
     /**
