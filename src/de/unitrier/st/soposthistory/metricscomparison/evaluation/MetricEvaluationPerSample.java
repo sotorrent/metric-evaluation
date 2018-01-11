@@ -132,7 +132,11 @@ public class MetricEvaluationPerSample extends LinkedList<MetricEvaluationPerPos
         // validate results
         MetricResult.validate(aggregatedResultText, aggregatedResultCode);
 
-        // "MetricType", "Metric", "Threshold", "Runtime",
+        // "MetricTypeText", "MetricText", "ThresholdText",
+        // "MetricTypeTextBackup", "MetricTextBackup", "ThresholdTextBackup",
+        // "MetricTypeCode", "MetricCode", "ThresholdCode",
+        // "MetricTypeCodeBackup", "MetricCodeBackup", "ThresholdCodeBackup",
+        // "Runtime",
         // "InformednessText", "MarkednessText", "MatthewsCorrelationText", "FScoreText",,
         // "InformednessCode", "MarkednessCode", "MatthewsCorrelationCode", "FScoreCode",
         // "PostCount", "PostVersionCount", "PostBlockVersionCount", "PossibleComparisons",
@@ -143,9 +147,22 @@ public class MetricEvaluationPerSample extends LinkedList<MetricEvaluationPerPos
         // "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailuresCode",
         // "PrecisionCode", "RecallCode", "InversePrecisionCode", "InverseRecallCode", "FailureRateCode"
         csvPrinterSample.printRecord(
-                similarityMetric.getType(),
-                similarityMetric.getName(),
-                similarityMetric.getThreshold(),
+                similarityMetric.getTypeText(),
+                similarityMetric.getNameText(),
+                similarityMetric.getConfig().getTextSimilarityThreshold(),
+
+                similarityMetric.getBackupTypeText(),
+                similarityMetric.getBackupNameText(),
+                similarityMetric.getConfig().getTextBackupSimilarityThreshold(),
+
+                similarityMetric.getTypeCode(),
+                similarityMetric.getNameCode(),
+                similarityMetric.getConfig().getCodeSimilarityThreshold(),
+
+                similarityMetric.getBackupTypeCode(),
+                similarityMetric.getBackupNameCode(),
+                similarityMetric.getConfig().getCodeBackupSimilarityThreshold(),
+
                 aggregatedResultText.getRuntime(),
 
                 aggregatedResultText.getInformedness(),

@@ -1,5 +1,6 @@
 package de.unitrier.st.soposthistory.metricscomparison.evaluation;
 
+import de.unitrier.st.soposthistory.Config;
 import de.unitrier.st.soposthistory.gt.PostGroundTruth;
 import de.unitrier.st.soposthistory.version.PostVersionList;
 import de.unitrier.st.util.Util;
@@ -29,9 +30,6 @@ public class MetricEvaluationManager implements Runnable {
     private static final Path DEFAULT_OUTPUT_DIR = Paths.get("output");
     private static final List<SimilarityMetric> allSimilarityMetrics = new LinkedList<>();
     private static final List<SimilarityMetric> selectedSimilarityMetrics = new LinkedList<>();
-
-    // default config will be used when this metric is configured
-    private static final SimilarityMetric emptyMetric = new SimilarityMetric("default", (str1, str2) -> 0.0, SimilarityMetric.MetricType.DEFAULT, 0.0);
 
     private int threadId;
     private String sampleName;
@@ -75,7 +73,7 @@ public class MetricEvaluationManager implements Runnable {
 
         // configure CSV format for metric comparison results (per post, i.e., per PostVersionList)
         csvFormatMetricEvaluationPerPost = CSVFormat.DEFAULT
-                .withHeader("MetricType", "Metric", "Threshold", "PostId", "Runtime", "PostVersionCount", "PostBlockVersionCount", "PossibleComparisons", "TextBlockVersionCount", "PossibleComparisonsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailedPredecessorComparisonsText", "CodeBlockVersionCount", "PossibleComparisonsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailedPredecessorComparisonsCode")
+                .withHeader("MetricTypeText", "MetricText", "ThresholdText", "MetricTypeTextBackup", "MetricTextBackup", "ThresholdTextBackup", "MetricTypeCode", "MetricCode", "ThresholdCode", "MetricTypeCodeBackup", "MetricCodeBackup", "ThresholdCodeBackup", "PostId", "Runtime", "PostVersionCount", "PostBlockVersionCount", "PossibleComparisons", "TextBlockVersionCount", "PossibleComparisonsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailedPredecessorComparisonsText", "CodeBlockVersionCount", "PossibleComparisonsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailedPredecessorComparisonsCode")
                 .withDelimiter(';')
                 .withQuote('"')
                 .withQuoteMode(QuoteMode.MINIMAL)
@@ -84,7 +82,7 @@ public class MetricEvaluationManager implements Runnable {
 
         // configure CSV format for metric comparison results (per version, i.e., per PostHistoryId)
         csvFormatMetricEvaluationPerVersion = CSVFormat.DEFAULT
-                .withHeader("MetricType", "Metric", "Threshold", "PostId", "PostHistoryId", "Runtime", "PossibleComparisons", "TextBlockCount", "PossibleComparisonsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailedPredecessorComparisonsText", "CodeBlockCount", "PossibleComparisonsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailedPredecessorComparisonsCode")
+                .withHeader("MetricTypeText", "MetricText", "ThresholdText", "MetricTypeTextBackup", "MetricTextBackup", "ThresholdTextBackup", "MetricTypeCode", "MetricCode", "ThresholdCode", "MetricTypeCodeBackup", "MetricCodeBackup", "ThresholdCodeBackup", "PostId", "PostHistoryId", "Runtime", "PossibleComparisons", "TextBlockCount", "PossibleComparisonsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailedPredecessorComparisonsText", "CodeBlockCount", "PossibleComparisonsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailedPredecessorComparisonsCode")
                 .withDelimiter(';')
                 .withQuote('"')
                 .withQuoteMode(QuoteMode.MINIMAL)
@@ -93,7 +91,7 @@ public class MetricEvaluationManager implements Runnable {
 
         // configure CSV format for aggregated metric comparison results (per (metric, threshold) combination)
         csvFormatMetricEvaluationPerSample = CSVFormat.DEFAULT
-                .withHeader("MetricType", "Metric", "Threshold", "Runtime", "InformednessText", "MarkednessText", "MatthewsCorrelationText", "FScoreText", "InformednessCode", "MarkednessCode", "MatthewsCorrelationCode", "FScoreCode", "PostCount", "PostVersionCount", "PostBlockVersionCount", "PossibleComparisons", "TextBlockVersionCount", "PossibleComparisonsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailuresText", "PrecisionText", "RecallText", "InversePrecisionText", "InverseRecallText", "FailureRateText", "CodeBlockVersionCount", "PossibleComparisonsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailuresCode", "PrecisionCode", "RecallCode", "InversePrecisionCode", "InverseRecallCode", "FailureRateCode")
+                .withHeader("MetricTypeText", "MetricText", "ThresholdText", "MetricTypeTextBackup", "MetricTextBackup", "ThresholdTextBackup", "MetricTypeCode", "MetricCode", "ThresholdCode", "MetricTypeCodeBackup", "MetricCodeBackup", "ThresholdCodeBackup", "Runtime", "InformednessText", "MarkednessText", "MatthewsCorrelationText", "FScoreText", "InformednessCode", "MarkednessCode", "MatthewsCorrelationCode", "FScoreCode", "PostCount", "PostVersionCount", "PostBlockVersionCount", "PossibleComparisons", "TextBlockVersionCount", "PossibleComparisonsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailuresText", "PrecisionText", "RecallText", "InversePrecisionText", "InverseRecallText", "FailureRateText", "CodeBlockVersionCount", "PossibleComparisonsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailuresCode", "PrecisionCode", "RecallCode", "InversePrecisionCode", "InverseRecallCode", "FailureRateCode")
                 .withDelimiter(';')
                 .withQuote('"')
                 .withQuoteMode(QuoteMode.MINIMAL)
@@ -278,7 +276,13 @@ public class MetricEvaluationManager implements Runnable {
 
     public void addDefaultSimilarityMetric() {
         // default config will be used when this metric is configured
-        similarityMetrics.add(emptyMetric);
+        similarityMetrics.add(new SimilarityMetric(
+                "default", SimilarityMetric.MetricType.DEFAULT,
+                "default", SimilarityMetric.MetricType.DEFAULT,
+                "default", SimilarityMetric.MetricType.DEFAULT,
+                "default", SimilarityMetric.MetricType.DEFAULT,
+                Config.DEFAULT
+        ));
     }
 
     public boolean validate() {
@@ -417,8 +421,11 @@ public class MetricEvaluationManager implements Runnable {
 
     public MetricEvaluationPerPost getMetricEvaluation(int postId, String metricName, double threshold) {
         for (MetricEvaluationPerSample evaluationPerSample : metricEvaluationsPerSample) {
-            if (!evaluationPerSample.getSimilarityMetric().getName().equals(metricName)
-                    || evaluationPerSample.getSimilarityMetric().getThreshold() != threshold) {
+            SimilarityMetric currentMetric = evaluationPerSample.getSimilarityMetric();
+            if (!currentMetric.getNameCode().equals(metricName)
+                    || !currentMetric.getNameText().equals(metricName)
+                    || currentMetric.getConfig().getCodeSimilarityThreshold() != threshold
+                    || currentMetric.getConfig().getTextSimilarityThreshold() != threshold) {
                 continue;
             }
             // correct samples found
@@ -539,7 +546,11 @@ public class MetricEvaluationManager implements Runnable {
                 // validate results
                 MetricResult.validate(aggregatedResultText, aggregatedResultCode);
 
-                // "MetricType", "Metric", "Threshold", "Runtime"
+                // "MetricTypeText", "MetricText", "ThresholdText",
+                // "MetricTypeTextBackup", "MetricTextBackup", "ThresholdTextBackup",
+                // "MetricTypeCode", "MetricCode", "ThresholdCode",
+                // "MetricTypeCodeBackup", "MetricCodeBackup", "ThresholdCodeBackup",
+                // "Runtime"
                 // "InformednessText", "MarkednessText", "MatthewsCorrelationText", "FScoreText",
                 // "InformednessCode", "MarkednessCode", "MatthewsCorrelationCode", "FScoreCode",
                 // "PostCount", "PostVersionCount", "PostBlockVersionCount", "PossibleComparisons",
@@ -550,9 +561,22 @@ public class MetricEvaluationManager implements Runnable {
                 // "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailuresCode",
                 // "PrecisionCode", "RecallCode", "InversePrecisionCode", "InverseRecallCode", "FailureRateCode"
                 csvPrinterAggregated.printRecord(
-                        similarityMetric.getType(),
-                        similarityMetric.getName(),
-                        similarityMetric.getThreshold(),
+                        similarityMetric.getTypeText(),
+                        similarityMetric.getNameText(),
+                        similarityMetric.getConfig().getTextSimilarityThreshold(),
+
+                        similarityMetric.getBackupTypeText(),
+                        similarityMetric.getBackupNameText(),
+                        similarityMetric.getConfig().getTextBackupSimilarityThreshold(),
+
+                        similarityMetric.getTypeCode(),
+                        similarityMetric.getNameCode(),
+                        similarityMetric.getConfig().getCodeSimilarityThreshold(),
+
+                        similarityMetric.getBackupTypeCode(),
+                        similarityMetric.getBackupNameCode(),
+                        similarityMetric.getConfig().getCodeBackupSimilarityThreshold(),
+
                         aggregatedResultText.getRuntime(),
 
                         aggregatedResultText.getInformedness(),
@@ -608,9 +632,12 @@ public class MetricEvaluationManager implements Runnable {
         logger.info("Aggregated results over all samples saved.");
     }
 
-    public static SimilarityMetric getDefaultSimilarityMetric(String name, double threshold) {
+    public static SimilarityMetric getSimilarityMetric(String name, double threshold) {
         for (SimilarityMetric metric : allSimilarityMetrics) {
-            if (metric.getName().equals(name) && metric.getThreshold() == threshold) {
+            if (metric.getNameText().equals(name)
+                    && metric.getNameCode().equals(name)
+                    && metric.getConfig().getTextSimilarityThreshold() == threshold
+                    && metric.getConfig().getCodeSimilarityThreshold() == threshold) {
                 return metric;
             }
         }
@@ -674,7 +701,7 @@ public class MetricEvaluationManager implements Runnable {
 
         // retrieve default metrics
         for (String metricName : metricNames) {
-            SimilarityMetric metric = getDefaultSimilarityMetric(metricName, 0.5);
+            SimilarityMetric metric = getSimilarityMetric(metricName, 0.5);
             defaultSimilarityMetrics.add(metric);
         }
 
@@ -690,7 +717,11 @@ public class MetricEvaluationManager implements Runnable {
 
             // add selected and backup metrics
             for (SimilarityMetric defaultMetric : defaultSimilarityMetrics) {
-                selectedSimilarityMetrics.add(defaultMetric.createCopyWithNewThreshold(threshold));
+                Config config = defaultMetric.getConfig();
+                selectedSimilarityMetrics.add(defaultMetric.withConfig(config
+                        .withTextSimilarityThreshold(threshold)
+                        .withCodeSimilarityThreshold(threshold))
+                );
             }
         }
 

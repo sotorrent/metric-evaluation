@@ -90,17 +90,6 @@ public class MetricEvaluationPerPost {
     }
 
     void startEvaluation(int currentRepetition) {
-        Config config;
-        if (similarityMetric.getName().equals("default")) {
-            config = Config.DEFAULT;
-        } else {
-            config = Config.METRICS_COMPARISON
-                    .withTextSimilarityMetric(similarityMetric.getMetric())
-                    .withTextSimilarityThreshold(similarityMetric.getThreshold())
-                    .withCodeSimilarityMetric(similarityMetric.getMetric())
-                    .withCodeSimilarityThreshold(similarityMetric.getThreshold());
-        }
-
         // the post version list is shared by all metric evaluations conducted for the corresponding post
         synchronized (postVersionList) {
             this.currentRepetition++;
@@ -114,7 +103,7 @@ public class MetricEvaluationPerPost {
             //logger.info("Evaluating metric " + similarityMetric + " on post " + postId);
 
             // alternate the order in which the post history is processed and evaluated
-            evaluatePostBlockVersions(config);
+            evaluatePostBlockVersions(similarityMetric.getConfig());
         }
     }
 
@@ -287,16 +276,33 @@ public class MetricEvaluationPerPost {
         // validate results
         MetricResult.validate(aggregatedResultText, aggregatedResultCode);
 
-        // "MetricType", "Metric", "Threshold", "PostId", "Runtime"
+        // "MetricTypeText", "MetricText", "ThresholdText",
+        // "MetricTypeTextBackup", "MetricTextBackup", "ThresholdTextBackup",
+        // "MetricTypeCode", "MetricCode", "ThresholdCode",
+        // "MetricTypeCodeBackup", "MetricCodeBackup", "ThresholdCodeBackup",
+        // "PostId", Runtime"
         // "PostVersionCount", "PostBlockVersionCount", "PossibleComparisons",
         // "TextBlockVersionCount", "PossibleComparisonsText",
         // "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailedPredecessorComparisonsText",
         // "CodeBlockVersionCount", "PossibleComparisonsCode",
         // "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailedPredecessorComparisonsCode"
         csvPrinterPost.printRecord(
-                similarityMetric.getType(),
-                similarityMetric.getName(),
-                similarityMetric.getThreshold(),
+                similarityMetric.getTypeText(),
+                similarityMetric.getNameText(),
+                similarityMetric.getConfig().getTextSimilarityThreshold(),
+
+                similarityMetric.getBackupTypeText(),
+                similarityMetric.getBackupNameText(),
+                similarityMetric.getConfig().getTextBackupSimilarityThreshold(),
+
+                similarityMetric.getTypeCode(),
+                similarityMetric.getNameCode(),
+                similarityMetric.getConfig().getCodeSimilarityThreshold(),
+
+                similarityMetric.getBackupTypeCode(),
+                similarityMetric.getBackupNameCode(),
+                similarityMetric.getConfig().getCodeBackupSimilarityThreshold(),
+
                 postId,
                 aggregatedResultText.getRuntime(),
                 postVersionList.size(),
@@ -326,15 +332,32 @@ public class MetricEvaluationPerPost {
             // validate results
             MetricResult.validate(resultText, resultCode);
 
-            // "Sample", "MetricType", "Metric", "Threshold", "PostId", "PostHistoryId", "Runtime", "PossibleComparisons",
+            // "MetricTypeText", "MetricText", "ThresholdText",
+            // "MetricTypeTextBackup", "MetricTextBackup", "ThresholdTextBackup",
+            // "MetricTypeCode", "MetricCode", "ThresholdCode",
+            // "MetricTypeCodeBackup", "MetricCodeBackup", "ThresholdCodeBackup",
+            // "PostId", "PostHistoryId", "Runtime", "PossibleComparisons",
             // "TextBlockCount", "PossibleComparisonsText",
             // "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "FailedPredecessorComparisonsText",
             // "CodeBlockCount", "PossibleComparisonsCode",
             // "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode", "FailedPredecessorComparisonsCode"
             csvPrinterVersion.printRecord(
-                    similarityMetric.getType(),
-                    similarityMetric.getName(),
-                    similarityMetric.getThreshold(),
+                    similarityMetric.getTypeText(),
+                    similarityMetric.getNameText(),
+                    similarityMetric.getConfig().getTextSimilarityThreshold(),
+
+                    similarityMetric.getBackupTypeText(),
+                    similarityMetric.getBackupNameText(),
+                    similarityMetric.getConfig().getTextBackupSimilarityThreshold(),
+
+                    similarityMetric.getTypeCode(),
+                    similarityMetric.getNameCode(),
+                    similarityMetric.getConfig().getCodeSimilarityThreshold(),
+
+                    similarityMetric.getBackupTypeCode(),
+                    similarityMetric.getBackupNameCode(),
+                    similarityMetric.getConfig().getCodeBackupSimilarityThreshold(),
+
                     postId,
                     postHistoryId,
                     resultText.getRuntime(),

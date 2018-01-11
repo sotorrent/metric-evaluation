@@ -69,10 +69,10 @@ public class MetricEvaluationTest {
         assertThat(manager.getPostVersionLists().keySet(), is(manager.getPostGroundTruths().keySet()));
 
         manager.addSimilarityMetric(
-                MetricEvaluationManager.getDefaultSimilarityMetric("fourGramOverlap", 0.6)
+                MetricEvaluationManager.getSimilarityMetric("fourGramOverlap", 0.6)
         );
         manager.addSimilarityMetric(
-                MetricEvaluationManager.getDefaultSimilarityMetric("levenshteinNormalized", 0.3)
+                MetricEvaluationManager.getSimilarityMetric("levenshteinNormalized", 0.3)
         );
 
         Thread managerThread = new Thread(manager);
@@ -156,7 +156,10 @@ public class MetricEvaluationTest {
             resultsCode = evaluation_a_3758880.getResultsCode(postHistoryId);
 
             SimilarityMetric metric = evaluation_a_3758880.getSimilarityMetric();
-            if (metric.getName().equals("levenshteinNormalized") && metric.getThreshold() == 0.3) {
+            if (metric.getNameText().equals("levenshteinNormalized")
+                    && metric.getNameCode().equals("levenshteinNormalized")
+                    && metric.getConfig().getTextSimilarityThreshold() == 0.3
+                    && metric.getConfig().getCodeSimilarityThreshold() == 0.3) {
                 assertEquals(2, resultsCode.getTruePositives());
                 assertEquals(0, resultsCode.getFalsePositives());
                 assertEquals(0, resultsCode.getTrueNegatives());
@@ -202,7 +205,11 @@ public class MetricEvaluationTest {
             postHistoryId = postHistoryIds_22037280.get(i);
 
             SimilarityMetric metric = evaluation_a_22037280.getSimilarityMetric();
-            if (i == 2 && metric.getName().equals("levenshteinNormalized") && metric.getThreshold() == 0.3) {
+            if (i == 2
+                    && metric.getNameText().equals("levenshteinNormalized")
+                    && metric.getNameCode().equals("levenshteinNormalized")
+                    && metric.getConfig().getTextSimilarityThreshold() == 0.3
+                    && metric.getConfig().getCodeSimilarityThreshold() == 0.3) {
                 resultsText = evaluation_a_22037280.getResultsText(postHistoryId);
                 assertEquals(2, resultsText.getTruePositives());
                 assertEquals(0, resultsText.getFalsePositives());
@@ -232,17 +239,17 @@ public class MetricEvaluationTest {
         );
         for (MetricEvaluationManager manager : managers) {
             manager.addSimilarityMetric(
-                    MetricEvaluationManager.getDefaultSimilarityMetric("winnowingTwoGramOverlap", 0.3)
+                    MetricEvaluationManager.getSimilarityMetric("winnowingTwoGramOverlap", 0.3)
             );
             manager.addSimilarityMetric(
-                    MetricEvaluationManager.getDefaultSimilarityMetric("tokenJaccard", 0.6)
+                    MetricEvaluationManager.getSimilarityMetric("tokenJaccard", 0.6)
             );
             manager.addSimilarityMetric(
-                    MetricEvaluationManager.getDefaultSimilarityMetric("twoGramJaccard", 0.9)
+                    MetricEvaluationManager.getSimilarityMetric("twoGramJaccard", 0.9)
             );
             // the following metric should produce failed comparisons
             manager.addSimilarityMetric(
-                    MetricEvaluationManager.getDefaultSimilarityMetric("twoShingleOverlap", 0.6)
+                    MetricEvaluationManager.getSimilarityMetric("twoShingleOverlap", 0.6)
             );
 
             threadPool.execute(new Thread(manager));
@@ -284,7 +291,7 @@ public class MetricEvaluationTest {
         assertThat(manager.getPostVersionLists().keySet(), is(manager.getPostGroundTruths().keySet()));
 
         manager.addSimilarityMetric(
-                MetricEvaluationManager.getDefaultSimilarityMetric("threeShingleOverlap", 0.6)
+                MetricEvaluationManager.getSimilarityMetric("threeShingleOverlap", 0.6)
         );
 
         Thread managerThread = new Thread(manager);
@@ -323,7 +330,7 @@ public class MetricEvaluationTest {
         assertThat(manager.getPostVersionLists().keySet(), is(manager.getPostGroundTruths().keySet()));
 
         manager.addSimilarityMetric(
-                MetricEvaluationManager.getDefaultSimilarityMetric("threeShingleOverlap", 0.6)
+                MetricEvaluationManager.getSimilarityMetric("threeShingleOverlap", 0.6)
         );
 
         Thread managerThread = new Thread(manager);
@@ -386,7 +393,7 @@ public class MetricEvaluationTest {
                 .initialize();
 
         manager.addSimilarityMetric(
-                MetricEvaluationManager.getDefaultSimilarityMetric("equal", 1.0)
+                MetricEvaluationManager.getSimilarityMetric("equal", 1.0)
         );
 
         Thread managerThread = new Thread(manager);
