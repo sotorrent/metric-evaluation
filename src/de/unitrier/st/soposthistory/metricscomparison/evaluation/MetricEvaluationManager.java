@@ -830,6 +830,7 @@ public class MetricEvaluationManager implements Runnable {
                         SimilarityMetric.MetricType.SET,
                         0.13)
         );
+        logger.info(metricsText.size() + " text metrics added.");
 
         List<SimilarityMetric> metricsTextBackup = new LinkedList<>();
         metricsTextBackup.add(
@@ -853,20 +854,150 @@ public class MetricEvaluationManager implements Runnable {
                         SimilarityMetric.MetricType.SET,
                         0.37)
         );
-
+        logger.info(metricsTextBackup.size() + " text backup metrics added.");
 
         List<SimilarityMetric> metricsCode = new LinkedList<>();
-        // TODO: add
+        metricsCode.add(
+                new SimilarityMetric(
+                        "winnowingFourGramDiceNormalized",
+                        de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingFourGramDiceNormalized,
+                        SimilarityMetric.MetricType.FINGERPRINT,
+                        0.20)
+        );
+        metricsCode.add(
+                new SimilarityMetric(
+                        "winnowingFourGramDiceNormalized",
+                        de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingFourGramDiceNormalized,
+                        SimilarityMetric.MetricType.FINGERPRINT,
+                        0.23)
+        );
+        metricsCode.add(
+                new SimilarityMetric(
+                        "winnowingFourGramDiceNormalized",
+                        de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingFourGramDiceNormalized,
+                        SimilarityMetric.MetricType.FINGERPRINT,
+                        0.24)
+        );
+        metricsCode.add(
+                new SimilarityMetric(
+                        "winnowingFourGramDiceNormalized",
+                        de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingFourGramDiceNormalized,
+                        SimilarityMetric.MetricType.FINGERPRINT,
+                        0.25)
+        );
+        metricsCode.add(
+                new SimilarityMetric(
+                        "winnowingFourGramDiceNormalized",
+                        de.unitrier.st.stringsimilarity.fingerprint.Variants::winnowingFourGramDiceNormalized,
+                        SimilarityMetric.MetricType.FINGERPRINT,
+                        0.26)
+        );
+        metricsCode.add(
+                new SimilarityMetric(
+                        "fourGramDiceNormalizedPadding",
+                        de.unitrier.st.stringsimilarity.set.Variants::fourGramDiceNormalizedPadding,
+                        SimilarityMetric.MetricType.SET,
+                        0.26)
+        );
+        metricsCode.add(
+                new SimilarityMetric(
+                        "fourGramDiceNormalizedPadding",
+                        de.unitrier.st.stringsimilarity.set.Variants::fourGramDiceNormalizedPadding,
+                        SimilarityMetric.MetricType.SET,
+                        0.27)
+        );
+        metricsCode.add(
+                new SimilarityMetric(
+                        "fourGramDiceNormalizedPadding",
+                        de.unitrier.st.stringsimilarity.set.Variants::fourGramDiceNormalizedPadding,
+                        SimilarityMetric.MetricType.SET,
+                        0.28)
+        );
+        metricsCode.add(
+                new SimilarityMetric(
+                        "fourGramDiceNormalizedPadding",
+                        de.unitrier.st.stringsimilarity.set.Variants::fourGramDiceNormalizedPadding,
+                        SimilarityMetric.MetricType.SET,
+                        0.29)
+        );
+        metricsCode.add(
+                new SimilarityMetric(
+                        "fourGramDiceNormalizedPadding",
+                        de.unitrier.st.stringsimilarity.set.Variants::fourGramDiceNormalizedPadding,
+                        SimilarityMetric.MetricType.SET,
+                        0.30)
+        );
+        metricsCode.add(
+                new SimilarityMetric(
+                        "fourGramDiceNormalizedPadding",
+                        de.unitrier.st.stringsimilarity.set.Variants::fourGramDiceNormalizedPadding,
+                        SimilarityMetric.MetricType.SET,
+                        0.31)
+        );
+        metricsCode.add(
+                new SimilarityMetric(
+                        "fourGramJaccardNormalizedPadding",
+                        de.unitrier.st.stringsimilarity.set.Variants::fourGramJaccardNormalizedPadding,
+                        SimilarityMetric.MetricType.SET,
+                        0.15)
+        );
+        metricsCode.add(
+                new SimilarityMetric(
+                        "fourGramJaccardNormalizedPadding",
+                        de.unitrier.st.stringsimilarity.set.Variants::fourGramJaccardNormalizedPadding,
+                        SimilarityMetric.MetricType.SET,
+                        0.16)
+        );
+        metricsCode.add(
+                new SimilarityMetric(
+                        "fourGramJaccardNormalizedPadding",
+                        de.unitrier.st.stringsimilarity.set.Variants::fourGramJaccardNormalizedPadding,
+                        SimilarityMetric.MetricType.SET,
+                        0.17)
+        );
+        metricsCode.add(
+                new SimilarityMetric(
+                        "threeGramJaccardNormalizedPadding",
+                        de.unitrier.st.stringsimilarity.set.Variants::threeGramJaccardNormalizedPadding,
+                        SimilarityMetric.MetricType.SET,
+                        0.20)
+        );
+        logger.info(metricsCode.size() + " code metrics added.");
 
         List<SimilarityMetric> metricsCodeBackup = new LinkedList<>();
-        // TODO: add
+        metricsCodeBackup.add(
+                new SimilarityMetric(
+                        "cosineTokenNormalizedNormalizedTermFrequency",
+                        de.unitrier.st.stringsimilarity.profile.Variants::cosineTokenNormalizedNormalizedTermFrequency,
+                        SimilarityMetric.MetricType.PROFILE,
+                        0.26)
+        );
+        metricsCodeBackup.add(
+                new SimilarityMetric(
+                        "cosineTokenNormalizedNormalizedTermFrequency",
+                        de.unitrier.st.stringsimilarity.profile.Variants::cosineTokenNormalizedNormalizedTermFrequency,
+                        SimilarityMetric.MetricType.PROFILE,
+                        0.27)
+        );
+        logger.info(metricsCodeBackup.size() + " code backup metrics added.");
 
         for (SimilarityMetric metricText : metricsText) {
             for (SimilarityMetric metricTextBackup : metricsTextBackup) {
                 for (SimilarityMetric metricCode : metricsCode) {
                     for (SimilarityMetric metricCodeBackup : metricsCodeBackup) {
-                        // TODO: combine and add metrics to combinedSimilarityMetrics
-
+                        combinedSimilarityMetrics.add(new SimilarityMetric(
+                                metricText.getNameText(), metricText.getTypeText(), metricTextBackup.getNameText(), metricTextBackup.getTypeText(),
+                                metricCode.getNameCode(), metricCode.getTypeCode(), metricCodeBackup.getNameCode(), metricCodeBackup.getTypeCode(),
+                                Config.METRICS_COMPARISON
+                                        .withTextSimilarityMetric(metricText.getConfig().getTextSimilarityMetric())
+                                        .withTextSimilarityThreshold(metricText.getConfig().getTextSimilarityThreshold())
+                                        .withTextBackupSimilarityMetric(metricTextBackup.getConfig().getTextSimilarityMetric())
+                                        .withTextBackupSimilarityThreshold(metricTextBackup.getConfig().getTextSimilarityThreshold())
+                                        .withCodeSimilarityMetric(metricCode.getConfig().getCodeSimilarityMetric())
+                                        .withCodeSimilarityThreshold(metricCode.getConfig().getCodeSimilarityThreshold())
+                                        .withCodeBackupSimilarityMetric(metricCodeBackup.getConfig().getCodeSimilarityMetric())
+                                        .withCodeBackupSimilarityThreshold(metricCodeBackup.getConfig().getCodeSimilarityThreshold())
+                        ));
                     }
                 }
             }
