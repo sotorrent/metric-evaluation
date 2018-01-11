@@ -49,8 +49,12 @@ class Main {
         options.addOption(selectedMetricsDirOption);
 
         Option defaultMetricOption = new Option("dm", "test-default-metric", false, "if present, only the default metric is tested");
-        selectedMetricsDirOption.setRequired(false);
+        defaultMetricOption.setRequired(false);
         options.addOption(defaultMetricOption);
+
+        Option combinedMetricsOption = new Option("cm", "test-combined-metrics", false, "if present, only configured combined metrics are tested");
+        combinedMetricsOption.setRequired(false);
+        options.addOption(combinedMetricsOption);
 
         CommandLineParser commandLineParser = new DefaultParser();
         HelpFormatter commandLineFormatter = new HelpFormatter();
@@ -68,16 +72,23 @@ class Main {
         Path samplesDir = Paths.get(commandLine.getOptionValue("samples-dir"));
         Path outputDir = Paths.get(commandLine.getOptionValue("output-dir"));
         int threadCount = Integer.parseInt(commandLine.getOptionValue("thread-count"));
-        boolean addSelectedMetrics = commandLine.hasOption("selected-metrics-dir");
+        boolean testSelectedMetrics = commandLine.hasOption("selected-metrics-dir");
         boolean testDefaultMetric = commandLine.hasOption("test-default-metric");
-        boolean addAllMetricsAndThresholds = !addSelectedMetrics && !testDefaultMetric;
+        boolean testCombinedMetrics = commandLine.hasOption("test-combined-metrics");
+        boolean addAllMetricsAndThresholds = !testSelectedMetrics && !testDefaultMetric && !testCombinedMetrics;
         Path selectedMetricsDir = null;
 
-        if (addSelectedMetrics) {
-            if (testDefaultMetric) {
-                throw new IllegalArgumentException("Either selected-metrics-dir OR test-default-metric can be configured.");
+        if (testSelectedMetrics) {
+            if (testDefaultMetric || testCombinedMetrics) {
+                throw new IllegalArgumentException("Either selected-metrics-dir OR test-default-metric OR test-combined-metrics can be configured.");
             }
             selectedMetricsDir = Paths.get(commandLine.getOptionValue("selected-metrics-dir"));
+        }
+
+        if (testCombinedMetrics) {
+            if (testDefaultMetric) {
+                throw new IllegalArgumentException("Either selected-metrics-dir OR test-default-metric OR test-combined-metrics can be configured.");
+            }
         }
 
         logger.info("Creating thread pool with at most " + threadCount + " threads...");
@@ -88,17 +99,27 @@ class Main {
                 samplesDir, outputDir, addAllMetricsAndThresholds
         );
 
-        if (addSelectedMetrics) {
+        if (testSelectedMetrics) {
             logger.info("Creating selected metrics...");
             MetricEvaluationManager.createSelectedSimilarityMetrics(selectedMetricsDir);
+        }
+
+        if (testCombinedMetrics) {
+            logger.info("Creating combined metrics...");
+            MetricEvaluationManager.createCombinedSimilarityMetrics();
         }
 
         for (MetricEvaluationManager manager : managers) {
             logger.info("Adding manager for sample " + manager.getSampleName() + " to thread pool...");
 
-            if (addSelectedMetrics) {
+            if (testSelectedMetrics) {
                 logger.info("Adding selected metrics to manager for sample " + manager.getSampleName() + "...");
                 manager.addSelectedSimilarityMetrics();
+            }
+
+            if (testCombinedMetrics) {
+                logger.info("Adding combined metrics to manager for sample " + manager.getSampleName() + "...");
+                manager.addCombinedSimilarityMetrics();
             }
 
             if (testDefaultMetric) {
