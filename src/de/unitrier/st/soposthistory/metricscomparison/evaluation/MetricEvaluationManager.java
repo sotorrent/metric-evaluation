@@ -31,6 +31,13 @@ public class MetricEvaluationManager implements Runnable {
     private static final List<SimilarityMetric> allSimilarityMetrics = new LinkedList<>();
     private static final List<SimilarityMetric> selectedSimilarityMetrics = new LinkedList<>();
     private static final List<SimilarityMetric> combinedSimilarityMetrics = new LinkedList<>();
+    private static final SimilarityMetric defaultSimilarityMetric = new SimilarityMetric(
+            "default", SimilarityMetric.MetricType.DEFAULT,
+            "default", SimilarityMetric.MetricType.DEFAULT,
+            "default", SimilarityMetric.MetricType.DEFAULT,
+            "default", SimilarityMetric.MetricType.DEFAULT,
+            Config.DEFAULT
+    );
 
     private int threadId;
     private String sampleName;
@@ -280,14 +287,7 @@ public class MetricEvaluationManager implements Runnable {
     }
 
     public void addDefaultSimilarityMetric() {
-        // default config will be used when this metric is configured
-        similarityMetrics.add(new SimilarityMetric(
-                "default", SimilarityMetric.MetricType.DEFAULT,
-                "default", SimilarityMetric.MetricType.DEFAULT,
-                "default", SimilarityMetric.MetricType.DEFAULT,
-                "default", SimilarityMetric.MetricType.DEFAULT,
-                Config.DEFAULT
-        ));
+        similarityMetrics.add(defaultSimilarityMetric);
     }
 
     public boolean validate() {
