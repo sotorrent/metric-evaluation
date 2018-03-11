@@ -5,7 +5,7 @@
     <name>SOPostHistoryMetricsComparison</name>
     <groupId>de.unitrier.st.soposthistory</groupId>
     <artifactId>so-posthistory-metricscomparision</artifactId>
-    <version>1.1.8</version>
+    <version>1.1.9</version>
     <url>https://github.com/sotorrent/metrics-comparison</url>
 
     <properties>
