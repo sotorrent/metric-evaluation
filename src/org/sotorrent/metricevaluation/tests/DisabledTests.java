@@ -1,14 +1,16 @@
-package de.unitrier.st.soposthistory.metricscomparison.tests;
+package org.sotorrent.metricevaluation.tests;
 
-import de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricEvaluationManager;
-import de.unitrier.st.soposthistory.metricscomparison.evaluation.SimilarityMetric;
-import de.unitrier.st.soposthistory.metricscomparison.statistics.Statistics;
-import de.unitrier.st.soposthistory.version.PostVersionList;
-import de.unitrier.st.util.Util;
+import org.sotorrent.metricevaluation.evaluation.MetricEvaluationManager;
+import org.sotorrent.metricevaluation.evaluation.SimilarityMetric;
+import org.sotorrent.metricevaluation.statistics.Statistics;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.sotorrent.posthistoryextractor.history.PostHistory;
+import org.sotorrent.posthistoryextractor.history.Posts;
+import org.sotorrent.posthistoryextractor.version.PostVersionList;
+import org.sotorrent.util.LogUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,7 +21,6 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
-import static de.unitrier.st.soposthistory.metricscomparison.statistics.Statistics.rootPathToGTSamples;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.junit.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,7 +31,7 @@ class DisabledTests {
 
     static {
         try {
-            logger = Util.getClassLogger(de.unitrier.st.soposthistory.metricscomparison.tests.DisabledTests.class);
+            logger = LogUtils.getClassLogger(DisabledTests.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -71,17 +72,17 @@ class DisabledTests {
             Path currentSampleFiles = Paths.get(currentSamplePath.toString(), "files");
 
             File[] postHistoryFiles = currentSampleFiles.toFile().listFiles(
-                    (dir, name) -> name.matches(PostVersionList.fileNamePattern.pattern())
+                    (dir, name) -> name.matches(PostHistory.fileNamePattern.pattern())
             );
 
             assertNotNull(postHistoryFiles);
 
             for (File postHistoryFile : postHistoryFiles) {
-                Matcher fileNameMatcher = PostVersionList.fileNamePattern.matcher(postHistoryFile.getName());
+                Matcher fileNameMatcher = PostHistory.fileNamePattern.matcher(postHistoryFile.getName());
                 if (fileNameMatcher.find()) {
                     int postId = Integer.parseInt(fileNameMatcher.group(1));
                     // no exception should be thrown for the following two lines
-                    PostVersionList postVersionList = PostVersionList.readFromCSV(currentSampleFiles, postId, -1);
+                    PostVersionList postVersionList = PostVersionList.readFromCSV(currentSampleFiles, postId, Posts.UNKNOWN_ID);
                     postVersionList.normalizeLinks();
                     assertTrue(postVersionList.size() > 0);
                 }
@@ -261,9 +262,9 @@ class DisabledTests {
         MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
                 .withName("TestMultiplePossibleConnections")
                 .withInputPaths(
-                        Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links.csv"),
-                        Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "files"),
-                        Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "completed"))
+                        Paths.get(Statistics.rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links.csv"),
+                        Paths.get(Statistics.rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "files"),
+                        Paths.get(Statistics.rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17-06_sample_100_multiple_possible_links", "completed"))
                 .withOutputDirPath(MetricEvaluationTest.testOutputDir)
                 .withAllSimilarityMetrics(false)
                 .initialize();
@@ -289,9 +290,9 @@ class DisabledTests {
         MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
                 .withName("TestSampleEqual")
                 .withInputPaths(
-                        Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_17_06_sample_edited_gt", "PostId_VersionCount_17_06_sample_edited_gt.csv"),
-                        Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_17_06_sample_edited_gt", "files"),
-                        Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_17_06_sample_edited_gt", "completed"))
+                        Paths.get(Statistics.rootPathToGTSamples.toString(), "PostId_VersionCount_17_06_sample_edited_gt", "PostId_VersionCount_17_06_sample_edited_gt.csv"),
+                        Paths.get(Statistics.rootPathToGTSamples.toString(), "PostId_VersionCount_17_06_sample_edited_gt", "files"),
+                        Paths.get(Statistics.rootPathToGTSamples.toString(), "PostId_VersionCount_17_06_sample_edited_gt", "completed"))
                 .withOutputDirPath(MetricEvaluationTest.testOutputDir)
                 .withAllSimilarityMetrics(false)
                 .initialize();
@@ -327,7 +328,7 @@ class DisabledTests {
     @Test
     void testMetricResultsWithEqualMetric() {
         List<MetricEvaluationManager> managers = MetricEvaluationManager.createManagersFromSampleDirectories(
-                rootPathToGTSamples, MetricEvaluationTest.testOutputDir, false
+                Statistics.rootPathToGTSamples, MetricEvaluationTest.testOutputDir, false
         );
 
         for (MetricEvaluationManager manager : managers) {
@@ -359,9 +360,9 @@ class DisabledTests {
         MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
                 .withName("TestUnclearMatching")
                 .withInputPaths(
-                        Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17_06_sample_unclear_matching", "PostId_VersionCount_SO_17_06_sample_unclear_matching.csv"),
-                        Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17_06_sample_unclear_matching", "files"),
-                        Paths.get(rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17_06_sample_unclear_matching", "completed"))
+                        Paths.get(Statistics.rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17_06_sample_unclear_matching", "PostId_VersionCount_SO_17_06_sample_unclear_matching.csv"),
+                        Paths.get(Statistics.rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17_06_sample_unclear_matching", "files"),
+                        Paths.get(Statistics.rootPathToGTSamples.toString(), "PostId_VersionCount_SO_17_06_sample_unclear_matching", "completed"))
                 .withOutputDirPath(MetricEvaluationTest.testOutputDir)
                 .withAllSimilarityMetrics(false)
                 .withNumberOfRepetitions(1)
@@ -373,7 +374,7 @@ class DisabledTests {
         // when aggregating results
         manager.addSimilarityMetric(new SimilarityMetric(
                 "threeShingleJaccard",
-                de.unitrier.st.stringsimilarity.set.Variants::threeShingleJaccard,
+                org.sotorrent.stringsimilarity.set.Variants::threeShingleJaccard,
                 SimilarityMetric.MetricType.SET,
                 0.8
         ));

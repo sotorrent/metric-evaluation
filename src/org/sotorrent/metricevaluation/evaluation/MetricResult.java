@@ -1,6 +1,7 @@
-package de.unitrier.st.soposthistory.metricscomparison.evaluation;
+package org.sotorrent.metricevaluation.evaluation;
 
-import de.unitrier.st.util.Util;
+import org.sotorrent.util.LogUtils;
+import org.sotorrent.util.MathUtils;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -23,7 +24,7 @@ public class MetricResult {
     static {
         // configure logger
         try {
-            logger = Util.getClassLogger(MetricResult.class);
+            logger = LogUtils.getClassLogger(MetricResult.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -190,7 +191,7 @@ public class MetricResult {
 
         double matthewsCorrelationCoefficient = numerator / denominator;
 
-        if (Util.lessThan(matthewsCorrelationCoefficient, -1.0) || Util.greaterThan(matthewsCorrelationCoefficient, 1.0)) {
+        if (MathUtils.lessThan(matthewsCorrelationCoefficient, -1.0) || MathUtils.greaterThan(matthewsCorrelationCoefficient, 1.0)) {
             String msg = "Matthews correlation coefficient must be in range [0.0, 1.0], but was " + matthewsCorrelationCoefficient;
             logger.warning(msg);
             throw new IllegalArgumentException(msg);
@@ -209,7 +210,7 @@ public class MetricResult {
     double getFailureRate() {
         double failureRate = possibleComparisons == 0 ? 0.0 : ((double) failedPredecessorComparisons) / ((double) possibleComparisons);
 
-        if (Util.lessThan(failureRate, 0.0) || Util.greaterThan(failureRate, 1.0)) {
+        if (MathUtils.lessThan(failureRate, 0.0) || MathUtils.greaterThan(failureRate, 1.0)) {
             String msg = similarityMetric + ": Failure rate must be in range [0.0, 1.0], but was " + failureRate;
             logger.warning(msg);
             throw new IllegalArgumentException(msg);

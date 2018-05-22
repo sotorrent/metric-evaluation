@@ -1,6 +1,6 @@
-package de.unitrier.st.soposthistory.metricscomparison.evaluation;
+package org.sotorrent.metricevaluation.evaluation;
 
-import de.unitrier.st.soposthistory.Config;
+import org.sotorrent.posthistoryextractor.Config;
 
 import java.util.function.BiFunction;
 

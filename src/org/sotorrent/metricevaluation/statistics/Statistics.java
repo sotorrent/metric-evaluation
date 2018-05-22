@@ -1,15 +1,19 @@
-package de.unitrier.st.soposthistory.metricscomparison.statistics;
+package org.sotorrent.metricevaluation.statistics;
 
-import de.unitrier.st.soposthistory.blocks.CodeBlockVersion;
-import de.unitrier.st.soposthistory.blocks.PostBlockVersion;
-import de.unitrier.st.soposthistory.metricscomparison.tests.MetricEvaluationTest;
-import de.unitrier.st.soposthistory.urls.*;
-import de.unitrier.st.soposthistory.version.PostVersion;
-import de.unitrier.st.soposthistory.version.PostVersionList;
-import de.unitrier.st.stringsimilarity.Normalization;
-import de.unitrier.st.stringsimilarity.Tokenization;
-import de.unitrier.st.util.Util;
+import org.sotorrent.metricevaluation.tests.MetricEvaluationTest;
 import org.apache.commons.csv.*;
+import org.sotorrent.metricevaluation.evaluation.MetricEvaluationManager;
+import org.sotorrent.posthistoryextractor.blocks.CodeBlockVersion;
+import org.sotorrent.posthistoryextractor.blocks.PostBlockVersion;
+import org.sotorrent.posthistoryextractor.history.PostHistory;
+import org.sotorrent.posthistoryextractor.history.Posts;
+import org.sotorrent.posthistoryextractor.urls.*;
+import org.sotorrent.posthistoryextractor.version.PostVersion;
+import org.sotorrent.posthistoryextractor.version.PostVersionList;
+import org.sotorrent.stringsimilarity.Normalization;
+import org.sotorrent.stringsimilarity.Tokenization;
+import org.sotorrent.util.FileUtils;
+import org.sotorrent.util.LogUtils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -19,9 +23,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
-import java.util.stream.Collectors;
 
-import static de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricEvaluationManager.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -48,7 +50,7 @@ public class Statistics {
     static {
         // configure logger
         try {
-            logger = Util.getClassLogger(Statistics.class, true);
+            logger = LogUtils.getClassLogger(Statistics.class, true);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -81,7 +83,7 @@ public class Statistics {
                 csvFormatMultipleConnections);
              CSVPrinter csvPrinterPosts = new CSVPrinter(new FileWriter(
                      pathToMultipleConnectionsPostsFile.toFile()),
-                     csvFormatPostIds
+                     MetricEvaluationManager.csvFormatPostIds
              )) {
 
             logger.info("Starting extraction of possible connections...");
@@ -175,10 +177,10 @@ public class Statistics {
         try (CSVParser csvParser = CSVParser.parse(
                 pathToMultipleConnectionsFile.toFile(),
                 StandardCharsets.UTF_8,
-                csvFormatMetricEvaluationPerVersion.withFirstRecordAsHeader()
+                MetricEvaluationManager.csvFormatMetricEvaluationPerVersion.withFirstRecordAsHeader()
         )) {
 
-            Util.ensureEmptyDirectoryExists(outputDir);
+            FileUtils.ensureEmptyDirectoryExists(outputDir);
 
             for (CSVRecord record : csvParser) {
                 postIds.add(Integer.valueOf(record.get("PostId")));
@@ -192,13 +194,13 @@ public class Statistics {
 
             File file = Paths.get(pathToSample.toString(), "files").toFile();
             File[] postVersionListFilesInFolder = file.listFiles(
-                    (dir, name) -> name.matches(PostVersionList.fileNamePattern.pattern())
+                    (dir, name) -> name.matches(PostHistory.fileNamePattern.pattern())
             );
 
             assertNotNull(postVersionListFilesInFolder);
 
             for (File postVersionListFile : postVersionListFilesInFolder) {
-                Matcher matcher = PostVersionList.fileNamePattern.matcher(postVersionListFile.getName());
+                Matcher matcher = PostHistory.fileNamePattern.matcher(postVersionListFile.getName());
                 if (matcher.find()) {
                     int postId = Integer.parseInt(matcher.group(1));
                     if (postIds.contains(postId)) {
@@ -360,7 +362,7 @@ public class Statistics {
 
             File file = Paths.get(pathToSample.toString(), "files").toFile();
             File[] postVersionListFilesInFolder = file.listFiles(
-                    (dir, name) -> name.matches(PostVersionList.fileNamePattern.pattern())
+                    (dir, name) -> name.matches(PostHistory.fileNamePattern.pattern())
             );
 
             assertNotNull(postVersionListFilesInFolder);
@@ -370,14 +372,14 @@ public class Statistics {
                 }
 
 
-                Matcher matcher = PostVersionList.fileNamePattern.matcher(postVersionListFile.getName());
+                Matcher matcher = PostHistory.fileNamePattern.matcher(postVersionListFile.getName());
                 if (matcher.find()) {
                     int postId = Integer.parseInt(matcher.group(1));
-                    PostVersionList postVersionList = PostVersionList.readFromCSV(file.toPath(), postId, 0);
+                    PostVersionList postVersionList = PostVersionList.readFromCSV(file.toPath(), postId, Posts.UNKNOWN_ID);
                     numberOfVersions++;
 
                     String content = postVersionList.getLast().getMergedTextBlockContent();
-                    List<Link> links = Link.extractAll(content);
+                    List<Link> links = Link.extractTyped(content);
                     numberOfURLsInTextBlocks += links.size();
 
                     for (Link link : links) {
@@ -417,7 +419,7 @@ public class Statistics {
 
             File file = Paths.get(pathToSample.toString(), "files").toFile();
             File[] postVersionListFilesInFolder = file.listFiles(
-                    (dir, name) -> name.matches(PostVersionList.fileNamePattern.pattern())
+                    (dir, name) -> name.matches(PostHistory.fileNamePattern.pattern())
             );
 
             assertNotNull(postVersionListFilesInFolder);
@@ -427,10 +429,10 @@ public class Statistics {
                 }
 
 
-                Matcher matcher = PostVersionList.fileNamePattern.matcher(postVersionListFile.getName());
+                Matcher matcher = PostHistory.fileNamePattern.matcher(postVersionListFile.getName());
                 if (matcher.find()) {
                     int postId = Integer.parseInt(matcher.group(1));
-                    PostVersionList postVersionList = PostVersionList.readFromCSV(file.toPath(), postId, 0);
+                    PostVersionList postVersionList = PostVersionList.readFromCSV(file.toPath(), postId, Posts.UNKNOWN_ID);
                     for (CodeBlockVersion codeBlockVersion : postVersionList.getLast().getCodeBlocks()) {
                         StringTokenizer tokensCodeLines = new StringTokenizer(codeBlockVersion.getContent(), "\n");
                         int numberOfCodeLines = tokensCodeLines.countTokens();
@@ -538,7 +540,7 @@ public class Statistics {
             try (CSVParser csvParser = new CSVParser(
                     new FileReader(file),
                     //CSVFormat.DEFAULT.withHeader("Sample", "Metric", "Threshold", "PostId", "PostVersionCount", "PostBlockVersionCount", "PossibleConnections", "RuntimeTextTotal", "RuntimeTextUser", "TextBlockVersionCount", "PossibleConnectionsText", "TruePositivesText", "TrueNegativesText", "FalsePositivesText", "FalseNegativesText", "RuntimeCodeTotal", "RuntimeCodeUser", "CodeBlockVersionCount", "PossibleConnectionsCode", "TruePositivesCode", "TrueNegativesCode", "FalsePositivesCode", "FalseNegativesCode"))) {
-                    csvFormatMetricEvaluationPerPost.withHeader())) {
+                    MetricEvaluationManager.csvFormatMetricEvaluationPerPost.withHeader())) {
 
                 for (CSVRecord currentRecord : csvParser) {
                     String sample = currentRecord.get("Sample");
@@ -600,7 +602,7 @@ public class Statistics {
             path = Paths.get(path.toString(), "files");
             File file = Paths.get(path.toString()).toFile();
             File[] postVersionListFilesInFolder = file.listFiles(
-                    (dir, name) -> name.matches(PostVersionList.fileNamePattern.pattern())
+                    (dir, name) -> name.matches(PostHistory.fileNamePattern.pattern())
             );
 
             if (postVersionListFilesInFolder == null) {
@@ -609,7 +611,7 @@ public class Statistics {
 
             for (File post : postVersionListFilesInFolder) {
                 int postId = Integer.valueOf(post.getName().replace(".csv", ""));
-                PostVersionList postVersionList = PostVersionList.readFromCSV(path, postId, 2, false);
+                PostVersionList postVersionList = PostVersionList.readFromCSV(path, postId, Posts.ANSWER_ID, false);
 
                 for (PostVersion postVersion : postVersionList) {
                     for (CodeBlockVersion codeBlockVersion : postVersion.getCodeBlocks()) {
@@ -720,7 +722,7 @@ public class Statistics {
         Path pathToFiles = Paths.get(path.toString(), "files");
         File file = Paths.get(pathToFiles.toString()).toFile();
         File[] postVersionListFilesInFolder = file.listFiles(
-                (dir, name) -> name.matches(PostVersionList.fileNamePattern.pattern())
+                (dir, name) -> name.matches(PostHistory.fileNamePattern.pattern())
         );
 
         try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(
@@ -732,14 +734,12 @@ public class Statistics {
             assert postVersionListFilesInFolder != null;
             for(File post : postVersionListFilesInFolder) {
                 int postId = Integer.parseInt(post.getName().replace(".csv", ""));
-                PostVersionList postVersionList = PostVersionList.readFromCSV(pathToFiles, postId, 2);
+                PostVersionList postVersionList = PostVersionList.readFromCSV(pathToFiles, postId, Posts.ANSWER_ID);
 
                 csvPrinter.printRecord(postId, postVersionList.getPostTypeId(), postVersionList.size());
             }
 
             csvPrinter.flush();
-            csvPrinter.close();
-
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -1,9 +1,10 @@
-package de.unitrier.st.soposthistory.metricscomparison;
+package org.sotorrent.metricevaluation;
 
-import de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricEvaluationManager;
+import org.sotorrent.metricevaluation.evaluation.MetricEvaluationManager;
 import org.apache.commons.cli.*;
 
-import de.unitrier.st.util.Util;
+import org.sotorrent.util.FileUtils;
+import org.sotorrent.util.LogUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -21,7 +22,7 @@ class Main {
     static {
         // configure logger
         try {
-            logger = Util.getClassLogger(Main.class);
+            logger = LogUtils.getClassLogger(Main.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -139,7 +140,7 @@ class Main {
 
             // output file aggregated over all samples
             Path outputFileAggregated= Paths.get(outputDir.toString(), "MetricComparison_aggregated.csv");
-            Util.deleteFileIfExists(outputFileAggregated);
+            FileUtils.deleteFileIfExists(outputFileAggregated);
 
             MetricEvaluationManager.aggregateAndWriteSampleResults(managers, outputFileAggregated.toFile());
 

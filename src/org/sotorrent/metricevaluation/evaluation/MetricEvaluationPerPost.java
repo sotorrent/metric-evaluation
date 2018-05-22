@@ -1,14 +1,14 @@
-package de.unitrier.st.soposthistory.metricscomparison.evaluation;
+package org.sotorrent.metricevaluation.evaluation;
 
 import com.google.common.base.Stopwatch;
-import de.unitrier.st.soposthistory.Config;
-import de.unitrier.st.soposthistory.blocks.CodeBlockVersion;
-import de.unitrier.st.soposthistory.blocks.TextBlockVersion;
-import de.unitrier.st.soposthistory.gt.PostBlockConnection;
-import de.unitrier.st.soposthistory.gt.PostGroundTruth;
-import de.unitrier.st.soposthistory.version.PostVersionList;
-import de.unitrier.st.util.Util;
 import org.apache.commons.csv.CSVPrinter;
+import org.sotorrent.posthistoryextractor.Config;
+import org.sotorrent.posthistoryextractor.blocks.CodeBlockVersion;
+import org.sotorrent.posthistoryextractor.blocks.TextBlockVersion;
+import org.sotorrent.posthistoryextractor.gt.PostBlockConnection;
+import org.sotorrent.posthistoryextractor.gt.PostGroundTruth;
+import org.sotorrent.posthistoryextractor.version.PostVersionList;
+import org.sotorrent.util.LogUtils;
 
 import java.io.IOException;
 import java.util.*;
@@ -23,7 +23,7 @@ public class MetricEvaluationPerPost {
     static {
         // configure logger
         try {
-            logger = Util.getClassLogger(MetricEvaluationPerPost.class);
+            logger = LogUtils.getClassLogger(MetricEvaluationPerPost.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -177,7 +177,7 @@ public class MetricEvaluationPerPost {
         }
     }
 
-    private void setResultAndRuntime(Map<Integer, MetricResult> results, Set<Integer> postBlockTypeFilter) {
+    private void setResultAndRuntime(Map<Integer, MetricResult> results, Set<Byte> postBlockTypeFilter) {
         if (currentRepetition == 1) {
             // set initial values after first run, return runtimeUser
             for (int postHistoryId : postHistoryIds) {
@@ -209,7 +209,7 @@ public class MetricEvaluationPerPost {
         }
     }
 
-    private MetricResult getResultAndSetRuntime(int postHistoryId, MetricResult oldResult, Set<Integer> postBlockTypeFilter) {
+    private MetricResult getResultAndSetRuntime(int postHistoryId, MetricResult oldResult, Set<Byte> postBlockTypeFilter) {
         MetricResult newResult = new MetricResult(similarityMetric);
 
         // runtime

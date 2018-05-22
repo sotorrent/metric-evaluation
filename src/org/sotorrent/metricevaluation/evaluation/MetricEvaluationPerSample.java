@@ -1,12 +1,12 @@
-package de.unitrier.st.soposthistory.metricscomparison.evaluation;
+package org.sotorrent.metricevaluation.evaluation;
 
-import de.unitrier.st.soposthistory.blocks.CodeBlockVersion;
-import de.unitrier.st.soposthistory.blocks.PostBlockVersion;
-import de.unitrier.st.soposthistory.blocks.TextBlockVersion;
-import de.unitrier.st.soposthistory.gt.PostGroundTruth;
-import de.unitrier.st.soposthistory.version.PostVersionList;
-import de.unitrier.st.util.Util;
 import org.apache.commons.csv.CSVPrinter;
+import org.sotorrent.posthistoryextractor.blocks.CodeBlockVersion;
+import org.sotorrent.posthistoryextractor.blocks.PostBlockVersion;
+import org.sotorrent.posthistoryextractor.blocks.TextBlockVersion;
+import org.sotorrent.posthistoryextractor.gt.PostGroundTruth;
+import org.sotorrent.posthistoryextractor.version.PostVersionList;
+import org.sotorrent.util.LogUtils;
 
 import java.io.IOException;
 import java.util.*;
@@ -21,7 +21,7 @@ public class MetricEvaluationPerSample extends LinkedList<MetricEvaluationPerPos
     static {
         // configure logger
         try {
-            logger = Util.getClassLogger(MetricEvaluationPerSample.class);
+            logger = LogUtils.getClassLogger(MetricEvaluationPerSample.class);
         } catch (IOException e) {
             e.printStackTrace();
         }

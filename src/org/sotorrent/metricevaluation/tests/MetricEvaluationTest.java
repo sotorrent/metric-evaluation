@@ -1,17 +1,18 @@
-package de.unitrier.st.soposthistory.metricscomparison.tests;
+package org.sotorrent.metricevaluation.tests;
 
-import de.unitrier.st.soposthistory.Config;
-import de.unitrier.st.soposthistory.blocks.CodeBlockVersion;
-import de.unitrier.st.soposthistory.blocks.TextBlockVersion;
-import de.unitrier.st.soposthistory.gt.PostBlockConnection;
-import de.unitrier.st.soposthistory.gt.PostGroundTruth;
-import de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricEvaluationManager;
-import de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricEvaluationPerPost;
-import de.unitrier.st.soposthistory.metricscomparison.evaluation.MetricResult;
-import de.unitrier.st.soposthistory.metricscomparison.evaluation.SimilarityMetric;
-import de.unitrier.st.soposthistory.version.PostVersionList;
-import de.unitrier.st.util.Util;
+import org.sotorrent.metricevaluation.evaluation.MetricEvaluationManager;
+import org.sotorrent.metricevaluation.evaluation.MetricEvaluationPerPost;
+import org.sotorrent.metricevaluation.evaluation.MetricResult;
+import org.sotorrent.metricevaluation.evaluation.SimilarityMetric;
 import org.junit.jupiter.api.Test;
+import org.sotorrent.posthistoryextractor.Config;
+import org.sotorrent.posthistoryextractor.blocks.CodeBlockVersion;
+import org.sotorrent.posthistoryextractor.blocks.TextBlockVersion;
+import org.sotorrent.posthistoryextractor.gt.PostBlockConnection;
+import org.sotorrent.posthistoryextractor.gt.PostGroundTruth;
+import org.sotorrent.posthistoryextractor.history.Posts;
+import org.sotorrent.posthistoryextractor.version.PostVersionList;
+import org.sotorrent.util.LogUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,17 +43,17 @@ public class MetricEvaluationTest {
     static {
         // configure logger
         try {
-            logger = Util.getClassLogger(MetricEvaluationTest.class);
+            logger = LogUtils.getClassLogger(MetricEvaluationTest.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     private Config configEqual = Config.DEFAULT
-            .withTextSimilarityMetric(de.unitrier.st.stringsimilarity.equal.Variants::equal)
+            .withTextSimilarityMetric(org.sotorrent.stringsimilarity.equal.Variants::equal)
             .withTextBackupSimilarityMetric(null)
             .withTextSimilarityThreshold(1.0)
-            .withCodeSimilarityMetric(de.unitrier.st.stringsimilarity.equal.Variants::equal)
+            .withCodeSimilarityMetric(org.sotorrent.stringsimilarity.equal.Variants::equal)
             .withCodeBackupSimilarityMetric(null)
             .withCodeSimilarityThreshold(1.0);
 
@@ -369,12 +370,12 @@ public class MetricEvaluationTest {
     @Test
     void equalsTestQuestion10381975() {
         int postId = 10381975;
-        PostVersionList q_10381975 = PostVersionList.readFromCSV(pathToPostHistory, postId, 1, false);
+        PostVersionList q_10381975 = PostVersionList.readFromCSV(pathToPostHistory, postId, Posts.QUESTION_ID, false);
         q_10381975.processVersionHistory(Config.DEFAULT
-                .withTextSimilarityMetric(de.unitrier.st.stringsimilarity.equal.Variants::equal)
+                .withTextSimilarityMetric(org.sotorrent.stringsimilarity.equal.Variants::equal)
                 .withTextBackupSimilarityMetric(null)
                 .withTextSimilarityThreshold(1.0)
-                .withCodeSimilarityMetric(de.unitrier.st.stringsimilarity.equal.Variants::equal)
+                .withCodeSimilarityMetric(org.sotorrent.stringsimilarity.equal.Variants::equal)
                 .withCodeBackupSimilarityMetric(null)
                 .withCodeSimilarityThreshold(1.0)
         );
@@ -415,12 +416,12 @@ public class MetricEvaluationTest {
         // text
         Set<PostBlockConnection> connectionsList = postVersionList.getConnections(TextBlockVersion.getPostBlockTypeIdFilter());
         Set<PostBlockConnection> connectionsGT = postGroundTruth.getConnections(TextBlockVersion.getPostBlockTypeIdFilter());
-        assertTrue(PostBlockConnection.difference(connectionsList, connectionsGT).size() == 0);
+        assertEquals(0, PostBlockConnection.difference(connectionsList, connectionsGT).size());
 
         // code
         connectionsList = postVersionList.getConnections(CodeBlockVersion.getPostBlockTypeIdFilter());
         connectionsGT = postGroundTruth.getConnections(CodeBlockVersion.getPostBlockTypeIdFilter());
-        assertTrue(PostBlockConnection.difference(connectionsList, connectionsGT).size() == 0);
+        assertEquals(0, PostBlockConnection.difference(connectionsList, connectionsGT).size());
     }
 
     static void validateEqualMetricResults(MetricEvaluationManager manager, int postId) {
@@ -447,7 +448,7 @@ public class MetricEvaluationTest {
     void equalsTestWithoutManagerAnswer10381975() {
         int postId = 10381975;
 
-        PostVersionList a_10381975 = PostVersionList.readFromCSV(pathToPostHistory, postId, 2, false);
+        PostVersionList a_10381975 = PostVersionList.readFromCSV(pathToPostHistory, postId, Posts.ANSWER_ID, false);
         a_10381975.normalizeLinks();
         a_10381975.processVersionHistory(configEqual);
         PostGroundTruth a_10381975_gt = PostGroundTruth.readFromCSV(pathToGroundTruth, postId);
@@ -461,7 +462,7 @@ public class MetricEvaluationTest {
     @Test
     void equalsTestWithoutManagerAnswer32841902() {
         int postId = 32841902;
-        PostVersionList a_32841902 = PostVersionList.readFromCSV(pathToPostHistory, postId, 2, false);
+        PostVersionList a_32841902 = PostVersionList.readFromCSV(pathToPostHistory, postId, Posts.ANSWER_ID, false);
         a_32841902.normalizeLinks();
         a_32841902.processVersionHistory(configEqual);
         PostGroundTruth a_32841902_gt = PostGroundTruth.readFromCSV(pathToGroundTruth, postId);
@@ -474,7 +475,7 @@ public class MetricEvaluationTest {
     @Test
     void equalsTestWithoutManagerQuestion13651791() {
         int postId = 13651791;
-        PostVersionList q_13651791 = PostVersionList.readFromCSV(pathToPostHistory, postId, 1, false);
+        PostVersionList q_13651791 = PostVersionList.readFromCSV(pathToPostHistory, postId, Posts.QUESTION_ID, false);
         q_13651791.normalizeLinks();
         q_13651791.processVersionHistory(configEqual);
         PostGroundTruth q_13651791_gt = PostGroundTruth.readFromCSV(pathToGroundTruth, postId);
@@ -488,7 +489,7 @@ public class MetricEvaluationTest {
     @Test
     void equalsTestWithoutManagerAnswer33076987() {
         int postId = 33076987;
-        PostVersionList a_33076987 = PostVersionList.readFromCSV(pathToPostHistory, postId, 1, false);
+        PostVersionList a_33076987 = PostVersionList.readFromCSV(pathToPostHistory, postId, Posts.QUESTION_ID, false);
         a_33076987.normalizeLinks();
         a_33076987.processVersionHistory(configEqual);
         PostGroundTruth a_33076987_gt = PostGroundTruth.readFromCSV(pathToGroundTruth, postId);
@@ -501,7 +502,7 @@ public class MetricEvaluationTest {
     @Test
     void equalsTestWithoutManagerAnswer38742394() {
         int postId = 38742394;
-        PostVersionList a_38742394 = PostVersionList.readFromCSV(pathToPostHistory, postId, 1, false);
+        PostVersionList a_38742394 = PostVersionList.readFromCSV(pathToPostHistory, postId, Posts.QUESTION_ID, false);
         a_38742394.normalizeLinks();
         a_38742394.processVersionHistory(configEqual);
         PostGroundTruth a_38742394_gt = PostGroundTruth.readFromCSV(pathToGroundTruth, postId);
@@ -515,7 +516,7 @@ public class MetricEvaluationTest {
     void equalsTestWithoutManagerAnswer37196630() {
         int postId = 37196630;
         int postHistoryId = 117953545; // version 3
-        PostVersionList a_37196630 = PostVersionList.readFromCSV(pathToPostHistory, postId, 1, false);
+        PostVersionList a_37196630 = PostVersionList.readFromCSV(pathToPostHistory, postId, Posts.QUESTION_ID, false);
         a_37196630.normalizeLinks();
         a_37196630.processVersionHistory(configEqual);
         PostGroundTruth a_37196630_gt = PostGroundTruth.readFromCSV(pathToGroundTruth, postId);
@@ -533,7 +534,7 @@ public class MetricEvaluationTest {
     void equalsTestWithoutManagerQuestion23459881() {
         int postId = 23459881;
         int postHistoryId = 64356224; // version 2
-        PostVersionList q_23459881 = PostVersionList.readFromCSV(pathToPostHistory, postId, 1, false);
+        PostVersionList q_23459881 = PostVersionList.readFromCSV(pathToPostHistory, postId, Posts.QUESTION_ID, false);
         q_23459881.normalizeLinks();
         q_23459881.processVersionHistory(configEqual);
         PostGroundTruth q_23459881_gt = PostGroundTruth.readFromCSV(pathToGroundTruth, postId);
@@ -548,7 +549,7 @@ public class MetricEvaluationTest {
     }
 
     private void validateResults(PostVersionList postVersionList, PostGroundTruth postGroundTruth,
-                                 Integer postHistoryId, Set<Integer> postBlockTypeFilter,
+                                 Integer postHistoryId, Set<Byte> postBlockTypeFilter,
                                  int expectedTruePositives, int expectedFalsePositives,
                                  int expectedTrueNegatives, int expectedFalseNegatives) {
 
