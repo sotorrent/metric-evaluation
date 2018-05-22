@@ -54,3 +54,4 @@ target/
 /testdata/metrics_comparison/TestCompareWithOldProject_per_post.csv
 /testdata/metrics_comparison/TestCompareWithOldProject_per_sample.csv
 /output/
+releases/
