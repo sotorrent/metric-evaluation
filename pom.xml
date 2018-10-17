@@ -86,7 +86,7 @@
     <build>
         <!-- configure source and test directories-->
         <sourceDirectory>src</sourceDirectory>
-        <testSourceDirectory>src/org/sotorrent/metricevaluation/tests</testSourceDirectory>
+        <testSourceDirectory>tests</testSourceDirectory>
 
         <plugins>
             <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->

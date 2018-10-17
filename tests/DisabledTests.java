@@ -1,5 +1,3 @@
-package org.sotorrent.metricevaluation.tests;
-
 import org.sotorrent.metricevaluation.evaluation.MetricEvaluationManager;
 import org.sotorrent.metricevaluation.evaluation.SimilarityMetric;
 import org.sotorrent.metricevaluation.statistics.Statistics;

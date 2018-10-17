@@ -1,6 +1,5 @@
 package org.sotorrent.metricevaluation.statistics;
 
-import org.sotorrent.metricevaluation.tests.MetricEvaluationTest;
 import org.apache.commons.csv.*;
 import org.sotorrent.metricevaluation.evaluation.MetricEvaluationManager;
 import org.sotorrent.posthistoryextractor.blocks.CodeBlockVersion;
@@ -44,6 +43,7 @@ public class Statistics {
     private static final Path pathToMultipleConnectionsPostsFile = Paths.get(pathToMultipleConnectionsDir.toString(), "multiple_possible_connections_posts.csv");
 
     private static final Path outputDir = Paths.get("output");
+    private static final Path testOutputDir = Paths.get("testdata", "output");
 
     public static final CSVFormat csvFormatMultipleConnections;
 
@@ -448,7 +448,7 @@ public class Statistics {
         }
 
         try {
-            File outputFile = Paths.get(MetricEvaluationTest.testOutputDir.toString(),"numberOfCodeLineStatistics.csv").toFile();
+            File outputFile = Paths.get(testOutputDir.toString(),"numberOfCodeLineStatistics.csv").toFile();
             PrintWriter printWriter = new PrintWriter(outputFile);
 
             printWriter.write("number of code lines;frequencies\n");

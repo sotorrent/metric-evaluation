@@ -1,5 +1,3 @@
-package org.sotorrent.metricevaluation.tests;
-
 import org.sotorrent.metricevaluation.evaluation.MetricEvaluationManager;
 import org.sotorrent.metricevaluation.evaluation.MetricEvaluationPerPost;
 import org.sotorrent.metricevaluation.evaluation.MetricResult;
@@ -31,13 +29,13 @@ import static org.hamcrest.junit.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class MetricEvaluationTest {
+class MetricEvaluationTest {
     private static Logger logger = null;
 
     static Path pathToPostIdList = Paths.get("testdata", "gt_test", "post_ids.csv");
     static Path pathToPostHistory = Paths.get("testdata", "gt_test", "files");
     static Path pathToGroundTruth = Paths.get("testdata", "gt_test", "gt");
-    public static Path testOutputDir = Paths.get("testdata", "output");
+    static Path testOutputDir = Paths.get("testdata", "output");
     private static Path pathToSamplesComparisonTestDir = Paths.get("testdata", "samples_comparison_test");
 
     static {
