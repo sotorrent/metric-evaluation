@@ -23,9 +23,6 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 /**
  * @author lorikdumani
  */
@@ -197,7 +194,9 @@ public class Statistics {
                     (dir, name) -> name.matches(PostHistory.fileNamePattern.pattern())
             );
 
-            assertNotNull(postVersionListFilesInFolder);
+            if (postVersionListFilesInFolder == null) {
+                throw new IllegalStateException("Post version files not found");
+            }
 
             for (File postVersionListFile : postVersionListFilesInFolder) {
                 Matcher matcher = PostHistory.fileNamePattern.matcher(postVersionListFile.getName());
@@ -293,9 +292,15 @@ public class Statistics {
                     List<MeasuredRuntimes> currentComparison = listOfListsOfMeasuredRuntimesFromDifferentComparisons.get(i);
 
                     // validate records
-                    assertEquals(baseComparison.get(j).postId, currentComparison.get(j).postId);
-                    assertEquals(baseComparison.get(j).metricName, currentComparison.get(j).metricName);
-                    assertEquals(baseComparison.get(j).threshold, currentComparison.get(j).threshold);
+                    if (baseComparison.get(j).postId != currentComparison.get(j).postId) {
+                        throw new IllegalStateException("Post IDs do not match.");
+                    }
+                    if (!baseComparison.get(j).metricName.equals(currentComparison.get(j).metricName)) {
+                        throw new IllegalStateException("Metric names do not match.");
+                    }
+                    if (baseComparison.get(j).threshold != currentComparison.get(j).threshold) {
+                        throw new IllegalStateException("Thresholds do not match.");
+                    }
 
                     minRuntimeTextTotal = Math.min(minRuntimeTextTotal, currentComparison.get(i).runtimeTextTotal);
                     minRuntimeCodeTotal = Math.min(minRuntimeCodeTotal, currentComparison.get(i).runtimeCodeTotal);
@@ -365,7 +370,11 @@ public class Statistics {
                     (dir, name) -> name.matches(PostHistory.fileNamePattern.pattern())
             );
 
-            assertNotNull(postVersionListFilesInFolder);
+            if (postVersionListFilesInFolder == null) {
+                throw new IllegalStateException("Post version files not found");
+            }
+
+
             for (File postVersionListFile : postVersionListFilesInFolder) {
                 if(++count % 1000 == 0) {
                     System.err.println("Process: " + (double)count / 100000 * 100 + " %");
@@ -422,7 +431,10 @@ public class Statistics {
                     (dir, name) -> name.matches(PostHistory.fileNamePattern.pattern())
             );
 
-            assertNotNull(postVersionListFilesInFolder);
+            if (postVersionListFilesInFolder == null) {
+                throw new IllegalStateException("Post version files not found");
+            }
+
             for (File postVersionListFile : postVersionListFilesInFolder) {
                 if(++count % 1000 == 0) {
                     System.err.println("Process: " + (double)count / 100000 * 100 + " %");
