@@ -451,9 +451,10 @@ class MetricEvaluationTest {
         a_10381975.processVersionHistory(configEqual);
         PostGroundTruth a_10381975_gt = PostGroundTruth.readFromCSV(pathToGroundTruth, postId);
 
+        // TODO: check again
         // text
         validateResults(a_10381975, a_10381975_gt, null, TextBlockVersion.getPostBlockTypeIdFilter(),
-                9+8+9+9+8, 0, 9*8 + 8*9 + 9*8 + 9*8 + 9*8, 1+1);
+                10+10+10+10+9, 0, 10*10 + 10*10 + 10*10 + 10*10 + 9*10, 0);
         // fn: comparison between versions 2 and 3 and connection null <- 17 instead of 17 <- 17 as well as between version 5 and 6 and connection null <- 11 instead of 11 <- 11
     }
 
