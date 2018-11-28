@@ -56,19 +56,19 @@
     </repositories>
 
     <dependencies>
-        <!-- https://github.com/sotorrent/so-posthistory-extractor/tree/master/releases/ -->
+        <!-- https://github.com/sotorrent/so-posthistory-extractor/ -->
         <dependency>
             <groupId>org.sotorrent</groupId>
             <artifactId>posthistory-extractor</artifactId>
             <version>${posthistory-extractor.version}</version>
         </dependency>
-        <!-- https://github.com/sotorrent/string-similarity/tree/master/releases/ -->
+        <!-- https://github.com/sotorrent/string-similarity/ -->
         <dependency>
             <groupId>org.sotorrent</groupId>
             <artifactId>string-similarity</artifactId>
             <version>${string-similarity.version}</version>
         </dependency>
-        <!-- https://github.com/sotorrent/util/tree/master/releases/ -->
+        <!-- https://github.com/sotorrent/util/ -->
         <dependency>
             <groupId>org.sotorrent</groupId>
             <artifactId>util</artifactId>
