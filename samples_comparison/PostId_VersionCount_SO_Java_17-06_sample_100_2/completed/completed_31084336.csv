@@ -1,0 +1,5 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+31084336;93785304;1;1;null;1;""
+31084336;147644697;1;1;1;null;""
+31084336;93785304;2;2;null;2;""
+31084336;147644697;2;2;2;null;""

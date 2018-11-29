@@ -1,0 +1,7 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+25800616;73343709;1;1;null;1;""
+25800616;73344216;1;1;1;null;""
+25800616;73343709;2;2;null;4;""
+25800616;73344216;2;4;2;null;""
+25800616;73344216;2;2;null;null;""
+25800616;73344216;1;3;null;null;""

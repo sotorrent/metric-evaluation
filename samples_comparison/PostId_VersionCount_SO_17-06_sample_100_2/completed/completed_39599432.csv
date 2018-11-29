@@ -1,0 +1,5 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+39599432;127520022;1;1;null;1;""
+39599432;127521239;1;1;1;null;""
+39599432;127520022;2;2;null;2;""
+39599432;127521239;2;2;2;null;""

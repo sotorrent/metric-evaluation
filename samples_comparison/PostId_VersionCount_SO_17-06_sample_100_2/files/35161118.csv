@@ -1,0 +1,3 @@
+Id;PostId;UserId;PostHistoryTypeId;RevisionGUID;CreationDate;Text;UserDisplayName;Comment
+109900744;35161118;3407798;2;28ec1755-bfbb-42a0-8d60-8178409daf19;2016-02-02 18:25:45.0;"try this!&#xD;&#xA;&#xD;&#xA;    ^if\\(\\d+[><=!]{1,2}\\d+\\)\\d+\\:\\d+$&#xD;&#xA;&#xD;&#xA;https://regex101.com/r/qZ7oM7/1&#xD;&#xA;";;
+109901838;35161118;3407798;5;d7de0895-d0e0-409b-960c-ff17eb08563a;2016-02-02 18:42:15.0;"try this!&#xD;&#xA;&#xD;&#xA;    ^if\\((\\d+)(>|<|>=|<=|==|!=)(\\d+)\\)(\\w{1,50})\\:(\\w{1,50})&#xD;&#xA;&#xD;&#xA;https://regex101.com/r/qZ7oM7/2&#xD;&#xA;";;added 23 characters in body

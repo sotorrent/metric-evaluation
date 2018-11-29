@@ -1,0 +1,4 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+42369010;138921061;1;1;null;1;" Text"
+42369010;138923201;1;1;1;1;""
+42369010;146606287;1;1;1;null;""

@@ -1,0 +1,8 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+32054282;97591336;1;1;null;1;""
+32054282;97592403;1;1;1;null;""
+32054282;97591336;2;2;null;2;""
+32054282;97592403;2;2;2;null;""
+32054282;97591336;1;3;null;3;""
+32054282;97592403;1;3;3;null;""
+32054282;97592403;2;4;null;null;""

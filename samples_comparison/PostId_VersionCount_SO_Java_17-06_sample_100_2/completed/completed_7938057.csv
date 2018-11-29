@@ -1,0 +1,7 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+7938057;17649615;1;1;null;1;""
+7938057;17649698;1;1;1;null;""
+7938057;17649615;2;2;null;2;""
+7938057;17649698;2;2;2;null;""
+7938057;17649615;1;3;null;3;""
+7938057;17649698;1;3;3;null;""

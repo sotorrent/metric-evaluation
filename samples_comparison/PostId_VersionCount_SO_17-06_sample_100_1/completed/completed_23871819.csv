@@ -1,0 +1,8 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+23871819;65951069;1;1;null;1;""
+23871819;65951450;1;1;1;1;""
+23871819;65951463;1;1;1;null;""
+23871819;65951069;2;2;null;2;""
+23871819;65951450;2;2;2;2;""
+23871819;65951463;2;2;2;null;""
+23871819;65951069;1;3;null;null;" Fehler"

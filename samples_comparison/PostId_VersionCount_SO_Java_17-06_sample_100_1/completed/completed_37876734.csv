@@ -1,0 +1,9 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+37876734;120648360;1;1;null;1;""
+37876734;120650094;1;1;1;null;""
+37876734;120648360;2;2;null;2;""
+37876734;120650094;2;2;2;null;""
+37876734;120648360;1;3;null;null;" Nicht richtig unterteilt"
+37876734;120650094;1;3;null;null;""
+37876734;120650094;2;4;null;null;""
+37876734;120650094;1;5;null;null;""

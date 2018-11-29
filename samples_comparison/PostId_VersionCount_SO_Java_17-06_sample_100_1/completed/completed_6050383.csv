@@ -1,0 +1,7 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+6050383;13088959;1;1;null;1;""
+6050383;13186648;1;1;1;null;""
+6050383;13088959;2;2;null;2;""
+6050383;13186648;2;2;2;null;""
+6050383;13088959;1;3;null;3;""
+6050383;13186648;1;3;3;null;""

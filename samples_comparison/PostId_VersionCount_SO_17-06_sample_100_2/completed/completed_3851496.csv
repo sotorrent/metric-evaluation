@@ -1,0 +1,6 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+3851496;8078806;1;1;null;1;""
+3851496;8078836;1;1;1;null;""
+3851496;8078806;2;2;null;2;""
+3851496;8078836;2;2;2;null;""
+3851496;8078836;1;3;null;null;""

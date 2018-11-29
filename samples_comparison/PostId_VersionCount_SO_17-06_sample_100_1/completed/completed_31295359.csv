@@ -1,0 +1,6 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+31295359;94619800;1;1;null;1;""
+31295359;94622346;1;1;1;null;""
+31295359;94619800;2;2;null;2;""
+31295359;94622346;2;2;2;null;""
+31295359;94622346;1;3;null;null;""

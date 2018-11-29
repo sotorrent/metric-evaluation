@@ -1,0 +1,7 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+31034687;93595346;1;1;null;1;""
+31034687;93595610;1;1;1;null;""
+31034687;93595346;2;2;null;2;""
+31034687;93595610;2;2;2;null;""
+31034687;93595346;1;3;null;3;""
+31034687;93595610;1;3;3;null;""

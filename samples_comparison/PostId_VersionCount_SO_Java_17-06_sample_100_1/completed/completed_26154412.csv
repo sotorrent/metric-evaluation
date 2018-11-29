@@ -1,0 +1,5 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+26154412;74702182;1;1;null;1;""
+26154412;74702246;1;1;1;null;""
+26154412;74702182;2;2;null;2;""
+26154412;74702246;2;2;2;null;""

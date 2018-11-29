@@ -1,0 +1,7 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+18572380;46455836;2;1;null;1;""
+18572380;46456246;2;1;1;1;""
+18572380;46471862;2;1;1;null;""
+18572380;46455836;1;2;null;2;""
+18572380;46456246;1;2;2;2;""
+18572380;46471862;1;2;2;null;""

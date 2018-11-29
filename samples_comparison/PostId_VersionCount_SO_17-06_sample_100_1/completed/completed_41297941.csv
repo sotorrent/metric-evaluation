@@ -1,0 +1,7 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+41297941;134475382;1;1;null;1;""
+41297941;134475832;1;1;1;null;""
+41297941;134475382;2;2;null;2;""
+41297941;134475832;2;2;2;null;""
+41297941;134475832;1;3;null;null;""
+41297941;134475832;2;4;null;null;""
