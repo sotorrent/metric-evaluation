@@ -13,11 +13,13 @@ import org.sotorrent.util.LogUtils;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
+import java.util.stream.Stream;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.junit.MatcherAssert.assertThat;
@@ -26,6 +28,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @Disabled
 class DisabledTests {
     private static Logger logger;
+
+    private static Path pathToComparisonSamplesDir = Paths.get("samples_comparison");
 
     static {
         try {
@@ -387,4 +391,28 @@ class DisabledTests {
         }
     }
 
+    @Test
+    void testMetricEvaluationManagerWithComparisonSamples() {
+        try (Stream<Path> paths = Files.list(pathToComparisonSamplesDir)) {
+            paths.forEach(
+                    path -> {
+                        String sampleName = path.getFileName().toString();
+                        MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
+                                .withName("TestComparisonSamples")
+                                .withInputPaths(
+                                        Paths.get(pathToComparisonSamplesDir.toString(), sampleName, sampleName + ".csv"),
+                                        Paths.get(pathToComparisonSamplesDir.toString(), sampleName, "files"),
+                                        Paths.get(pathToComparisonSamplesDir.toString(), sampleName, "completed"))
+                                .withOutputDirPath(MetricEvaluationTest.testOutputDir)
+                                .withAllSimilarityMetrics(false)
+                                .withNumberOfRepetitions(1)
+                                .initialize();
+                        assertEquals(manager.getPostVersionLists().size(), manager.getPostGroundTruths().size());
+                        assertThat(manager.getPostVersionLists().keySet(), is(manager.getPostGroundTruths().keySet()));
+                    }
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
