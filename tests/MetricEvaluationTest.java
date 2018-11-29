@@ -231,6 +231,21 @@ class MetricEvaluationTest {
     }
 
     @Test
+    void validateAnswer10381975() {
+        int postId = 10381975;
+
+        PostVersionList a_10381975 = PostVersionList.readFromCSV(pathToPostHistory, postId, Posts.ANSWER_ID, false);
+        a_10381975.normalizeLinks();
+        a_10381975.processVersionHistory(Config.DEFAULT);
+        PostGroundTruth a_10381975_gt = PostGroundTruth.readFromCSV(pathToGroundTruth, postId);
+
+        // text
+        validateResults(a_10381975, a_10381975_gt, null, TextBlockVersion.getPostBlockTypeIdFilter(),
+                10+10+10+10+9, 0, 9*10 + 9*10 + 9*10 + 9*10 + 9*9, 0);
+        // fn: comparison between versions 2 and 3 and connection null <- 17 instead of 17 <- 17 as well as between version 5 and 6 and connection null <- 11 instead of 11 <- 11
+    }
+
+    @Test
     void testAggregatedResultsManagers() {
         ExecutorService threadPool = Executors.newFixedThreadPool(4);
         List<MetricEvaluationManager> managers = MetricEvaluationManager.createManagersFromSampleDirectories(
@@ -448,13 +463,12 @@ class MetricEvaluationTest {
 
         PostVersionList a_10381975 = PostVersionList.readFromCSV(pathToPostHistory, postId, Posts.ANSWER_ID, false);
         a_10381975.normalizeLinks();
-        a_10381975.processVersionHistory(Config.DEFAULT);
+        a_10381975.processVersionHistory(configEqual);
         PostGroundTruth a_10381975_gt = PostGroundTruth.readFromCSV(pathToGroundTruth, postId);
 
-        // TODO: check again
         // text
         validateResults(a_10381975, a_10381975_gt, null, TextBlockVersion.getPostBlockTypeIdFilter(),
-                10+10+10+10+9, 0, 9*10 + 9*10 + 9*10 + 9*10 + 9*9, 0);
+                10+9+10+10+8, 0, 9*10 + 9*10 + 9*10 + 9*10 + 9*9, 2);
         // fn: comparison between versions 2 and 3 and connection null <- 17 instead of 17 <- 17 as well as between version 5 and 6 and connection null <- 11 instead of 11 <- 11
     }
 
