@@ -3,7 +3,6 @@ import org.sotorrent.metricevaluation.evaluation.SimilarityMetric;
 import org.sotorrent.metricevaluation.statistics.Statistics;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.sotorrent.posthistoryextractor.history.PostHistory;
 import org.sotorrent.posthistoryextractor.history.Posts;
@@ -25,7 +24,6 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.junit.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-@Disabled
 class DisabledTests {
     private static Logger logger;
 
