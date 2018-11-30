@@ -72,59 +72,6 @@ class DisabledTests {
         }
     }
 
-    private class MultipleConnectionsResultOld {
-        int postId;
-        int postHistoryId;
-        int localId;
-        int postBlockTypeId;
-        String possiblePredOrSuccLocalIds;
-        int numberOfPossibleSuccessorsOrPredecessors;
-
-        MultipleConnectionsResultOld(int postId, int postHistoryId, int localId, int postBlockTypeId,
-                                     String possiblePredOrSuccLocalIds,
-                                     int numberOfPossibleSuccessorsOrPredecessors) {
-            this.postId = postId;
-            this.postHistoryId = postHistoryId;
-            this.localId = localId;
-            this.postBlockTypeId = postBlockTypeId;
-            this.possiblePredOrSuccLocalIds = possiblePredOrSuccLocalIds;
-            this.numberOfPossibleSuccessorsOrPredecessors = numberOfPossibleSuccessorsOrPredecessors;
-        }
-    }
-
-    private class MultipleConnectionsResultNew {
-        int postId;
-        int postHistoryId;
-        int localId;
-        int postBlockTypeId;
-        int possiblePredecessorsCount;
-        int possibleSuccessorsCount;
-        String possiblePredecessorLocalIds;
-        String possibleSuccessorLocalIds;
-
-        MultipleConnectionsResultNew(int postId, int postHistoryId, int localId, int postBlockTypeId,
-                                     int possiblePredecessorsCount, int possibleSuccessorsCount,
-                                     String possiblePredecessorLocalIds, String possibleSuccessorLocalIds) {
-            this.postId = postId;
-            this.postHistoryId = postHistoryId;
-            this.localId = localId;
-            this.postBlockTypeId = postBlockTypeId;
-            this.possiblePredecessorsCount = possiblePredecessorsCount;
-            this.possibleSuccessorsCount = possibleSuccessorsCount;
-            this.possiblePredecessorLocalIds = possiblePredecessorLocalIds;
-            this.possibleSuccessorLocalIds = possibleSuccessorLocalIds;
-        }
-    }
-
-    private void joinAndValidateEqualMetricResults(MetricEvaluationManager manager, Thread managerThread) throws InterruptedException {
-        managerThread.join();
-        assertTrue(manager.isFinished()); // assert that execution of manager successfully finished
-        for (int postId : manager.getPostIds()) {
-            // assert that equality-based metric did not produce false positives or failed comparisons
-            MetricEvaluationTest.validateEqualMetricResults(manager, postId);
-        }
-    }
-
     @Test
     void testMetricEvaluationManagerValidationWithComparisonSamples() {
         try (Stream<Path> paths = Files.list(MetricEvaluationTest.pathToComparisonSamplesDir)) {
@@ -226,4 +173,14 @@ class DisabledTests {
             e.printStackTrace();
         }
     }
+
+    private void joinAndValidateEqualMetricResults(MetricEvaluationManager manager, Thread managerThread) throws InterruptedException {
+        managerThread.join();
+        assertTrue(manager.isFinished()); // assert that execution of manager successfully finished
+        for (int postId : manager.getPostIds()) {
+            // assert that equality-based metric did not produce false positives or failed comparisons
+            MetricEvaluationTest.validateEqualMetricResults(manager, postId);
+        }
+    }
+
 }
