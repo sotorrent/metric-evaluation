@@ -19,7 +19,6 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.junit.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-@Disabled
 class DisabledTests {
     private static Path pathToComparisonSamplesDir = Paths.get("samples_comparison");
 
