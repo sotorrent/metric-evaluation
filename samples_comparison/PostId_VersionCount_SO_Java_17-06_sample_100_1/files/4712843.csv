@@ -1,3 +1,0 @@
-Id;PostId;UserId;PostHistoryTypeId;RevisionGUID;CreationDate;Text;UserDisplayName;Comment
-9970133;4712843;544537;2;c7727645-713f-4e07-b5da-c2247526aecb;2011-01-17 11:55:19.0;"its obvoius bcoz you have provided height as wrap_content and you dont still fill that content.so it will display as 0.&#xD;&#xA;";;
-9988330;4712843;56338;5;ed380021-7590-4587-9261-750b99115318;2011-01-18 06:23:51.0;"You have provided the height as `wrap_content` and you don't fill that content. Because of that it will display as 0.&#xD;&#xA;";;deleted 2 characters in body

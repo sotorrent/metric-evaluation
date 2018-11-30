@@ -1,3 +1,0 @@
-Id;PostId;UserId;PostHistoryTypeId;RevisionGUID;CreationDate;Text;UserDisplayName;Comment
-30165511;12774836;1696495;2;2d66d160-6daa-4035-a607-367413537a66;2012-10-08 03:10:30.0;"    FlexClient.getInstance().id = UIDUtil.createUID();&#xD;&#xA;&#xD;&#xA;just add above code";;
-30165794;12774836;318223;5;c6f1e8a4-a274-49e3-93ad-f38f6a069288;2012-10-08 03:28:46.0;"Just add the following code&#xD;&#xA;&#xD;&#xA;    FlexClient.getInstance().id = UIDUtil.createUID();&#xD;&#xA;&#xD;&#xA;";;improved formatting

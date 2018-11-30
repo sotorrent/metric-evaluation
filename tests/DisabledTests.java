@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Disabled
 class DisabledTests {
-    private static Path pathToComparisonSamplesDir = Paths.get("samples_comparison");
 
     @Test
     void testMetricEvaluationManagerTestData() {
@@ -45,11 +44,11 @@ class DisabledTests {
 
     @Test
     void testComparisonSamplesParsable() {
-        try (Stream<Path> paths = Files.list(pathToComparisonSamplesDir)) {
+        try (Stream<Path> paths = Files.list(MetricEvaluationTest.pathToComparisonSamplesDir)) {
             paths.forEach(
                     path -> {
                         String sampleName = path.getFileName().toString();
-                        Path currentSampleFiles = Paths.get(pathToComparisonSamplesDir.toString(), sampleName, "files");
+                        Path currentSampleFiles = Paths.get(MetricEvaluationTest.pathToComparisonSamplesDir.toString(), sampleName, "files");
 
                         File[] postHistoryFiles = currentSampleFiles.toFile().listFiles(
                                 (dir, name) -> name.matches(PostHistory.fileNamePattern.pattern())
@@ -129,16 +128,16 @@ class DisabledTests {
 
     @Test
     void testMetricEvaluationManagerValidationWithComparisonSamples() {
-        try (Stream<Path> paths = Files.list(pathToComparisonSamplesDir)) {
+        try (Stream<Path> paths = Files.list(MetricEvaluationTest.pathToComparisonSamplesDir)) {
             paths.forEach(
                     path -> {
                         String sampleName = path.getFileName().toString();
                         MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
                                 .withName("TestComparisonSamples")
                                 .withInputPaths(
-                                        Paths.get(pathToComparisonSamplesDir.toString(), sampleName, sampleName + ".csv"),
-                                        Paths.get(pathToComparisonSamplesDir.toString(), sampleName, "files"),
-                                        Paths.get(pathToComparisonSamplesDir.toString(), sampleName, "completed"))
+                                        Paths.get(MetricEvaluationTest.pathToComparisonSamplesDir.toString(), sampleName, sampleName + ".csv"),
+                                        Paths.get(MetricEvaluationTest.pathToComparisonSamplesDir.toString(), sampleName, "files"),
+                                        Paths.get(MetricEvaluationTest.pathToComparisonSamplesDir.toString(), sampleName, "completed"))
                                 .withOutputDirPath(MetricEvaluationTest.testOutputDir)
                                 .withAllSimilarityMetrics(false)
                                 .withNumberOfRepetitions(1)
@@ -155,16 +154,16 @@ class DisabledTests {
 
     @Test
     void testMetricEvaluationManagerInitializationWithComparisonSamples() {
-        try (Stream<Path> paths = Files.list(pathToComparisonSamplesDir)) {
+        try (Stream<Path> paths = Files.list(MetricEvaluationTest.pathToComparisonSamplesDir)) {
             paths.forEach(
                     path -> {
                         String sampleName = path.getFileName().toString();
                         MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
                                 .withName("TestComparisonSamples")
                                 .withInputPaths(
-                                        Paths.get(pathToComparisonSamplesDir.toString(), sampleName, sampleName + ".csv"),
-                                        Paths.get(pathToComparisonSamplesDir.toString(), sampleName, "files"),
-                                        Paths.get(pathToComparisonSamplesDir.toString(), sampleName, "completed"))
+                                        Paths.get(MetricEvaluationTest.pathToComparisonSamplesDir.toString(), sampleName, sampleName + ".csv"),
+                                        Paths.get(MetricEvaluationTest.pathToComparisonSamplesDir.toString(), sampleName, "files"),
+                                        Paths.get(MetricEvaluationTest.pathToComparisonSamplesDir.toString(), sampleName, "completed"))
                                 .withOutputDirPath(MetricEvaluationTest.testOutputDir)
                                 .withAllSimilarityMetrics(false)
                                 .withNumberOfRepetitions(1)
@@ -181,16 +180,16 @@ class DisabledTests {
 
     @Test
     void testMetricEvaluationManagerWithEqualityMetrics() {
-        try (Stream<Path> paths = Files.list(pathToComparisonSamplesDir)) {
+        try (Stream<Path> paths = Files.list(MetricEvaluationTest.pathToComparisonSamplesDir)) {
             paths.forEach(
                     path -> {
                         String sampleName = path.getFileName().toString();
                         MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
                                 .withName("TestComparisonSamplesEqual")
                                 .withInputPaths(
-                                        Paths.get(pathToComparisonSamplesDir.toString(), sampleName, sampleName + ".csv"),
-                                        Paths.get(pathToComparisonSamplesDir.toString(), sampleName, "files"),
-                                        Paths.get(pathToComparisonSamplesDir.toString(), sampleName, "completed"))
+                                        Paths.get(MetricEvaluationTest.pathToComparisonSamplesDir.toString(), sampleName, sampleName + ".csv"),
+                                        Paths.get(MetricEvaluationTest.pathToComparisonSamplesDir.toString(), sampleName, "files"),
+                                        Paths.get(MetricEvaluationTest.pathToComparisonSamplesDir.toString(), sampleName, "completed"))
                                 .withOutputDirPath(MetricEvaluationTest.testOutputDir)
                                 .withAllSimilarityMetrics(false)
                                 .initialize();

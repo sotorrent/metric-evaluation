@@ -1,3 +1,4 @@
+import com.google.common.collect.Sets;
 import org.sotorrent.metricevaluation.evaluation.MetricEvaluationManager;
 import org.sotorrent.metricevaluation.evaluation.MetricEvaluationPerPost;
 import org.sotorrent.metricevaluation.evaluation.MetricResult;
@@ -32,11 +33,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class MetricEvaluationTest {
     private static Logger logger = null;
 
+    static Path pathToComparisonSamplesDir = Paths.get("testdata","samples_comparison");
+
     static Path pathToPostIdList = Paths.get("testdata", "gt_test", "post_ids.csv");
     static Path pathToPostHistory = Paths.get("testdata", "gt_test", "files");
     static Path pathToGroundTruth = Paths.get("testdata", "gt_test", "gt");
+
     static Path testOutputDir = Paths.get("testdata", "output");
-    private static Path pathToSamplesComparisonTestDir = Paths.get("testdata", "samples_comparison_test");
 
     static {
         // configure logger
@@ -249,8 +252,13 @@ class MetricEvaluationTest {
     void testAggregatedResultsManagers() {
         ExecutorService threadPool = Executors.newFixedThreadPool(4);
         List<MetricEvaluationManager> managers = MetricEvaluationManager.createManagersFromSampleDirectories(
-                pathToSamplesComparisonTestDir, testOutputDir, false
+                pathToComparisonSamplesDir, testOutputDir, false,
+                Sets.newHashSet(
+                        "PostId_VersionCount_SO_17-06_sample_100_1",
+                        "PostId_VersionCount_SO_17-06_sample_100_2"
+                )
         );
+
         for (MetricEvaluationManager manager : managers) {
             manager.addSimilarityMetric(
                     MetricEvaluationManager.getSimilarityMetric("winnowingTwoGramOverlap", 0.3)
@@ -293,7 +301,7 @@ class MetricEvaluationTest {
     }
 
     @Test
-    void testFailedPredecessorComparisonsText() {
+    void testFailedPredecessorComparisons1() {
         MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
                 .withName("TestFailedPredecessorComparisonsText")
                 .withInputPaths(pathToPostIdList, pathToPostHistory, pathToGroundTruth)
@@ -332,7 +340,7 @@ class MetricEvaluationTest {
     }
 
     @Test
-    void testFailedPredecessorComparisonsCode() {
+    void testFailedPredecessorComparisons2() {
         MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
                 .withName("TestFailedPredecessorComparisonsCode")
                 .withInputPaths(pathToPostIdList, pathToPostHistory, pathToGroundTruth)
@@ -363,7 +371,15 @@ class MetricEvaluationTest {
             assertEquals(0, resultsCode.getFalsePositives());
             assertEquals(0, resultsCode.getTrueNegatives());
             assertEquals(0, resultsCode.getFalseNegatives());
-            assertEquals(1, resultsCode.getFailedPredecessorComparisons());
+            assertEquals(0, resultsCode.getFailedPredecessorComparisons());
+
+            MetricResult resultsText = evaluation_a_2096370.getResultsText(postHistoryId_version2);
+            assertEquals(1, resultsText.getTruePositives());
+            assertEquals(0, resultsText.getFalsePositives());
+            assertEquals(0, resultsText.getTrueNegatives());
+            assertEquals(1, resultsText.getFalseNegatives());
+            // text blocks with local id 3 are only contain two words, thus comparison fails for (1,3) and (3,3)
+            assertEquals(2, resultsText.getFailedPredecessorComparisons());
 
         } catch (InterruptedException e) {
             e.printStackTrace();

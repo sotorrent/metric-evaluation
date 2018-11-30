@@ -467,7 +467,8 @@ public class MetricEvaluationManager implements Runnable {
     public static List<MetricEvaluationManager> createManagersFromSampleDirectories(
             Path samplesDir,
             Path outputDir,
-            boolean addDefaultMetricsAndThresholds) {
+            boolean addDefaultMetricsAndThresholds,
+            Set<String> sampleFilter) {
 
         try {
             FileUtils.ensureEmptyDirectoryExists(outputDir);
@@ -485,19 +486,21 @@ public class MetricEvaluationManager implements Runnable {
                         if (!Files.isDirectory(path)) {
                             return;
                         }
-                        String name = path.toFile().getName();
-                        Path pathToPostIdList = Paths.get(path.toString(), name + ".csv");
-                        Path pathToPostHistory = Paths.get(path.toString(), "files");
-                        Path pathToGroundTruth = Paths.get(path.toString(), "completed");
+                        String sampleName = path.toFile().getName();
+                        if (sampleFilter == null || sampleFilter.contains(sampleName)) {
+                            Path pathToPostIdList = Paths.get(path.toString(), sampleName + ".csv");
+                            Path pathToPostHistory = Paths.get(path.toString(), "files");
+                            Path pathToGroundTruth = Paths.get(path.toString(), "completed");
 
-                        MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
-                                .withName(name)
-                                .withInputPaths(pathToPostIdList, pathToPostHistory, pathToGroundTruth)
-                                .withOutputDirPath(outputDir)
-                                .withAllSimilarityMetrics(addDefaultMetricsAndThresholds)
-                                .initialize();
+                            MetricEvaluationManager manager = MetricEvaluationManager.DEFAULT
+                                    .withName(sampleName)
+                                    .withInputPaths(pathToPostIdList, pathToPostHistory, pathToGroundTruth)
+                                    .withOutputDirPath(outputDir)
+                                    .withAllSimilarityMetrics(addDefaultMetricsAndThresholds)
+                                    .initialize();
 
-                        managers.add(manager);
+                            managers.add(manager);
+                        }
                     }
             );
         } catch (IOException e) {
@@ -505,6 +508,19 @@ public class MetricEvaluationManager implements Runnable {
         }
 
         return managers;
+    }
+
+    public static List<MetricEvaluationManager> createManagersFromSampleDirectories(
+            Path samplesDir,
+            Path outputDir,
+            boolean addDefaultMetricsAndThresholds) {
+
+        return createManagersFromSampleDirectories(
+                samplesDir,
+                outputDir,
+                addDefaultMetricsAndThresholds,
+                null
+        );
     }
 
     public static void aggregateAndWriteSampleResults(List<MetricEvaluationManager> managers, File outputFile) {
