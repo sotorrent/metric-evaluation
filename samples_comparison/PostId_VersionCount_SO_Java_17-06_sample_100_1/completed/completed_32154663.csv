@@ -1,6 +1,0 @@
-PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
-32154663;97984983;1;1;null;1;""
-32154663;97985220;1;1;1;null;""
-32154663;97984983;2;2;null;2;""
-32154663;97985220;2;2;2;null;""
-32154663;97985220;1;3;null;null;""

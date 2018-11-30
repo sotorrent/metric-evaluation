@@ -1,3 +1,0 @@
-Id;PostId;UserId;PostHistoryTypeId;RevisionGUID;CreationDate;Text;UserDisplayName;Comment
-83452618;28428976;2329714;2;ffe3c669-0054-4717-96c4-3f1b4e6e68a8;2015-02-10 10:09:32.0;"Disabling Gauge plugin as recommended in this post did the trick: http://stackoverflow.com/questions/27733987/intellij-adding-extra-line-in-new-blocks. ";;
-147176039;28428976;-1;5;c449865a-65ec-40ca-85be-3e4ce77ce180;2017-05-23 12:14:14.0;"Disabling Gauge plugin as recommended in this post did the trick: https://stackoverflow.com/questions/27733987/intellij-adding-extra-line-in-new-blocks. ";;replaced http://stackoverflow.com/ with https://stackoverflow.com/

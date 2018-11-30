@@ -1,7 +1,0 @@
-PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
-22707219;61510552;1;1;null;1;""
-22707219;61518956;1;1;1;null;""
-22707219;61510552;2;2;null;2;""
-22707219;61518956;2;2;2;null;""
-22707219;61510552;1;3;null;3;""
-22707219;61518956;1;3;3;null;""

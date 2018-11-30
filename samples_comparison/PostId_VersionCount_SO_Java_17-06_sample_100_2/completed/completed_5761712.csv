@@ -1,9 +1,0 @@
-PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
-5761712;12404325;1;1;null;1;""
-5761712;12412467;1;1;1;null;""
-5761712;12404325;2;2;null;2;""
-5761712;12412467;2;2;2;null;""
-5761712;12404325;1;3;null;3;""
-5761712;12412467;1;3;3;null;""
-5761712;12404325;2;4;null;4;""
-5761712;12412467;2;4;4;null;""

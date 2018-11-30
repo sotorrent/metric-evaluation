@@ -1,3 +1,0 @@
-Id;PostId;UserId;PostHistoryTypeId;RevisionGUID;CreationDate;Text;UserDisplayName;Comment
-25664717;11076824;207421;2;9b336ec4-4bef-4697-b1e6-4578f7caad06;2012-06-18 04:07:50.0;"1. Use a BufferedOutputStream between the ObjectOutputStream and the socket.&#xD;&#xA;2. Use a BufferedInputStream between the ObjectInputStream and the socket.&#xD;&#xA;3. call `flush()` after every `writeObject()` or `writeUnshared().`";;
-95285813;11076824;207421;5;1557c13e-0ec5-420f-a7f3-5c44d6a60222;2015-07-17 01:38:13.0;"1. Use a `BufferedOutputStream` between the `ObjectOutputStream` and the socket.&#xD;&#xA;2. Use a `BufferedInputStream` between the `ObjectInputStream` and the socket.&#xD;&#xA;3. Call `flush()` after every `writeObject()` or `writeUnshared().`";;added 8 characters in body
