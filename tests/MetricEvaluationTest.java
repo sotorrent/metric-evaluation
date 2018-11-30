@@ -509,7 +509,7 @@ class MetricEvaluationTest {
 
         // text
         validateResults(a_33076987, a_33076987_gt, null, TextBlockVersion.getPostBlockTypeIdFilter(),
-                2, 0, 3*3, 1);
+                2, 0,  2 + 2 + 2, 1);
     }
 
     @Test
