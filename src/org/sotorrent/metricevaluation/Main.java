@@ -45,7 +45,7 @@ class Main {
         threadCountOption.setRequired(true);
         options.addOption(threadCountOption);
 
-        Option selectedMetricsDirOption = new Option("d", "selected-metrics-dir", true, "path to directory with selected metrics");
+        Option selectedMetricsDirOption = new Option("sm", "selected-metrics-dir", true, "path to directory with selected metrics");
         selectedMetricsDirOption.setRequired(false);
         options.addOption(selectedMetricsDirOption);
 
@@ -53,7 +53,7 @@ class Main {
         defaultMetricOption.setRequired(false);
         options.addOption(defaultMetricOption);
 
-        Option combinedMetricsOption = new Option("cm", "test-combined-metrics", false, "if present, only configured combined metrics are tested");
+        Option combinedMetricsOption = new Option("cm", "test-combined-metrics", false, "if present, only configured combined metrics are tested (see MetricEvaluationManager.createCombinedSimilarityMetrics())");
         combinedMetricsOption.setRequired(false);
         options.addOption(combinedMetricsOption);
 
