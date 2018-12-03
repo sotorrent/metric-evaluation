@@ -1,0 +1,7 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+35106428;109687610;1;1;null;1;""
+35106428;109687718;1;1;1;null;""
+35106428;109687610;2;2;null;2;""
+35106428;109687718;2;2;2;null;""
+35106428;109687610;1;3;null;3;""
+35106428;109687718;1;3;3;null;""

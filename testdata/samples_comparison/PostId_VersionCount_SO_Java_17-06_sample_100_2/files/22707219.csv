@@ -1,0 +1,3 @@
+Id;PostId;UserId;PostHistoryTypeId;RevisionGUID;CreationDate;Text;UserDisplayName;Comment
+61510552;22707219;3245959;2;1e8a865e-10a7-4b20-b477-f0f74c178700;2014-03-28 08:01:54.0;"Or this should also work... &#xD;&#xA;&#xD;&#xA;    Pattern.matches(""\\\\[a-z]+"", tag);&#xD;&#xA;&#xD;&#xA;you can validate your expression online [here](http://www.regexr.com/)";;
+61518956;22707219;3245959;5;d55aab57-7364-47d5-b205-59d4fc4efe19;2014-03-28 10:01:13.0;"This should work... &#xD;&#xA;&#xD;&#xA;    Pattern.matches(""\\\\[a-z]+"", tag);&#xD;&#xA;&#xD;&#xA;[a-z] allows any character between a-z more than once and \\\\\\ allows ""\\"" once.&#xD;&#xA;&#xD;&#xA;you can validate your expression online [here](http://www.regexr.com/)";;added 74 characters in body

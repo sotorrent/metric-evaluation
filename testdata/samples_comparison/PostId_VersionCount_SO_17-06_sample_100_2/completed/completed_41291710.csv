@@ -1,0 +1,7 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+41291710;134449545;1;1;null;1;""
+41291710;134453651;1;1;1;null;""
+41291710;134449545;2;2;null;2;""
+41291710;134453651;2;2;2;null;""
+41291710;134453651;1;3;null;null;""
+41291710;134453651;2;4;null;null;""

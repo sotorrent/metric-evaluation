@@ -1,0 +1,3 @@
+Id;PostId;UserId;PostHistoryTypeId;RevisionGUID;CreationDate;Text;UserDisplayName;Comment
+127332151;39552029;4716946;2;7e73741e-32bd-4dca-8f9a-49dd2d7341e8;2016-09-17 21:43:33.0;"Once you do .readLine() it will no longer be in the buffer, change your while loop to:&#xA;&#xA;`String line;&#xA;while((line = reader.readLine()) != null)`";;
+127332428;39552029;4716946;5;351507a9-8e93-4c6e-8523-deaead14185b;2016-09-17 21:56:55.0;"Once you do .readLine() it will no longer be in the buffer, change your while loop to:&#xD;&#xA;&#xD;&#xA;    String line = null;&#xD;&#xA;    while((line = reader.readLine()) != null) {&#xD;&#xA;        list.add(line);&#xD;&#xA;    }";;added 50 characters in body

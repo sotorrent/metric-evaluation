@@ -1,0 +1,5 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+37028529;117292824;1;1;null;1;""
+37028529;117296199;1;1;1;null;""
+37028529;117292824;2;2;null;2;""
+37028529;117296199;2;2;2;null;""

@@ -1,0 +1,5 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+21010942;55228229;1;1;null;1;""
+21010942;55228506;1;1;1;null;""
+21010942;55228229;2;2;null;2;""
+21010942;55228506;2;2;2;null;""

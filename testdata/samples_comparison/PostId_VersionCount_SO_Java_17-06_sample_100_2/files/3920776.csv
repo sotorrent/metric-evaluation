@@ -1,0 +1,3 @@
+Id;PostId;UserId;PostHistoryTypeId;RevisionGUID;CreationDate;Text;UserDisplayName;Comment
+8232539;3920776;471927;2;daca1805-f41a-435e-999b-3af81ee54c6d;2010-10-13 04:29:07.0;"Dog d=new Dog();&#xD;&#xA;In the above line which is object and which is reference variable? or Whether object and reference variable are the same?";;
+8232569;3920776;52249;5;06ed11b3-4e41-4c1e-a8a7-b0760a906eae;2010-10-13 04:32:24.0;"    Dog d=new Dog();&#xD;&#xA;&#xD;&#xA;In the above line which is object and which is reference variable? or Whether object and reference variable are the same?";;added 6 characters in body

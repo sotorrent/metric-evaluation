@@ -1,0 +1,7 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+39298776;126304814;1;1;null;1;""
+39298776;126306541;1;1;1;null;""
+39298776;126304814;2;2;null;2;""
+39298776;126306541;2;2;2;null;""
+39298776;126304814;1;3;null;3;""
+39298776;126306541;1;3;3;null;""

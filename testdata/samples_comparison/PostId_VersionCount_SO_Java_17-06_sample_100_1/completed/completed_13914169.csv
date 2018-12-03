@@ -1,0 +1,7 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+13914169;33299068;1;1;null;1;""
+13914169;33299915;1;1;1;null;""
+13914169;33299068;2;2;null;2;""
+13914169;33299915;2;2;2;null;""
+13914169;33299068;1;3;null;3;""
+13914169;33299915;1;3;3;null;""

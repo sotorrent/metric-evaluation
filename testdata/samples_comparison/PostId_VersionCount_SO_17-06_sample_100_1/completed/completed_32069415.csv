@@ -1,0 +1,5 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+32069415;97649135;1;1;null;1;""
+32069415;97649655;1;1;1;null;""
+32069415;97649135;2;2;null;2;""
+32069415;97649655;2;2;2;null;""

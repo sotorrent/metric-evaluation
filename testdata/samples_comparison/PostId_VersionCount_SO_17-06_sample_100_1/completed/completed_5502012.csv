@@ -1,0 +1,5 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+5502012;11797120;1;1;null;1;""
+5502012;11811932;1;1;1;null;""
+5502012;11797120;2;2;null;2;""
+5502012;11811932;2;2;2;null;""

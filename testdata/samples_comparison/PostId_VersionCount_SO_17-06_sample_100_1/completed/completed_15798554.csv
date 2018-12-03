@@ -1,0 +1,7 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+15798554;38533389;1;1;null;1;""
+15798554;38740581;1;1;1;null;""
+15798554;38533389;2;2;null;2;""
+15798554;38740581;2;2;2;null;""
+15798554;38533389;1;3;null;3;""
+15798554;38740581;1;3;3;null;""

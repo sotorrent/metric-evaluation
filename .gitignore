@@ -46,12 +46,5 @@ target/
 *.log
 *.log.*
 *.lck
-/testdata/samples_comparison
-/testdata/samples_gt
-/testdata/samples_test
 /testdata/output
-/testdata/metrics_comparison/TestCompareWithOldProject_per_version.csv
-/testdata/metrics_comparison/TestCompareWithOldProject_per_post.csv
-/testdata/metrics_comparison/TestCompareWithOldProject_per_sample.csv
 /output/
-releases/

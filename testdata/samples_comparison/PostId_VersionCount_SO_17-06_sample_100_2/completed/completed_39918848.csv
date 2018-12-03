@@ -1,0 +1,5 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+39918848;128785835;1;1;null;1;""
+39918848;128789234;1;1;1;null;""
+39918848;128785835;2;2;null;2;""
+39918848;128789234;2;2;2;null;""
