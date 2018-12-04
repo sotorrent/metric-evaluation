@@ -1,5 +1,11 @@
 Metric
-cosineTokenNormalizedTermFrequency
-cosineTokenNormalizedNormalizedTermFrequency
-tokenJaccardNormalized
 tokenDice
+cosineTokenNormalizedNormalizedTermFrequency
+tokenJaccard
+cosineTokenNormalizedBool
+tokenDiceNormalized
+tokenJaccardNormalized
+manhattanTokenNormalized
+levenshtein
+optimalAlignment
+damerauLevenshtein
