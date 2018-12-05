@@ -6,6 +6,3 @@ cosineTokenNormalizedBool
 tokenDiceNormalized
 tokenJaccardNormalized
 manhattanTokenNormalized
-levenshtein
-optimalAlignment
-damerauLevenshtein
