@@ -28,7 +28,7 @@
         <junit.jupiter.version>LATEST</junit.jupiter.version>
         <hamcrest.junit.version>LATEST</hamcrest.junit.version>
         <!-- Other dependencies -->
-        <posthistory-extractor.version>LATEST</posthistory-extractor.version>
+        <posthistory-extractor.version>3.3.0</posthistory-extractor.version>
         <string-similarity.version>LATEST</string-similarity.version>
         <util.version>LATEST</util.version>
         <commons-cli.version>LATEST</commons-cli.version>
