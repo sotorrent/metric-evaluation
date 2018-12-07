@@ -15,6 +15,6 @@ To test only the configured combined metrics (see `MetricEvaluationManager.creat
 
 To test only the default metric, run:
 
-    java -jar metric-evaluation-2.2.0-jar-with-dependencies.jar -dm -s testdata/samples_comparison -o output -t 1
+    java -jar metric-evaluation-2.2.1-jar-with-dependencies.jar -dm -s testdata/samples_comparison -o output -t 1
 
 [![DOI](https://zenodo.org/badge/103541441.svg)](https://zenodo.org/badge/latestdoi/103541441)
