@@ -1,0 +1,6 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+21120863;55633840;2;1;null;1;""
+21120863;55634047;2;1;1;null;""
+21120863;55633840;1;2;null;null;" Nicht richtig unterteilt"
+21120863;55634047;1;2;null;null;""
+21120863;55634047;2;3;null;null;""

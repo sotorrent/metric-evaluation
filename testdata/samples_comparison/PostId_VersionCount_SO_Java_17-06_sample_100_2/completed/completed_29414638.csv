@@ -1,0 +1,5 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+29414638;87246201;1;1;null;1;""
+29414638;104304957;1;1;1;null;""
+29414638;87246201;2;2;null;2;""
+29414638;104304957;2;2;2;null;""

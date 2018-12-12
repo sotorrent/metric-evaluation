@@ -1,0 +1,7 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+29901134;89146888;1;1;null;1;""
+29901134;89147936;1;1;1;1;""
+29901134;89148277;1;1;1;null;""
+29901134;89146888;2;2;null;2;""
+29901134;89147936;2;2;2;2;""
+29901134;89148277;2;2;2;null;""

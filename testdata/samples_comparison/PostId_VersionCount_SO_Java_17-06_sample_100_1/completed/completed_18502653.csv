@@ -1,0 +1,7 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+18502653;46203750;1;1;null;1;""
+18502653;46204015;1;1;1;null;""
+18502653;46203750;2;2;null;2;""
+18502653;46204015;2;2;2;null;""
+18502653;46203750;1;3;null;3;""
+18502653;46204015;1;3;3;null;""

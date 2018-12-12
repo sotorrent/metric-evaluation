@@ -1,0 +1,7 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+43304240;142671020;1;1;null;1;""
+43304240;142671881;1;1;1;null;""
+43304240;142671020;2;2;null;2;""
+43304240;142671881;2;2;2;null;""
+43304240;142671020;1;3;null;3;""
+43304240;142671881;1;3;3;null;""

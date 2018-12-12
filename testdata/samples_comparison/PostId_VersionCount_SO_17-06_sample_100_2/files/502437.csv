@@ -1,0 +1,3 @@
+Id;PostId;UserId;PostHistoryTypeId;RevisionGUID;CreationDate;Text;UserDisplayName;Comment
+833091;502437;53246;2;162181f4-5961-4d66-9f46-6a5355325e9b;2009-02-02 07:24:56.0;"or maybe (Its untested) you can use:&#xD;&#xA;&#xD;&#xA;    jQuery(document).ready(function(jQuery.noConflict(true)) {&#xD;&#xA;&#xD;&#xA;And still use `$` inside.&#xD;&#xA;&#xD;&#xA;Regards";;
+69641534;502437;63550;5;4ac33a78-1f21-4477-a3db-8cb093e66ab6;2014-07-18 17:52:37.0;"Or maybe (it's untested) you can use:&#xD;&#xA;&#xD;&#xA;    jQuery(document).ready(function(jQuery.noConflict(true)) {&#xD;&#xA;&#xD;&#xA;And still use `$` inside.&#xD;&#xA;";;"Copy edited. (its = possessive, it's = ""it is"" or ""it has"". See for example <http://www.wikihow.com/Use-its-and-it's>.)"

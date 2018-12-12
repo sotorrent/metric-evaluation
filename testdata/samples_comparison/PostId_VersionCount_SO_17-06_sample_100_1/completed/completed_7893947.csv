@@ -1,0 +1,8 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+7893947;17543265;1;1;null;null;" Nicht richtig unterteilt"
+7893947;17543304;1;1;null;1;""
+7893947;17544635;1;1;1;null;""
+7893947;17543304;2;2;null;2;""
+7893947;17544635;2;2;2;null;""
+7893947;17543304;1;3;null;3;""
+7893947;17544635;1;3;3;null;""

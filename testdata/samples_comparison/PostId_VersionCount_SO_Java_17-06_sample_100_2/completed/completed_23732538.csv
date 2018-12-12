@@ -1,0 +1,7 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+23732538;65412713;1;1;null;1;""
+23732538;65412978;1;1;1;null;""
+23732538;65412713;2;2;null;2;""
+23732538;65412978;2;2;2;null;""
+23732538;65412713;1;3;null;3;""
+23732538;65412978;1;3;3;null;""

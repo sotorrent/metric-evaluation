@@ -1,0 +1,8 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+42865604;140905927;1;1;null;1;""
+42865604;140906604;1;1;1;null;""
+42865604;140905927;2;2;null;2;""
+42865604;140906604;2;2;2;null;""
+42865604;140905927;1;3;null;3;""
+42865604;140906604;1;3;3;null;""
+42865604;140906604;2;4;null;null;""

@@ -763,15 +763,127 @@ public class MetricEvaluationManager implements Runnable {
         List<SimilarityMetric> metricsText = new LinkedList<>();
         metricsText.add(
             new SimilarityMetric(
-                    "manhattanFourGramNormalized",
-                    org.sotorrent.stringsimilarity.profile.Variants::manhattanFourGramNormalized,
-                    SimilarityMetric.MetricType.PROFILE,
-                    0.16)
+                    "fiveGramDiceNormalized",
+                    org.sotorrent.stringsimilarity.set.Variants::fiveGramDiceNormalized,
+                    SimilarityMetric.MetricType.SET,
+                    0.04)
+        );
+        metricsText.add(
+                new SimilarityMetric(
+                        "cosineFiveGramNormalizedBool",
+                        org.sotorrent.stringsimilarity.profile.Variants::cosineFiveGramNormalizedBool,
+                        SimilarityMetric.MetricType.PROFILE,
+                        0.05)
+        );
+        metricsText.add(
+                new SimilarityMetric(
+                        "fiveGramDice",
+                        org.sotorrent.stringsimilarity.set.Variants::fiveGramDice,
+                        SimilarityMetric.MetricType.SET,
+                        0.04)
+        );
+        metricsText.add(
+                new SimilarityMetric(
+                        "fiveGramJaccard",
+                        org.sotorrent.stringsimilarity.set.Variants::fiveGramJaccard,
+                        SimilarityMetric.MetricType.SET,
+                        0.02)
+        );
+        metricsText.add(
+                new SimilarityMetric(
+                        "cosineFiveGramNormalizedBool",
+                        org.sotorrent.stringsimilarity.profile.Variants::cosineFiveGramNormalizedBool,
+                        SimilarityMetric.MetricType.PROFILE,
+                        0.03)
+        );
+        metricsText.add(
+                new SimilarityMetric(
+                        "cosineFiveGramNormalizedBool",
+                        org.sotorrent.stringsimilarity.profile.Variants::cosineFiveGramNormalizedBool,
+                        SimilarityMetric.MetricType.PROFILE,
+                        0.04)
+        );
+        metricsText.add(
+                new SimilarityMetric(
+                        "cosineFiveGramNormalizedBool",
+                        org.sotorrent.stringsimilarity.profile.Variants::cosineFiveGramNormalizedBool,
+                        SimilarityMetric.MetricType.PROFILE,
+                        0.06)
+        );
+        metricsText.add(
+                new SimilarityMetric(
+                        "fourGramDiceNormalized",
+                        org.sotorrent.stringsimilarity.set.Variants::fourGramDiceNormalized,
+                        SimilarityMetric.MetricType.SET,
+                        0.05)
+        );
+        metricsText.add(
+                new SimilarityMetric(
+                        "fiveGramDiceNormalized",
+                        org.sotorrent.stringsimilarity.set.Variants::fiveGramDiceNormalized,
+                        SimilarityMetric.MetricType.SET,
+                        0.03)
+        );
+        metricsText.add(
+                new SimilarityMetric(
+                        "fiveGramDice",
+                        org.sotorrent.stringsimilarity.set.Variants::fiveGramDice,
+                        SimilarityMetric.MetricType.SET,
+                        0.03)
+        );
+        metricsText.add(
+                new SimilarityMetric(
+                        "cosineFiveGramNormalizedBool",
+                        org.sotorrent.stringsimilarity.profile.Variants::cosineFiveGramNormalizedBool,
+                        SimilarityMetric.MetricType.PROFILE,
+                        0.08)
+        );
+        metricsText.add(
+                new SimilarityMetric(
+                        "fourGramDice",
+                        org.sotorrent.stringsimilarity.set.Variants::fourGramDice,
+                        SimilarityMetric.MetricType.SET,
+                        0.08)
+        );
+        metricsText.add(
+                new SimilarityMetric(
+                        "fiveGramDice",
+                        org.sotorrent.stringsimilarity.set.Variants::fiveGramDice,
+                        SimilarityMetric.MetricType.SET,
+                        0.05)
+        );
+        metricsText.add(
+                new SimilarityMetric(
+                        "cosineFiveGramNormalizedBool",
+                        org.sotorrent.stringsimilarity.profile.Variants::cosineFiveGramNormalizedBool,
+                        SimilarityMetric.MetricType.PROFILE,
+                        0.07)
+        );
+        metricsText.add(
+                new SimilarityMetric(
+                        "cosineFiveGramNormalizedBool",
+                        org.sotorrent.stringsimilarity.profile.Variants::cosineFiveGramNormalizedBool,
+                        SimilarityMetric.MetricType.PROFILE,
+                        0.14)
+        );
+        metricsText.add(
+                new SimilarityMetric(
+                        "fourGramJaccardNormalized",
+                        org.sotorrent.stringsimilarity.set.Variants::fourGramJaccardNormalized,
+                        SimilarityMetric.MetricType.SET,
+                        0.03)
         );
         metricsText.add(
                 new SimilarityMetric(
                         "manhattanFourGramNormalized",
                         org.sotorrent.stringsimilarity.profile.Variants::manhattanFourGramNormalized,
+                        SimilarityMetric.MetricType.PROFILE,
+                        0.05)
+        );
+        metricsText.add(
+                new SimilarityMetric(
+                        "cosineFourGramNormalizedBool",
+                        org.sotorrent.stringsimilarity.profile.Variants::cosineFourGramNormalizedBool,
                         SimilarityMetric.MetricType.PROFILE,
                         0.17)
         );
@@ -780,226 +892,184 @@ public class MetricEvaluationManager implements Runnable {
                         "manhattanFourGramNormalized",
                         org.sotorrent.stringsimilarity.profile.Variants::manhattanFourGramNormalized,
                         SimilarityMetric.MetricType.PROFILE,
-                        0.18)
-        );
-        metricsText.add(
-                new SimilarityMetric(
-                        "manhattanThreeGramNormalized",
-                        org.sotorrent.stringsimilarity.profile.Variants::manhattanThreeGramNormalized,
-                        SimilarityMetric.MetricType.PROFILE,
-                        0.20)
-        );
-        metricsText.add(
-                new SimilarityMetric(
-                        "manhattanThreeGramNormalized",
-                        org.sotorrent.stringsimilarity.profile.Variants::manhattanThreeGramNormalized,
-                        SimilarityMetric.MetricType.PROFILE,
-                        0.21)
-        );
-        metricsText.add(
-                new SimilarityMetric(
-                        "manhattanThreeGramNormalized",
-                        org.sotorrent.stringsimilarity.profile.Variants::manhattanThreeGramNormalized,
-                        SimilarityMetric.MetricType.PROFILE,
-                        0.22)
-        );
-        metricsText.add(
-                new SimilarityMetric(
-                        "manhattanThreeGramNormalized",
-                        org.sotorrent.stringsimilarity.profile.Variants::manhattanThreeGramNormalized,
-                        SimilarityMetric.MetricType.PROFILE,
-                        0.23)
-        );
-        metricsText.add(
-                new SimilarityMetric(
-                        "manhattanThreeGramNormalized",
-                        org.sotorrent.stringsimilarity.profile.Variants::manhattanThreeGramNormalized,
-                        SimilarityMetric.MetricType.PROFILE,
-                        0.24)
-        );
-        metricsText.add(
-                new SimilarityMetric(
-                        "manhattanThreeGramNormalized",
-                        org.sotorrent.stringsimilarity.profile.Variants::manhattanThreeGramNormalized,
-                        SimilarityMetric.MetricType.PROFILE,
-                        0.25)
-        );
-        metricsText.add(
-                new SimilarityMetric(
-                        "threeGramDice",
-                        org.sotorrent.stringsimilarity.set.Variants::threeGramDice,
-                        SimilarityMetric.MetricType.SET,
-                        0.30)
+                        0.04)
         );
         metricsText.add(
                 new SimilarityMetric(
                         "fourGramDice",
                         org.sotorrent.stringsimilarity.set.Variants::fourGramDice,
                         SimilarityMetric.MetricType.SET,
-                        0.22)
-        );
-        metricsText.add(
-                new SimilarityMetric(
-                        "fourGramDice",
-                        org.sotorrent.stringsimilarity.set.Variants::fourGramDice,
-                        SimilarityMetric.MetricType.SET,
-                        0.23)
+                        0.06)
         );
         metricsText.add(
                 new SimilarityMetric(
                         "fourGramJaccard",
                         org.sotorrent.stringsimilarity.set.Variants::fourGramJaccard,
                         SimilarityMetric.MetricType.SET,
-                        0.13)
+                        0.03)
+        );
+        metricsText.add(
+                new SimilarityMetric(
+                        "cosineFourGramNormalizedBool",
+                        org.sotorrent.stringsimilarity.profile.Variants::cosineFourGramNormalizedBool,
+                        SimilarityMetric.MetricType.PROFILE,
+                        0.07)
+        );
+        metricsText.add(
+                new SimilarityMetric(
+                        "fourGramDice",
+                        org.sotorrent.stringsimilarity.set.Variants::fourGramDice,
+                        SimilarityMetric.MetricType.SET,
+                        0.05)
+        );
+        metricsText.add(
+                new SimilarityMetric(
+                        "cosineFourGramNormalizedBool",
+                        org.sotorrent.stringsimilarity.profile.Variants::cosineFourGramNormalizedBool,
+                        SimilarityMetric.MetricType.PROFILE,
+                        0.16)
+        );
+        metricsText.add(
+                new SimilarityMetric(
+                        "cosineFiveGramNormalizedBool",
+                        org.sotorrent.stringsimilarity.profile.Variants::cosineFiveGramNormalizedBool,
+                        SimilarityMetric.MetricType.PROFILE,
+                        0.11)
+        );
+        metricsText.add(
+                new SimilarityMetric(
+                        "cosineFiveGramNormalizedBool",
+                        org.sotorrent.stringsimilarity.profile.Variants::cosineFiveGramNormalizedBool,
+                        SimilarityMetric.MetricType.PROFILE,
+                        0.10)
         );
         logger.info(metricsText.size() + " text metrics added.");
 
         List<SimilarityMetric> metricsTextBackup = new LinkedList<>();
         metricsTextBackup.add(
                 new SimilarityMetric(
-                        "cosineTokenNormalizedTermFrequency",
-                        org.sotorrent.stringsimilarity.profile.Variants::cosineTokenNormalizedTermFrequency,
+                        "cosineTokenNormalizedBool",
+                        org.sotorrent.stringsimilarity.profile.Variants::cosineTokenNormalizedBool,
                         SimilarityMetric.MetricType.PROFILE,
-                        0.36)
+                        0.19)
         );
         metricsTextBackup.add(
                 new SimilarityMetric(
-                        "cosineTokenNormalizedTermFrequency",
-                        org.sotorrent.stringsimilarity.profile.Variants::cosineTokenNormalizedTermFrequency,
+                        "cosineTokenNormalizedBool",
+                        org.sotorrent.stringsimilarity.profile.Variants::cosineTokenNormalizedBool,
                         SimilarityMetric.MetricType.PROFILE,
-                        0.37)
+                        0.16)
         );
         metricsTextBackup.add(
                 new SimilarityMetric(
-                        "tokenJaccardNormalized",
-                        org.sotorrent.stringsimilarity.set.Variants::tokenJaccardNormalized,
-                        SimilarityMetric.MetricType.SET,
-                        0.37)
+                        "cosineTokenNormalizedBool",
+                        org.sotorrent.stringsimilarity.profile.Variants::cosineTokenNormalizedBool,
+                        SimilarityMetric.MetricType.PROFILE,
+                        0.15)
+        );
+        metricsTextBackup.add(
+                new SimilarityMetric(
+                        "cosineTokenNormalizedBool",
+                        org.sotorrent.stringsimilarity.profile.Variants::cosineTokenNormalizedBool,
+                        SimilarityMetric.MetricType.PROFILE,
+                        0.18)
+        );
+        metricsTextBackup.add(
+                new SimilarityMetric(
+                        "cosineTokenNormalizedBool",
+                        org.sotorrent.stringsimilarity.profile.Variants::cosineTokenNormalizedBool,
+                        SimilarityMetric.MetricType.PROFILE,
+                        0.14)
         );
         logger.info(metricsTextBackup.size() + " text backup metrics added.");
 
         List<SimilarityMetric> metricsCode = new LinkedList<>();
         metricsCode.add(
                 new SimilarityMetric(
-                        "winnowingFourGramDiceNormalized",
-                        org.sotorrent.stringsimilarity.fingerprint.Variants::winnowingFourGramDiceNormalized,
-                        SimilarityMetric.MetricType.FINGERPRINT,
-                        0.20)
-        );
-        metricsCode.add(
-                new SimilarityMetric(
-                        "winnowingFourGramDiceNormalized",
-                        org.sotorrent.stringsimilarity.fingerprint.Variants::winnowingFourGramDiceNormalized,
-                        SimilarityMetric.MetricType.FINGERPRINT,
-                        0.23)
-        );
-        metricsCode.add(
-                new SimilarityMetric(
-                        "winnowingFourGramDiceNormalized",
-                        org.sotorrent.stringsimilarity.fingerprint.Variants::winnowingFourGramDiceNormalized,
-                        SimilarityMetric.MetricType.FINGERPRINT,
-                        0.24)
-        );
-        metricsCode.add(
-                new SimilarityMetric(
-                        "winnowingFourGramDiceNormalized",
-                        org.sotorrent.stringsimilarity.fingerprint.Variants::winnowingFourGramDiceNormalized,
-                        SimilarityMetric.MetricType.FINGERPRINT,
-                        0.25)
-        );
-        metricsCode.add(
-                new SimilarityMetric(
-                        "winnowingFourGramDiceNormalized",
-                        org.sotorrent.stringsimilarity.fingerprint.Variants::winnowingFourGramDiceNormalized,
-                        SimilarityMetric.MetricType.FINGERPRINT,
-                        0.26)
-        );
-        metricsCode.add(
-                new SimilarityMetric(
-                        "fourGramDiceNormalizedPadding",
-                        org.sotorrent.stringsimilarity.set.Variants::fourGramDiceNormalizedPadding,
+                        "tokenDiceNormalized",
+                        org.sotorrent.stringsimilarity.set.Variants::tokenDiceNormalized,
                         SimilarityMetric.MetricType.SET,
-                        0.26)
+                        0.10)
         );
         metricsCode.add(
                 new SimilarityMetric(
-                        "fourGramDiceNormalizedPadding",
-                        org.sotorrent.stringsimilarity.set.Variants::fourGramDiceNormalizedPadding,
+                        "tokenDiceNormalized",
+                        org.sotorrent.stringsimilarity.set.Variants::tokenDiceNormalized,
                         SimilarityMetric.MetricType.SET,
-                        0.27)
+                        0.08)
         );
         metricsCode.add(
                 new SimilarityMetric(
-                        "fourGramDiceNormalizedPadding",
-                        org.sotorrent.stringsimilarity.set.Variants::fourGramDiceNormalizedPadding,
+                        "tokenDiceNormalized",
+                        org.sotorrent.stringsimilarity.set.Variants::tokenDiceNormalized,
                         SimilarityMetric.MetricType.SET,
-                        0.28)
+                        0.09)
         );
         metricsCode.add(
                 new SimilarityMetric(
-                        "fourGramDiceNormalizedPadding",
-                        org.sotorrent.stringsimilarity.set.Variants::fourGramDiceNormalizedPadding,
+                        "tokenJaccardNormalized",
+                        org.sotorrent.stringsimilarity.set.Variants::tokenJaccardNormalized,
                         SimilarityMetric.MetricType.SET,
-                        0.29)
+                        0.05)
         );
         metricsCode.add(
                 new SimilarityMetric(
-                        "fourGramDiceNormalizedPadding",
-                        org.sotorrent.stringsimilarity.set.Variants::fourGramDiceNormalizedPadding,
+                        "tokenDiceNormalized",
+                        org.sotorrent.stringsimilarity.set.Variants::tokenDiceNormalized,
                         SimilarityMetric.MetricType.SET,
-                        0.30)
+                        0.12)
         );
         metricsCode.add(
                 new SimilarityMetric(
-                        "fourGramDiceNormalizedPadding",
-                        org.sotorrent.stringsimilarity.set.Variants::fourGramDiceNormalizedPadding,
+                        "tokenDiceNormalized",
+                        org.sotorrent.stringsimilarity.set.Variants::tokenDiceNormalized,
                         SimilarityMetric.MetricType.SET,
-                        0.31)
+                        0.11)
         );
         metricsCode.add(
                 new SimilarityMetric(
-                        "fourGramJaccardNormalizedPadding",
-                        org.sotorrent.stringsimilarity.set.Variants::fourGramJaccardNormalizedPadding,
+                        "tokenJaccardNormalized",
+                        org.sotorrent.stringsimilarity.set.Variants::tokenJaccardNormalized,
                         SimilarityMetric.MetricType.SET,
-                        0.15)
+                        0.06)
         );
         metricsCode.add(
                 new SimilarityMetric(
-                        "fourGramJaccardNormalizedPadding",
-                        org.sotorrent.stringsimilarity.set.Variants::fourGramJaccardNormalizedPadding,
-                        SimilarityMetric.MetricType.SET,
-                        0.16)
-        );
-        metricsCode.add(
-                new SimilarityMetric(
-                        "fourGramJaccardNormalizedPadding",
-                        org.sotorrent.stringsimilarity.set.Variants::fourGramJaccardNormalizedPadding,
-                        SimilarityMetric.MetricType.SET,
-                        0.17)
-        );
-        metricsCode.add(
-                new SimilarityMetric(
-                        "threeGramJaccardNormalizedPadding",
-                        org.sotorrent.stringsimilarity.set.Variants::threeGramJaccardNormalizedPadding,
-                        SimilarityMetric.MetricType.SET,
-                        0.20)
+                        "cosineTokenNormalizedBool",
+                        org.sotorrent.stringsimilarity.profile.Variants::cosineTokenNormalizedBool,
+                        SimilarityMetric.MetricType.PROFILE,
+                        0.10)
         );
         logger.info(metricsCode.size() + " code metrics added.");
 
         List<SimilarityMetric> metricsCodeBackup = new LinkedList<>();
         metricsCodeBackup.add(
                 new SimilarityMetric(
-                        "cosineTokenNormalizedNormalizedTermFrequency",
-                        org.sotorrent.stringsimilarity.profile.Variants::cosineTokenNormalizedNormalizedTermFrequency,
-                        SimilarityMetric.MetricType.PROFILE,
-                        0.26)
+                        "tokenDiceNormalized",
+                        org.sotorrent.stringsimilarity.set.Variants::tokenDiceNormalized,
+                        SimilarityMetric.MetricType.SET,
+                        0.10)
         );
         metricsCodeBackup.add(
                 new SimilarityMetric(
-                        "cosineTokenNormalizedNormalizedTermFrequency",
-                        org.sotorrent.stringsimilarity.profile.Variants::cosineTokenNormalizedNormalizedTermFrequency,
-                        SimilarityMetric.MetricType.PROFILE,
-                        0.27)
+                        "tokenDiceNormalized",
+                        org.sotorrent.stringsimilarity.set.Variants::tokenDiceNormalized,
+                        SimilarityMetric.MetricType.SET,
+                        0.08)
+        );
+        metricsCodeBackup.add(
+                new SimilarityMetric(
+                        "tokenDiceNormalized",
+                        org.sotorrent.stringsimilarity.set.Variants::tokenDiceNormalized,
+                        SimilarityMetric.MetricType.SET,
+                        0.09)
+        );
+        metricsCodeBackup.add(
+                new SimilarityMetric(
+                        "tokenJaccardNormalized",
+                        org.sotorrent.stringsimilarity.set.Variants::tokenJaccardNormalized,
+                        SimilarityMetric.MetricType.SET,
+                        0.05)
         );
         logger.info(metricsCodeBackup.size() + " code backup metrics added.");
 

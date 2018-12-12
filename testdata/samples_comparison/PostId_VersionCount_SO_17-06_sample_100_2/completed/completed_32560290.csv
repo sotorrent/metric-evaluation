@@ -1,0 +1,5 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+32560290;99576803;2;1;null;1;""
+32560290;99577079;2;1;1;null;""
+32560290;99576803;1;2;null;2;""
+32560290;99577079;1;2;2;null;""

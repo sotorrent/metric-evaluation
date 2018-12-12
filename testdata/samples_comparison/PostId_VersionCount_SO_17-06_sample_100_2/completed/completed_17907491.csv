@@ -1,0 +1,5 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+17907491;44428541;1;1;null;1;""
+17907491;147099880;1;1;1;null;""
+17907491;44428541;2;2;null;2;""
+17907491;147099880;2;2;2;null;""

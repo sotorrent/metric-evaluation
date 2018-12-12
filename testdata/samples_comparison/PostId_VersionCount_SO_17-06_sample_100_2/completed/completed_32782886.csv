@@ -1,0 +1,7 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+32782886;100444999;1;1;null;1;""
+32782886;100446108;1;1;1;null;""
+32782886;100444999;2;2;null;2;""
+32782886;100446108;2;2;2;null;""
+32782886;100444999;1;3;null;3;""
+32782886;100446108;1;3;3;null;""

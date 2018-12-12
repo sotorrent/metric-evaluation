@@ -1,0 +1,7 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+19771666;50737624;1;1;null;1;""
+19771666;50737953;1;1;1;null;""
+19771666;50737624;2;2;null;2;""
+19771666;50737953;2;2;2;null;""
+19771666;50737624;1;3;null;3;""
+19771666;50737953;1;3;3;null;""

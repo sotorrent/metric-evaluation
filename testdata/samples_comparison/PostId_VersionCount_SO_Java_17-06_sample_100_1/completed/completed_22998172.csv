@@ -1,0 +1,5 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+22998172;62604477;1;1;null;1;""
+22998172;90239121;1;1;1;null;""
+22998172;62604477;2;2;null;2;""
+22998172;90239121;2;2;2;null;""

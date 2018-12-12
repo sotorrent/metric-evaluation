@@ -1,0 +1,9 @@
+PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
+42396312;139027242;1;1;null;1;""
+42396312;139084528;1;1;1;null;""
+42396312;139027242;2;2;null;2;""
+42396312;139084528;2;2;2;null;""
+42396312;139027242;1;3;null;3;""
+42396312;139084528;1;3;3;null;""
+42396312;139084528;2;4;null;null;""
+42396312;139084528;1;5;null;null;""
