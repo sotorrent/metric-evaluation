@@ -1,4 +1,4 @@
 PostId;PostHistoryId;PostBlockTypeId;LocalId;PredLocalId;SuccLocalId;Comment
-3920776;8232539;1;1;null;null;" Nicht richtig unterteilt.  Keine Verbindung"
-3920776;8232569;2;1;null;null;""
-3920776;8232569;1;2;null;null;""
+3920776;8232539;1;1;null;2; Nicht richtig unterteilt.  Keine Verbindung
+3920776;8232569;2;1;null;null;
+3920776;8232569;1;2;1;null;
