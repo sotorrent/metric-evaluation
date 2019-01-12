@@ -5,7 +5,7 @@
     <name>MetricEvaluation</name>
     <groupId>org.sotorrent</groupId>
     <artifactId>metric-evaluation</artifactId>
-    <version>2.2.1</version>
+    <version>2.2.2</version>
     <url>https://github.com/sotorrent/metric-evaluation</url>
 
     <properties>
