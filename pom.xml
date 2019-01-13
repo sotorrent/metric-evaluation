@@ -5,7 +5,7 @@
     <name>MetricEvaluation</name>
     <groupId>org.sotorrent</groupId>
     <artifactId>metric-evaluation</artifactId>
-    <version>2.2.1</version>
+    <version>2.2.3</version>
     <url>https://github.com/sotorrent/metric-evaluation</url>
 
     <properties>
@@ -28,7 +28,7 @@
         <junit.jupiter.version>LATEST</junit.jupiter.version>
         <hamcrest.junit.version>LATEST</hamcrest.junit.version>
         <!-- Other dependencies -->
-        <posthistory-extractor.version>3.4.1</posthistory-extractor.version>
+        <posthistory-extractor.version>3.4.2</posthistory-extractor.version>
         <string-similarity.version>LATEST</string-similarity.version>
         <util.version>LATEST</util.version>
         <commons-cli.version>LATEST</commons-cli.version>

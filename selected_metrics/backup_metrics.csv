@@ -1,8 +1,9 @@
 Metric
-tokenDice
 cosineTokenNormalizedNormalizedTermFrequency
-tokenJaccard
+cosineTokenNormalizedTermFrequency
 cosineTokenNormalizedBool
+manhattanTokenNormalized
+tokenDice
 tokenDiceNormalized
 tokenJaccardNormalized
-manhattanTokenNormalized
+tokenJaccard
