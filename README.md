@@ -1,5 +1,5 @@
 # metrics-evaluation
-Comparision of different string similarity metrics for reconstructing the history Stack Overflow posts.
+Evaluation of different string similarity metrics for reconstructing the history Stack Overflow posts.
 
 To test all metrics (see `MetricEvaluationManager.addAllSimilarityMetrics()`), run:
  
