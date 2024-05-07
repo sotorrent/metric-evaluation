@@ -35,7 +35,7 @@
         <posthistory-extractor.version>3.5.0</posthistory-extractor.version>
         <commons-cli.version>1.4</commons-cli.version>
         <commons-csv.version>1.6</commons-csv.version>
-        <guava.version>27.0.1-jre</guava.version>
+        <guava.version>32.0.0-jre</guava.version>
     </properties>
 
     <distributionManagement>
